@@ -1,0 +1,9 @@
+*.bak
+*.kicad_pcb-bak
+.DS_Store
+*.lib
+fp-info-cache
+target/
+.idea/
+*.lock
+*.iml
