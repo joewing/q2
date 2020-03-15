@@ -1,0 +1,430 @@
+EESchema Schematic File Version 4
+LIBS:slice-cache
+EELAYER 29 0
+EELAYER END
+$Descr A3 16535 11693
+encoding utf-8
+Sheet 1 7
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+Text GLabel 11600 2950 3    50   Input ~ 0
+DBUS
+$Comp
+L Connector_Generic:Conn_01x20 J2
+U 1 1 5E925A65
+P 14600 2500
+F 0 "J2" H 14680 2492 50  0000 L CNN
+F 1 "Top" H 14680 2401 50  0000 L CNN
+F 2 "Connector_Harwin:Harwin_M20-89020xx_1x20_P2.54mm_Horizontal" H 14600 2500 50  0001 C CNN
+F 3 "~" H 14600 2500 50  0001 C CNN
+	1    14600 2500
+	-1   0    0    1   
+$EndComp
+$Comp
+L Connector_Generic:Conn_01x20 J1
+U 1 1 5E9E6410
+P 13250 2500
+F 0 "J1" H 13330 2492 50  0000 L CNN
+F 1 "Bottom" H 13330 2401 50  0000 L CNN
+F 2 "Connector_Harwin:Harwin_M20-89020xx_1x20_P2.54mm_Horizontal" H 13250 2500 50  0001 C CNN
+F 3 "~" H 13250 2500 50  0001 C CNN
+	1    13250 2500
+	-1   0    0    1   
+$EndComp
+$Comp
+L power:GND #PWR06
+U 1 1 5E9F1867
+P 14800 3400
+F 0 "#PWR06" H 14800 3150 50  0001 C CNN
+F 1 "GND" H 14805 3227 50  0000 C CNN
+F 2 "" H 14800 3400 50  0001 C CNN
+F 3 "" H 14800 3400 50  0001 C CNN
+	1    14800 3400
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR05
+U 1 1 5E9F1F5E
+P 13450 3400
+F 0 "#PWR05" H 13450 3150 50  0001 C CNN
+F 1 "GND" H 13455 3227 50  0000 C CNN
+F 2 "" H 13450 3400 50  0001 C CNN
+F 3 "" H 13450 3400 50  0001 C CNN
+	1    13450 3400
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VCC #PWR02
+U 1 1 5E9F22DB
+P 14800 1500
+F 0 "#PWR02" H 14800 1350 50  0001 C CNN
+F 1 "VCC" H 14817 1673 50  0000 C CNN
+F 2 "" H 14800 1500 50  0001 C CNN
+F 3 "" H 14800 1500 50  0001 C CNN
+	1    14800 1500
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VCC #PWR01
+U 1 1 5E9F29F8
+P 13450 1500
+F 0 "#PWR01" H 13450 1350 50  0001 C CNN
+F 1 "VCC" H 13467 1673 50  0000 C CNN
+F 2 "" H 13450 1500 50  0001 C CNN
+F 3 "" H 13450 1500 50  0001 C CNN
+	1    13450 1500
+	1    0    0    -1  
+$EndComp
+Text GLabel 14800 1600 2    50   Input ~ 0
+X
+Text GLabel 14800 1700 2    50   Input ~ 0
+FIN
+Text GLabel 13450 1600 2    50   Input ~ 0
+Xn
+Text GLabel 14800 2000 2    50   Input ~ 0
+LD
+Text GLabel 14800 2100 2    50   Input ~ 0
+NOT
+Text GLabel 14800 2200 2    50   Input ~ 0
+AND
+Text GLabel 14800 2300 2    50   Input ~ 0
+OR
+Text GLabel 14800 2500 2    50   Input ~ 0
+ADD
+Text GLabel 14800 2600 2    50   Input ~ 0
+SUB
+Text GLabel 13450 1700 2    50   Input ~ 0
+FOUT
+Text GLabel 14800 2700 2    50   Input ~ 0
+ROR
+Text GLabel 14800 2900 2    50   Input ~ 0
+WRA
+Text GLabel 14800 3300 2    50   Input ~ 0
+DBUS
+$Comp
+L Transistor_FET:2N7002 Q1
+U 1 1 5EB515B8
+P 10550 4750
+F 0 "Q1" H 10756 4796 50  0000 L CNN
+F 1 "2N7002" H 10756 4705 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 10750 4675 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 10550 4750 50  0001 L CNN
+	1    10550 4750
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R3
+U 1 1 5EB60AF3
+P 10650 4250
+F 0 "R3" H 10720 4296 50  0000 L CNN
+F 1 "R" H 10720 4205 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" V 10580 4250 50  0001 C CNN
+F 3 "~" H 10650 4250 50  0001 C CNN
+	1    10650 4250
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VCC #PWR07
+U 1 1 5EB60AF9
+P 10650 4100
+F 0 "#PWR07" H 10650 3950 50  0001 C CNN
+F 1 "VCC" H 10667 4273 50  0000 C CNN
+F 2 "" H 10650 4100 50  0001 C CNN
+F 3 "" H 10650 4100 50  0001 C CNN
+	1    10650 4100
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	10650 4400 10650 4450
+Text GLabel 10850 4450 2    50   Input ~ 0
+~ALU_OUT
+Wire Wire Line
+	10650 4450 10850 4450
+Connection ~ 10650 4450
+Wire Wire Line
+	10650 4450 10650 4550
+Text GLabel 10150 4750 0    50   Input ~ 0
+ALU_OUT
+$Comp
+L Device:R R2
+U 1 1 5EB7C128
+P 11600 2400
+F 0 "R2" H 11670 2446 50  0000 L CNN
+F 1 "R" H 11670 2355 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" V 11530 2400 50  0001 C CNN
+F 3 "~" H 11600 2400 50  0001 C CNN
+	1    11600 2400
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VCC #PWR04
+U 1 1 5EB7C12E
+P 11600 2250
+F 0 "#PWR04" H 11600 2100 50  0001 C CNN
+F 1 "VCC" H 11617 2423 50  0000 C CNN
+F 2 "" H 11600 2250 50  0001 C CNN
+F 3 "" H 11600 2250 50  0001 C CNN
+	1    11600 2250
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR08
+U 1 1 5EB97A32
+P 10650 4950
+F 0 "#PWR08" H 10650 4700 50  0001 C CNN
+F 1 "GND" H 10655 4777 50  0000 C CNN
+F 2 "" H 10650 4950 50  0001 C CNN
+F 3 "" H 10650 4950 50  0001 C CNN
+	1    10650 4950
+	1    0    0    -1  
+$EndComp
+Text GLabel 14800 2800 2    50   Input ~ 0
+RDA_DBUS
+Wire Wire Line
+	10150 4750 10350 4750
+$Sheet
+S 2100 2200 2550 1850
+U 5EE1D251
+F0 "Adder" 50
+F1 "adder.sch" 50
+$EndSheet
+$Sheet
+S 5250 2300 2250 1550
+U 5EE53669
+F0 "Logical" 50
+F1 "logical.sch" 50
+$EndSheet
+Text GLabel 14800 2400 2    50   Input ~ 0
+XOR
+$Sheet
+S 2250 4750 2300 1500
+U 5EF31D02
+F0 "Rotate" 50
+F1 "rotate.sch" 50
+$EndSheet
+$Sheet
+S 5450 4800 2450 1550
+U 5EF45566
+F0 "A Register" 50
+F1 "areg.sch" 50
+$EndSheet
+$Sheet
+S 5600 7350 2000 1400
+U 5EF9DF90
+F0 "P Register" 50
+F1 "preg.sch" 50
+$EndSheet
+Text GLabel 13450 2000 2    50   Input ~ 0
+PIN_NEXT
+Text GLabel 13450 2200 2    50   Input ~ 0
+WRP
+Text GLabel 14800 1800 2    50   Input ~ 0
+PCIN
+Text GLabel 13450 1800 2    50   Input ~ 0
+PCOUT
+$Sheet
+S 2250 7350 2200 1500
+U 5F227145
+F0 "X Register" 50
+F1 "xreg.sch" 50
+$EndSheet
+$Comp
+L Device:R R1
+U 1 1 5F299D20
+P 11200 2400
+F 0 "R1" H 11270 2446 50  0000 L CNN
+F 1 "R" H 11270 2355 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" V 11130 2400 50  0001 C CNN
+F 3 "~" H 11200 2400 50  0001 C CNN
+	1    11200 2400
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VCC #PWR03
+U 1 1 5F299D26
+P 11200 2250
+F 0 "#PWR03" H 11200 2100 50  0001 C CNN
+F 1 "VCC" H 11217 2423 50  0000 C CNN
+F 2 "" H 11200 2250 50  0001 C CNN
+F 3 "" H 11200 2250 50  0001 C CNN
+	1    11200 2250
+	1    0    0    -1  
+$EndComp
+Text GLabel 11200 2950 3    50   Input ~ 0
+ABUS
+Wire Wire Line
+	11200 2550 11200 2950
+Text GLabel 14800 3200 2    50   Input ~ 0
+ABUS
+Text GLabel 13450 2600 2    50   Input ~ 0
+RDX_ABUS
+Text GLabel 13450 2700 2    50   Input ~ 0
+RDX_DBUS
+Text GLabel 13450 2800 2    50   Input ~ 0
+WRX
+Text GLabel 13450 2300 2    50   Input ~ 0
+RDP_ABUS
+Text GLabel 13450 2400 2    50   Input ~ 0
+XIN_ABUS
+Text GLabel 13450 2500 2    50   Input ~ 0
+XIN_DBUS
+Wire Wire Line
+	11600 2950 11600 2550
+Text GLabel 13950 2900 2    50   Input ~ 0
+~SW
+Text GLabel 14800 1900 2    50   Input ~ 0
+RST
+Text GLabel 13450 1900 2    50   Input ~ 0
+PIN_X
+$Comp
+L Transistor_FET:2N7002 Q3
+U 1 1 5E7DC78C
+P 10450 6750
+F 0 "Q3" H 10656 6796 50  0000 L CNN
+F 1 "2N7002" H 10656 6705 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 10650 6675 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 10450 6750 50  0001 L CNN
+	1    10450 6750
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R4
+U 1 1 5E7DC792
+P 10550 6250
+F 0 "R4" H 10620 6296 50  0000 L CNN
+F 1 "R" H 10620 6205 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" V 10480 6250 50  0001 C CNN
+F 3 "~" H 10550 6250 50  0001 C CNN
+	1    10550 6250
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VCC #PWR09
+U 1 1 5E7DC798
+P 10550 6100
+F 0 "#PWR09" H 10550 5950 50  0001 C CNN
+F 1 "VCC" H 10567 6273 50  0000 C CNN
+F 2 "" H 10550 6100 50  0001 C CNN
+F 3 "" H 10550 6100 50  0001 C CNN
+	1    10550 6100
+	1    0    0    -1  
+$EndComp
+Text GLabel 10050 6750 0    50   Input ~ 0
+~SW
+$Comp
+L power:GND #PWR010
+U 1 1 5E7DC7A4
+P 10550 6950
+F 0 "#PWR010" H 10550 6700 50  0001 C CNN
+F 1 "GND" H 10555 6777 50  0000 C CNN
+F 2 "" H 10550 6950 50  0001 C CNN
+F 3 "" H 10550 6950 50  0001 C CNN
+	1    10550 6950
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	10050 6750 10250 6750
+Text GLabel 11750 6800 0    50   Input ~ 0
+DEP
+$Comp
+L Transistor_FET:2N7002 Q2
+U 1 1 5E7DCCD3
+P 11950 6400
+F 0 "Q2" H 12156 6446 50  0000 L CNN
+F 1 "2N7002" H 12156 6355 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 12150 6325 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 11950 6400 50  0001 L CNN
+	1    11950 6400
+	1    0    0    -1  
+$EndComp
+$Comp
+L Transistor_FET:2N7002 Q4
+U 1 1 5E7DEDC4
+P 11950 6800
+F 0 "Q4" H 12156 6846 50  0000 L CNN
+F 1 "2N7002" H 12156 6755 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 12150 6725 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 11950 6800 50  0001 L CNN
+	1    11950 6800
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR011
+U 1 1 5E7EA749
+P 12050 7000
+F 0 "#PWR011" H 12050 6750 50  0001 C CNN
+F 1 "GND" H 12055 6827 50  0000 C CNN
+F 2 "" H 12050 7000 50  0001 C CNN
+F 3 "" H 12050 7000 50  0001 C CNN
+	1    12050 7000
+	1    0    0    -1  
+$EndComp
+Text GLabel 12050 6200 1    50   Input ~ 0
+DBUS
+Wire Wire Line
+	10550 6400 10550 6500
+Text GLabel 10800 6500 2    50   Input ~ 0
+SW
+Wire Wire Line
+	10550 6500 10800 6500
+Connection ~ 10550 6500
+Wire Wire Line
+	10550 6500 10550 6550
+Text GLabel 11750 6400 0    50   Input ~ 0
+~SW
+Text GLabel 13450 3200 2    50   Input ~ 0
+ABUS
+Text GLabel 13450 3300 2    50   Input ~ 0
+DBUS
+Text GLabel 13450 3100 2    50   Input ~ 0
+CLK2
+Text GLabel 14800 3100 2    50   Input ~ 0
+CLK2
+Wire Wire Line
+	13950 2900 13450 2900
+Text GLabel 13450 3000 2    50   Input ~ 0
+DEP
+NoConn ~ 14800 3000
+$Comp
+L Device:C C1
+U 1 1 5E557476
+P 13800 4600
+F 0 "C1" H 13915 4646 50  0000 L CNN
+F 1 "C" H 13915 4555 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 13838 4450 50  0001 C CNN
+F 3 "~" H 13800 4600 50  0001 C CNN
+	1    13800 4600
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR0111
+U 1 1 5E5579C3
+P 13800 4750
+F 0 "#PWR0111" H 13800 4500 50  0001 C CNN
+F 1 "GND" H 13805 4577 50  0000 C CNN
+F 2 "" H 13800 4750 50  0001 C CNN
+F 3 "" H 13800 4750 50  0001 C CNN
+	1    13800 4750
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VCC #PWR0110
+U 1 1 5E557D5C
+P 13800 4450
+F 0 "#PWR0110" H 13800 4300 50  0001 C CNN
+F 1 "VCC" H 13817 4623 50  0000 C CNN
+F 2 "" H 13800 4450 50  0001 C CNN
+F 3 "" H 13800 4450 50  0001 C CNN
+	1    13800 4450
+	1    0    0    -1  
+$EndComp
+Text GLabel 13450 2100 2    50   Input ~ 0
+WRN
+$EndSCHEMATC
