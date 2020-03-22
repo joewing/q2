@@ -1144,7 +1144,7 @@ F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 3200 4750 50  000
 	1    0    0    -1  
 $EndComp
 Text GLabel 3000 4750 0    50   Input ~ 0
-STATE_FETCH
+STATE_EXEC
 Text GLabel 3000 4200 0    50   Input ~ 0
 TYPE1
 $Comp

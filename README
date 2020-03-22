@@ -1,5 +1,12 @@
 
+# Q2
+
+A 16-bit discrete transistor computer with an architecture inspired
+by the minicomputers of the 1960s.
+
 ## Frontpanel
+
+The frontpanel provides the main interface to the computer.
 
   16 Address LEDs
   16 Data LEDs
@@ -13,7 +20,12 @@
 
 ## Boards
 
+The computer is comprised of several PCBs. Other than the backplane,
+all PCBs have 2x 20 pin male headers to plug into a 2-row, 40-pin
+headers on the backplane.
+
   Name        | Quantity  | Description
+  ----------- | --------- | ----------------
   Slice       | 16        | ALU/A/P/X slice
   RAM         | 1         | 16-bit RAM module
   Control     | 1         | Control module

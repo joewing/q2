@@ -1,7 +1,6 @@
 
 use super::parser;
 use std::collections::HashMap;
-use std::error::Error;
 
 pub fn eval(
     addr: u64,
