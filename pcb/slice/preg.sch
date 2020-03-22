@@ -982,20 +982,6 @@ F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 8950 5150 50  000
 	1    8950 5150
 	1    0    0    -1  
 $EndComp
-Text GLabel 7100 1650 2    50   Input ~ 0
-NP
-Text GLabel 5250 1550 2    50   Input ~ 0
-~NP
-Wire Wire Line
-	5250 1550 5100 1550
-Wire Wire Line
-	5100 1500 5100 1550
-Wire Wire Line
-	5100 1550 5100 1650
-Connection ~ 5100 1550
-Wire Wire Line
-	7100 1650 6900 1650
-Connection ~ 6900 1650
 Wire Wire Line
 	7300 4350 7550 4350
 Wire Wire Line
@@ -1199,4 +1185,10 @@ Text GLabel 6600 3150 0    50   Input ~ 0
 WRN
 Text GLabel 4250 3150 0    50   Input ~ 0
 WRN
+Text Label 6550 1650 0    50   ~ 0
+N
+Wire Wire Line
+	5100 1500 5100 1650
+Text Label 4700 1650 0    50   ~ 0
+~N
 $EndSCHEMATC

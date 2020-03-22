@@ -11,28 +11,15 @@ mod eval;
 mod pass1;
 mod pass2;
 
-use parser::Listing;
-
-enum OutputMode {
-    Raw,
-    Hex,
-    List
-}
-
-fn get_output_name(name: &str, suffix: &str) -> String {
-    match name.rfind(".") {
-        Some(idx) => {
-            let mut s = String::from(name);
-            s.truncate(idx);
-            format!("{}.{}", s, suffix)
-        }
-        None => format!("{}.{}", name, suffix)
-    }
-}
+use parser::{Listing, Statement};
 
 fn write_u16_raw(vec: &mut Vec<u8>, word: u16) -> () {
     vec.push((word >> 8) as u8);
     vec.push((word & 255) as u8);
+}
+
+fn write_str(vec: &mut Vec<u8>, s: &str) -> () {
+    vec.extend(s.bytes());
 }
 
 fn write_u16_hex(vec: &mut Vec<u8>, word: u16) -> () {
@@ -48,44 +35,88 @@ fn write_u16_hex(vec: &mut Vec<u8>, word: u16) -> () {
     insert(vec, word >> 0);
 }
 
-fn write_str(vec: &mut Vec<u8>, s: &str) -> () {
-    vec.extend(s.bytes());
+
+trait OutputFormat {
+    fn name(self: &Self) -> &str;
+    fn pad(self: &Self, vec: &mut Vec<u8>, addr: u64, count: u64);
+    fn write(self: &Self, vec: &mut Vec<u8>, addr: u64, st: Statement, word_opt: Option<u16>);
 }
 
-fn assemble(input_name: &str, output_name: &str, mode: OutputMode) -> Result<(), Box<dyn Error>> {
+struct RawOutputFormat;
+impl OutputFormat for RawOutputFormat {
+    fn name(self: &Self) -> &str { "raw" }
+    fn pad(self: &Self, vec: &mut Vec<u8>, addr: u64, count: u64) {
+        for i in 0..count {
+            write_u16_raw(vec, 0);
+        }
+    }
+    fn write(self: &Self, vec: &mut Vec<u8>, addr: u64, st: Statement, word_opt: Option<u16>) {
+        match word_opt {
+            Some(word) => write_u16_raw(vec, word),
+            None => ()
+        }
+    }
+}
+
+struct HexOutputFormat;
+impl OutputFormat for HexOutputFormat {
+    fn name(self: &Self) -> &str { "hex" }
+    fn pad(self: &Self, vec: &mut Vec<u8>, addr: u64, count: u64) {
+        for i in 0..count {
+            write_u16_hex(vec, 0);
+            write_str(vec, "\n");
+        }
+    }
+    fn write(self: &Self, vec: &mut Vec<u8>, addr: u64, st: Statement, word_opt: Option<u16>) {
+        match word_opt {
+            Some(word) => {
+                write_u16_hex(vec, word);
+                write_str(vec, "\n");
+            }
+            None => ()
+        }
+    }
+}
+
+struct ListOutputFormat;
+impl OutputFormat for ListOutputFormat {
+    fn name(self: &Self) -> &str { "lst" }
+    fn pad(self: &Self, vec: &mut Vec<u8>, addr: u64, count: u64) {}
+    fn write(self: &Self, vec: &mut Vec<u8>, addr: u64, st: Statement, word_opt: Option<u16>) {
+        write_str(vec, format!("{:04X}  ", addr).as_ref());
+        match word_opt {
+            Some(word)  => write_u16_hex(vec, word),
+            None        => write_str(vec, "    ")
+        }
+        write_str(vec, format!("    {}\n", st.emit_listing()).as_ref());
+    }
+}
+
+fn get_output_name(name: &str, suffix: &str) -> String {
+    match name.rfind(".") {
+        Some(idx) => {
+            let mut s = String::from(name);
+            s.truncate(idx);
+            format!("{}.{}", s, suffix)
+        }
+        None => format!("{}.{}", name, suffix)
+    }
+}
+
+fn assemble(input_name: &str, output_name: &str, format: &Box<dyn OutputFormat>) -> Result<(), Box<dyn Error>> {
     let content = fs::read_to_string(input_name)?;
     let statements = parser::parse(&content)?;
     let symbols = pass1::pass1(&statements);
-    let result = pass2::pass2(&statements, &symbols)?;
+    let mut result = pass2::pass2(&statements, &symbols)?;
+    result.sort_by_key(|(a, _, _)| a.clone());
     let mut output: Vec<u8> = Vec::new();
-    for (st, word_opt) in result {
-        match mode {
-            OutputMode::Hex     => {
-                match word_opt {
-                    Some(word) => {
-                        write_u16_hex(&mut output, word);
-                        write_str(&mut output, "\n");
-                    }
-                    None => ()
-                }
-            }
-            OutputMode::List    => {
-                match word_opt {
-                    Some(word)  => write_u16_hex(&mut output, word),
-                    None        => write_str(&mut output, "    ")
-                }
-                write_str(&mut output, format!("    {}\n", st.emit_listing()).as_ref());
-            }
-            OutputMode::Raw     => {
-                match word_opt {
-                    Some(word) => write_u16_raw(&mut output, word),
-                    None => ()
-                }
-            }
-        }
+    let mut last_addr: u64 = 0;
+    for (addr, st, word_opt) in result {
+        format.pad(&mut output, last_addr, addr - last_addr);
+        format.write(&mut output, addr, st, word_opt);
+        last_addr = addr;
     };
     if output_name == "-" {
-        let s = String::new();
         for b in output.iter() {
             print!("{}", *b as char);
         }
@@ -96,42 +127,47 @@ fn assemble(input_name: &str, output_name: &str, mode: OutputMode) -> Result<(),
 }
 
 fn main() {
+    let output_formats: Vec<Box<dyn OutputFormat>> = vec![
+        Box::new(RawOutputFormat),
+        Box::new(HexOutputFormat),
+        Box::new(ListOutputFormat)
+    ];
+    let output_names: Vec<&str> = output_formats.iter().map(|f| f.name()).collect();
     let input_key = "INPUT";
     let output_key = "OUTPUT";
-    let mode_key = "MODE";
-    let raw_name = "raw";
-    let hex_name = "hex";
-    let list_name = "lst";
+    let format_key = "FORMAT";
     let matches = App::new(crate_name!())
         .version(crate_version!())
         .author(crate_authors!())
-        .arg(Arg::with_name(input_key).required(true))
+        .about("An assembler for the Q2 computer")
+        .max_term_width(80)
+        .arg(Arg::with_name(input_key)
+            .required(true)
+            .help("Source to assemble")
+        )
         .arg(Arg::with_name(output_key)
             .short("o")
             .long("output")
             .number_of_values(1)
+            .help("Output file name (defaults to the input name with an appropriate extension)")
         )
-        .arg(Arg::with_name(mode_key)
-            .short("m")
-            .long("mode")
-            .possible_values(&[raw_name, hex_name, list_name])
-            .default_value(raw_name)
+        .arg(Arg::with_name(format_key)
+            .short("f")
+            .long("format")
+            .possible_values(output_names.as_ref())
+            .default_value(output_formats[0].name())
+            .help("Output format")
         )
         .get_matches();
 
     let input_name = matches.value_of(input_key).unwrap();
-    let mode_str = matches.value_of(mode_key).unwrap();
-    let mode = match mode_str {
-        "raw"    => OutputMode::Raw,
-        "hex"    => OutputMode::Hex,
-        "lst"    => OutputMode::List,
-        _        => panic!("invalid mode")
-    };
+    let format_str = matches.value_of(format_key).unwrap();
+    let format = output_formats.iter().find(|f| f.name() == format_str).unwrap();
     let output_name = matches.value_of(output_key).map(String::from).unwrap_or_else(||
-        get_output_name(&input_name, &mode_str)
+        get_output_name(&input_name, &format_str)
     );
-    match assemble(input_name, &output_name, mode) {
-        Ok(_) => println!("done"),
+    match assemble(input_name, &output_name, format) {
+        Ok(_) => (),
         Err(e) => eprintln!("ERROR: {}", e)
     };
 }

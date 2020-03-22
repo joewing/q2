@@ -42,23 +42,23 @@ fn emit_instruction(
 pub fn pass2(
     statements: &Vec<Statement>,
     symbols: &HashMap<String, Expression>
-) -> Result<Vec<(Statement, Option<u16>)>, String> {
+) -> Result<Vec<(u64, Statement, Option<u16>)>, String> {
 
-    let mut result: Vec<(Statement, Option<u16>)> = Vec::new();
-    let mut addr = 0;
+    let mut result: Vec<(u64, Statement, Option<u16>)> = Vec::new();
+    let mut addr: u64 = 0;
 
     for st in statements {
         match st {
-            Statement::Define(_, _)         => result.push((st.clone(), None)),
-            Statement::Label(_)             => result.push((st.clone(), None)),
+            Statement::Define(_, _)         => result.push((addr, st.clone(), None)),
+            Statement::Label(_)             => result.push((addr, st.clone(), None)),
             Statement::Origin(e)            => {
                 addr = eval(addr, e, symbols, 0)?;
-                result.push((st.clone(), None));
+                result.push((addr, st.clone(), None));
             },
             Statement::Instruction(i, m, e) => {
                 let offset = eval(addr, e, symbols, 0)?;
                 let code = emit_instruction(addr, i, m, offset)?;
-                result.push((st.clone(), Some(code)));
+                result.push((addr, st.clone(), Some(code)));
                 addr += 1;
             },
             Statement::Word(e)              => {
@@ -66,7 +66,7 @@ pub fn pass2(
                 if word > 0xffff {
                     return Err(format!("word {} out of range", word));
                 }
-                result.push((st.clone(), Some(word as u16)));
+                result.push((addr, st.clone(), Some(word as u16)));
                 addr += 1;
             }
         }

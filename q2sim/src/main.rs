@@ -1,6 +1,6 @@
 
 extern crate clap;
-use clap::{App, Arg};
+use clap::{App, Arg, crate_version, crate_name, crate_authors};
 use std::fs;
 use std::process;
 use std::ops::{Shr, BitAnd, BitOr, BitXor};
@@ -190,13 +190,13 @@ fn main() {
     let input_key = "INPUT";
     let freq_key = "FREQ";
     let clks_key = "CLKS";
-    let matches = App::new("q2sim")
-        .version("0.1")
-        .author("Joe Wingbermuehle")
+    let matches = App::new(crate_name!())
+        .version(crate_version!())
+        .author(crate_authors!())
         .arg(Arg::with_name(input_key).required(true))
         .arg(Arg::with_name(freq_key)
-            .short("-f")
-            .long("--frequency")
+            .short("f")
+            .long("frequency")
             .default_value("100")
             .help("Clock frequency in Hz")
             .validator(|s|
@@ -204,8 +204,8 @@ fn main() {
             )
         )
         .arg(Arg::with_name(clks_key)
-            .short("-m")
-            .long("--max_clks")
+            .short("m")
+            .long("max_clks")
             .default_value("1000000")
             .help("Max clock cycles")
             .validator(|s|
