@@ -58,7 +58,7 @@ fn assemble(input_name: &str, output_name: &str, mode: OutputMode) -> Result<(),
     let symbols = pass1::pass1(&statements);
     let result = pass2::pass2(&statements, &symbols)?;
     let mut output: Vec<u8> = Vec::new();
-    for (st, word_opt) in result {
+    for (addr, st, word_opt) in result {
         match mode {
             OutputMode::Hex     => {
                 match word_opt {
@@ -70,6 +70,7 @@ fn assemble(input_name: &str, output_name: &str, mode: OutputMode) -> Result<(),
                 }
             }
             OutputMode::List    => {
+                write_str(&mut output, format!("{:04X}  ", addr).as_ref());
                 match word_opt {
                     Some(word)  => write_u16_hex(&mut output, word),
                     None        => write_str(&mut output, "    ")
@@ -85,7 +86,6 @@ fn assemble(input_name: &str, output_name: &str, mode: OutputMode) -> Result<(),
         }
     };
     if output_name == "-" {
-        let s = String::new();
         for b in output.iter() {
             print!("{}", *b as char);
         }
@@ -131,7 +131,7 @@ fn main() {
         get_output_name(&input_name, &mode_str)
     );
     match assemble(input_name, &output_name, mode) {
-        Ok(_) => println!("done"),
+        Ok(_) => (),
         Err(e) => eprintln!("ERROR: {}", e)
     };
 }

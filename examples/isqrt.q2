@@ -1,0 +1,73 @@
+
+    nop   #0            ; =0
+    nop   #0            ; =1
+
+    ld    value         ; Load the value whose sqrt to compute.
+    st    =1            ; Store at =1
+    ld    #+2           ; Load return address (P+2)
+    j     @isqrt_ptr    ; Call isqrt
+    hlt   #0            ; Halt
+
+isqrt_ptr:
+    .dw   isqrt
+value:
+    .dw   1024
+
+; Compute the integer square root of =1
+; Return the result in A.
+; Call with A=return address
+isqrt:
+    st    isqrt_ra
+    ld    #0
+    st    isqrt_result
+    ld    isqrt_top_bit
+    st    isqrt_bit
+isqrt_start:
+    ld    isqrt_bit
+    sub   #1
+    sub   =1
+    jf    isqrt_loop
+    shr   isqrt_bit
+    st    isqrt_bit
+    shr   isqrt_bit
+    st    isqrt_bit
+    j     isqrt_start
+isqrt_loop:
+    ld    isqrt_bit
+    jnf   isqrt_done
+    ld    isqrt_result
+    add   isqrt_bit
+    sub   =1
+    jf    isqrt_ge
+    or    #0
+    jnf   isqrt_ge
+    shr   isqrt_result
+    st    isqrt_result
+    j     isqrt_continue
+isqrt_ge:
+    ld    =1
+    sub   isqrt_result
+    sub   isqrt_bit
+    st    =1
+    shr   isqrt_result
+    add   isqrt_bit
+    st    isqrt_result
+isqrt_continue:
+    shr   isqrt_bit
+    st    isqrt_bit
+    shr   isqrt_bit
+    st    isqrt_bit
+    j     isqrt_loop
+isqrt_done:
+    ld    isqrt_result
+    j     @isqrt_ra
+
+isqrt_ra:
+    .dw   0
+isqrt_top_bit:
+    .dw   $4000   ; Second highest bit set.
+isqrt_bit:
+    .dw   0
+isqrt_result:
+    .dw   0
+
