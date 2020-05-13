@@ -1,6 +1,7 @@
 
-    nop   #0            ; =0
-    nop   #0            ; =1
+    j     $100
+
+    .org $100
 
     ld    value         ; Load the value whose sqrt to compute.
     st    =1            ; Store at =1
@@ -12,6 +13,8 @@ isqrt_ptr:
     .dw   isqrt
 value:
     .dw   1024
+
+    .org  $200
 
 ; Compute the integer square root of =1
 ; Return the result in A.

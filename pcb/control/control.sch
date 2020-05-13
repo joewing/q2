@@ -131,9 +131,9 @@ Text GLabel 9200 2350 2    50   Input ~ 0
 ~RAM_WE_IO
 Text GLabel 7600 2450 0    50   Input ~ 0
 ~WRN_IO
-Text GLabel 8100 3150 0    50   Input ~ 0
-CLK1_IN
 Text GLabel 8100 3050 0    50   Input ~ 0
+CLK1_IN
+Text GLabel 8100 3150 0    50   Input ~ 0
 CLK2_IN
 Text GLabel 8100 3250 0    50   Input ~ 0
 RST_IN

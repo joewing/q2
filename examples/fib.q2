@@ -1,0 +1,26 @@
+
+; Compute the largest Fibonacci number that fits in 16 bits.
+fib:
+    ld    #1
+    st    fib1
+    st    fib2
+fib_loop:
+    ld    fib1
+    add   fib2
+    jf    fib_done
+    st    fib3
+    ld    fib2
+    st    fib1
+    ld    fib3
+    st    fib2
+    j     fib_loop
+fib_done:
+    ld    fib2
+    hlt   #0
+fib1:
+    .dw   0
+fib2:
+    .dw   0
+fib3:
+    .dw   0
+
