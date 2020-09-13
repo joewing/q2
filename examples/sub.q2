@@ -1,0 +1,33 @@
+
+  jmp   @=1
+  .dw   init
+
+ra:
+  .dw   0
+x0:
+  .dw   0
+x1:
+  .dw   0
+
+init:
+
+  lda   #25
+  sta   =x0
+  lda   #10
+  sta   =x1
+  lda   #@init_ra
+  jmp   sub
+init_ra:
+
+  hlt   #0
+
+; Compute x0 = x0 - x1
+sub:
+  sta   =ra
+  lda   =x0
+  nor   #0
+  add   =x1
+  nor   #0
+  sta   =x0
+  jmp   @=ra
+  

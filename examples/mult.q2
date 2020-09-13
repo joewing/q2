@@ -1,0 +1,60 @@
+
+  jmp   @=1
+  .dw   init
+ra:
+  .dw   0
+x0:
+  .dw   0
+x1:
+  .dw   0
+x2:
+  .dw   0
+
+init:
+  lda   #35
+  sta   =x0
+  lda   #15
+  sta   =x1
+  lda   #@init_ra
+  jmp   mult
+init_ra:
+  lda   =x2
+  sta   =x0
+  hlt   #0
+
+
+; Multiply x2 = x0 * x1
+; Destroys x0, x1, and x2
+mult:
+  sta   =ra
+  lda   #0
+  sta   =x2
+multLoop:
+  lda   =x0
+  jnf   multCont
+
+  ; done when =x0 is 0.
+  jmp  @=ra
+
+multCont:
+  nor   multn2  ; zero if bit 1 is set
+  jnf   multNext
+
+  ; bit is set, update =x2
+  lda   =x1
+  add   =x2
+  sta   =x2
+
+multNext:
+
+  ; shift =x0 right and =x1 left
+  shr   =x0
+  sta   =x0
+  lda   =x1
+  add   =x1
+  sta   =x1
+
+  jmp   multLoop
+multn2:
+  .dw   4094
+

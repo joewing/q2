@@ -24,7 +24,7 @@ pub fn pass1(statements: &Vec<Statement>) -> HashMap<String, Expression> {
                     Box::new(Expression::Constant(addr))
                 );
                 result.insert(s.clone(), pos);
-            }
+            },
         }
     }
 

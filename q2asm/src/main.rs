@@ -29,7 +29,6 @@ fn write_u16_hex(vec: &mut Vec<u8>, word: u16) -> () {
         vec.push(hex[(x & 15) as usize]);
     }
 
-    insert(vec, word >> 12);
     insert(vec, word >> 8);
     insert(vec, word >> 4);
     insert(vec, word >> 0);
@@ -38,19 +37,19 @@ fn write_u16_hex(vec: &mut Vec<u8>, word: u16) -> () {
 
 trait OutputFormat {
     fn name(self: &Self) -> &str;
-    fn pad(self: &Self, vec: &mut Vec<u8>, addr: u64, count: u64);
-    fn write(self: &Self, vec: &mut Vec<u8>, addr: u64, st: Statement, word_opt: Option<u16>);
+    fn pad(self: &Self, vec: &mut Vec<u8>, last_addr: i64, addr: i64);
+    fn write(self: &Self, vec: &mut Vec<u8>, addr: i64, st: Statement, word_opt: Option<u16>);
 }
 
 struct RawOutputFormat;
 impl OutputFormat for RawOutputFormat {
     fn name(self: &Self) -> &str { "raw" }
-    fn pad(self: &Self, vec: &mut Vec<u8>, addr: u64, count: u64) {
-        for i in 0..count {
+    fn pad(self: &Self, vec: &mut Vec<u8>, last_addr: i64, addr: i64) {
+        for _ in last_addr + 1..addr {
             write_u16_raw(vec, 0);
         }
     }
-    fn write(self: &Self, vec: &mut Vec<u8>, addr: u64, st: Statement, word_opt: Option<u16>) {
+    fn write(self: &Self, vec: &mut Vec<u8>, _addr: i64, _st: Statement, word_opt: Option<u16>) {
         match word_opt {
             Some(word) => write_u16_raw(vec, word),
             None => ()
@@ -61,13 +60,13 @@ impl OutputFormat for RawOutputFormat {
 struct HexOutputFormat;
 impl OutputFormat for HexOutputFormat {
     fn name(self: &Self) -> &str { "hex" }
-    fn pad(self: &Self, vec: &mut Vec<u8>, addr: u64, count: u64) {
-        for i in 0..count {
+    fn pad(self: &Self, vec: &mut Vec<u8>, last_addr: i64, addr: i64) {
+        for _ in last_addr + 1..addr {
             write_u16_hex(vec, 0);
             write_str(vec, "\n");
         }
     }
-    fn write(self: &Self, vec: &mut Vec<u8>, addr: u64, st: Statement, word_opt: Option<u16>) {
+    fn write(self: &Self, vec: &mut Vec<u8>, _addr: i64, _st: Statement, word_opt: Option<u16>) {
         match word_opt {
             Some(word) => {
                 write_u16_hex(vec, word);
@@ -81,8 +80,8 @@ impl OutputFormat for HexOutputFormat {
 struct ListOutputFormat;
 impl OutputFormat for ListOutputFormat {
     fn name(self: &Self) -> &str { "lst" }
-    fn pad(self: &Self, vec: &mut Vec<u8>, addr: u64, count: u64) {}
-    fn write(self: &Self, vec: &mut Vec<u8>, addr: u64, st: Statement, word_opt: Option<u16>) {
+    fn pad(self: &Self, _vec: &mut Vec<u8>, _last_addr: i64, _addr: i64) {}
+    fn write(self: &Self, vec: &mut Vec<u8>, addr: i64, st: Statement, word_opt: Option<u16>) {
         write_str(vec, format!("{:04X}  ", addr).as_ref());
         match word_opt {
             Some(word)  => write_u16_hex(vec, word),
@@ -110,9 +109,9 @@ fn assemble(input_name: &str, output_name: &str, format: &Box<dyn OutputFormat>)
     let mut result = pass2::pass2(&statements, &symbols)?;
     result.sort_by_key(|(a, _, _)| a.clone());
     let mut output: Vec<u8> = Vec::new();
-    let mut last_addr: u64 = 0;
+    let mut last_addr: i64 = 0;
     for (addr, st, word_opt) in result {
-        format.pad(&mut output, last_addr, addr - last_addr);
+        format.pad(&mut output, addr, last_addr);
         format.write(&mut output, addr, st, word_opt);
         last_addr = addr;
     };
@@ -128,9 +127,9 @@ fn assemble(input_name: &str, output_name: &str, format: &Box<dyn OutputFormat>)
 
 fn main() {
     let output_formats: Vec<Box<dyn OutputFormat>> = vec![
-        Box::new(RawOutputFormat),
         Box::new(HexOutputFormat),
-        Box::new(ListOutputFormat)
+        Box::new(ListOutputFormat),
+        Box::new(RawOutputFormat),
     ];
     let output_names: Vec<&str> = output_formats.iter().map(|f| f.name()).collect();
     let input_key = "INPUT";

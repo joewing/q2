@@ -1,12 +1,12 @@
 
-    j     $100
+    jmp $100
 
     .org $100
 
-    ld    value         ; Load the value whose sqrt to compute.
-    st    =1            ; Store at =1
-    ld    #+2           ; Load return address (P+2)
-    j     @isqrt_ptr    ; Call isqrt
+    lda   value         ; Load the value whose sqrt to compute.
+    sta   =1            ; Store at =1
+    lda   #+2           ; Load return address (P+2)
+    jmp   @isqrt_ptr    ; Call isqrt
     hlt   #0            ; Halt
 
 isqrt_ptr:
@@ -20,13 +20,13 @@ value:
 ; Return the result in A.
 ; Call with A=return address
 isqrt:
-    st    isqrt_ra
-    ld    #0
-    st    isqrt_result
-    ld    isqrt_top_bit
-    st    isqrt_bit
+    sta   isqrt_ra
+    lda   #0
+    sta   isqrt_result
+    lda   isqrt_top_bit
+    sta   isqrt_bit
 isqrt_start:
-    ld    isqrt_bit
+    lda   isqrt_bit
     sub   #1
     sub   =1
     jf    isqrt_loop

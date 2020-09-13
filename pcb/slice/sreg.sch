@@ -1,0 +1,156 @@
+EESchema Schematic File Version 4
+EELAYER 30 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 8 9
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Sheet
+S 3700 2100 1400 1050
+U 5ED32497
+F0 "State FF" 50
+F1 "dff.sch" 50
+F2 "Q" I R 5100 2450 50 
+F3 "~Q" I R 5100 2800 50 
+F4 "CLK" I L 3700 2250 50 
+F5 "D" I L 3700 2450 50 
+F6 "SET" I L 3700 2800 50 
+F7 "CLR" I L 3700 3000 50 
+$EndSheet
+Text GLabel 3400 2250 0    50   Input ~ 0
+WRS
+Wire Wire Line
+	3400 2250 3700 2250
+Text GLabel 3450 2450 0    50   Input ~ 0
+SIN
+Wire Wire Line
+	3450 2450 3700 2450
+Text GLabel 5350 2450 2    50   Input ~ 0
+SOUT
+Text GLabel 5350 2800 2    50   Input ~ 0
+~SOUT
+Wire Wire Line
+	5100 2450 5350 2450
+Wire Wire Line
+	5100 2800 5350 2800
+$Comp
+L Device:R R?
+U 1 1 5F79F04C
+P 6650 1500
+AR Path="/5F79F04C" Ref="R?"  Part="1" 
+AR Path="/5EE1D251/5F79F04C" Ref="R?"  Part="1" 
+AR Path="/5EF45566/5EBC02F6/5F79F04C" Ref="R?"  Part="1" 
+AR Path="/5F227145/5ECA19CD/5F79F04C" Ref="R?"  Part="1" 
+AR Path="/5EF9DF90/5ECD3C9D/5F79F04C" Ref="R?"  Part="1" 
+AR Path="/5ED30EAA/5ED32497/5F79F04C" Ref="R?"  Part="1" 
+AR Path="/5ED30EAA/5F79F04C" Ref="R28"  Part="1" 
+F 0 "R28" H 6720 1546 50  0000 L CNN
+F 1 "R" H 6720 1455 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" V 6580 1500 50  0001 C CNN
+F 3 "~" H 6650 1500 50  0001 C CNN
+	1    6650 1500
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VCC #PWR?
+U 1 1 5F79F052
+P 6650 1350
+AR Path="/5F79F052" Ref="#PWR?"  Part="1" 
+AR Path="/5EE1D251/5F79F052" Ref="#PWR?"  Part="1" 
+AR Path="/5EF45566/5EBC02F6/5F79F052" Ref="#PWR?"  Part="1" 
+AR Path="/5F227145/5ECA19CD/5F79F052" Ref="#PWR?"  Part="1" 
+AR Path="/5EF9DF90/5ECD3C9D/5F79F052" Ref="#PWR?"  Part="1" 
+AR Path="/5ED30EAA/5ED32497/5F79F052" Ref="#PWR?"  Part="1" 
+AR Path="/5ED30EAA/5F79F052" Ref="#PWR059"  Part="1" 
+F 0 "#PWR059" H 6650 1200 50  0001 C CNN
+F 1 "VCC" H 6667 1523 50  0000 C CNN
+F 2 "" H 6650 1350 50  0001 C CNN
+F 3 "" H 6650 1350 50  0001 C CNN
+	1    6650 1350
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:LED D?
+U 1 1 5F79F058
+P 6650 1800
+AR Path="/5EF45566/5EBC02F6/5F79F058" Ref="D?"  Part="1" 
+AR Path="/5EF9DF90/5ECD3C9D/5F79F058" Ref="D?"  Part="1" 
+AR Path="/5F227145/5ECA19CD/5F79F058" Ref="D?"  Part="1" 
+AR Path="/5ED30EAA/5ED32497/5F79F058" Ref="D?"  Part="1" 
+AR Path="/5ED30EAA/5F79F058" Ref="D4"  Part="1" 
+F 0 "D4" V 6689 1683 50  0000 R CNN
+F 1 "S" V 6598 1683 50  0000 R CNN
+F 2 "LED_THT:LED_D3.0mm_Horizontal_O1.27mm_Z2.0mm" H 6650 1800 50  0001 C CNN
+F 3 "~" H 6650 1800 50  0001 C CNN
+	1    6650 1800
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Transistor_FET:2N7002 Q?
+U 1 1 5F79F05E
+P 6550 2150
+AR Path="/5F79F05E" Ref="Q?"  Part="1" 
+AR Path="/5EE1D251/5F79F05E" Ref="Q?"  Part="1" 
+AR Path="/5EF45566/5EBC02F6/5F79F05E" Ref="Q?"  Part="1" 
+AR Path="/5F227145/5ECA19CD/5F79F05E" Ref="Q?"  Part="1" 
+AR Path="/5EF9DF90/5ECD3C9D/5F79F05E" Ref="Q?"  Part="1" 
+AR Path="/5ED30EAA/5ED32497/5F79F05E" Ref="Q?"  Part="1" 
+AR Path="/5ED30EAA/5F79F05E" Ref="Q69"  Part="1" 
+F 0 "Q69" H 6756 2196 50  0000 L CNN
+F 1 "2N7002" H 6756 2105 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23_Handsoldering" H 6750 2075 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 6550 2150 50  0001 L CNN
+	1    6550 2150
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 5F79F064
+P 6650 2350
+AR Path="/5F79F064" Ref="#PWR?"  Part="1" 
+AR Path="/5EE1D251/5F79F064" Ref="#PWR?"  Part="1" 
+AR Path="/5EF45566/5EBC02F6/5F79F064" Ref="#PWR?"  Part="1" 
+AR Path="/5F227145/5ECA19CD/5F79F064" Ref="#PWR?"  Part="1" 
+AR Path="/5EF9DF90/5ECD3C9D/5F79F064" Ref="#PWR?"  Part="1" 
+AR Path="/5ED30EAA/5ED32497/5F79F064" Ref="#PWR?"  Part="1" 
+AR Path="/5ED30EAA/5F79F064" Ref="#PWR060"  Part="1" 
+F 0 "#PWR060" H 6650 2100 50  0001 C CNN
+F 1 "GND" H 6655 2177 50  0000 C CNN
+F 2 "" H 6650 2350 50  0001 C CNN
+F 3 "" H 6650 2350 50  0001 C CNN
+	1    6650 2350
+	1    0    0    -1  
+$EndComp
+Text GLabel 6350 2150 0    50   Input ~ 0
+SOUT
+Text GLabel 3500 3000 0    50   Input ~ 0
+RST
+Wire Wire Line
+	3500 3000 3700 3000
+$Comp
+L power:GND #PWR?
+U 1 1 5F5E1785
+P 3700 2800
+AR Path="/5F5E1785" Ref="#PWR?"  Part="1" 
+AR Path="/5EE1D251/5F5E1785" Ref="#PWR?"  Part="1" 
+AR Path="/5EF45566/5EBC02F6/5F5E1785" Ref="#PWR?"  Part="1" 
+AR Path="/5F227145/5ECA19CD/5F5E1785" Ref="#PWR?"  Part="1" 
+AR Path="/5EF9DF90/5ECD3C9D/5F5E1785" Ref="#PWR?"  Part="1" 
+AR Path="/5ED30EAA/5ED32497/5F5E1785" Ref="#PWR?"  Part="1" 
+AR Path="/5ED30EAA/5F5E1785" Ref="#PWR061"  Part="1" 
+F 0 "#PWR061" H 3700 2550 50  0001 C CNN
+F 1 "GND" H 3705 2627 50  0000 C CNN
+F 2 "" H 3700 2800 50  0001 C CNN
+F 3 "" H 3700 2800 50  0001 C CNN
+	1    3700 2800
+	0    1    1    0   
+$EndComp
+$EndSCHEMATC
