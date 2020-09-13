@@ -12,3 +12,4 @@ target/
 *.hex
 *.lst
 a.out
+case.stl

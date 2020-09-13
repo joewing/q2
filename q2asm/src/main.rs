@@ -111,7 +111,7 @@ fn assemble(input_name: &str, output_name: &str, format: &Box<dyn OutputFormat>)
     let mut output: Vec<u8> = Vec::new();
     let mut last_addr: i64 = 0;
     for (addr, st, word_opt) in result {
-        format.pad(&mut output, addr, last_addr);
+        format.pad(&mut output, last_addr, addr);
         format.write(&mut output, addr, st, word_opt);
         last_addr = addr;
     };

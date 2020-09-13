@@ -750,7 +750,7 @@ F 1 "2N7002" H 3456 3355 50  0000 L CNN
 F 2 "Package_TO_SOT_SMD:SOT-23_Handsoldering" H 3450 3325 50  0001 L CIN
 F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 3250 3400 50  0001 L CNN
 	1    3250 3400
-	1    0    0    1   
+	1    0    0    -1  
 $EndComp
 $Comp
 L Transistor_FET:2N7002 Q?

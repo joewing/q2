@@ -33,6 +33,7 @@ pub fn eval(
             eval(addr, inner, symbols, next)?
         },
         parser::Expression::Constant(v)      => *v,
+        parser::Expression::CurrentAddress => addr,
     };
     Ok(value)
 }

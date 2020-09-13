@@ -426,7 +426,7 @@ module q2(
     .rdp(rdp),
     .wrx(wrx),
     .rdx(rdx),
-    .xshift(1'b0),
+    .xshift(x[0]),
     .xin_zero(xhin_zero),
     .xin_shift(xhin_shift),
     .xin_p(xhin_p),

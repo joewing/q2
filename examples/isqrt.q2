@@ -1,76 +1,52 @@
 
-    jmp $100
-
-    .org $100
-
     lda   value         ; Load the value whose sqrt to compute.
-    sta   =1            ; Store at =1
-    lda   #+2           ; Load return address (P+2)
+    sta   =x0           ; Store at =x1
+    lda   #$+2          ; Load return address (P+2)
     jmp   @isqrt_ptr    ; Call isqrt
     hlt   #0            ; Halt
+
+ra:
+    .dw   0
+x0:
+    .dw   0
+x1:
+    .dw   0
+x2:
+    .dw   0
 
 isqrt_ptr:
     .dw   isqrt
 value:
     .dw   1024
 
-    .org  $200
+    .org  0x100
 
-; Compute the integer square root of =1
-; Return the result in A.
-; Call with A=return address
+; Compute the integer square root of =x0
+; Returns the result in =x0.
+; Destroys =x0, =x1, =x2, =ra
 isqrt:
-    sta   isqrt_ra
-    lda   #0
-    sta   isqrt_result
-    lda   isqrt_top_bit
-    sta   isqrt_bit
-isqrt_start:
-    lda   isqrt_bit
-    sub   #1
-    sub   =1
-    jf    isqrt_loop
-    shr   isqrt_bit
-    st    isqrt_bit
-    shr   isqrt_bit
-    st    isqrt_bit
-    j     isqrt_start
+  sta   =ra
+  lda   #1
+  sta   =x1       ; x1 = 1
+  lda   #3
+  sta   =x2       ; x2 = 3
 isqrt_loop:
-    ld    isqrt_bit
-    jnf   isqrt_done
-    ld    isqrt_result
-    add   isqrt_bit
-    sub   =1
-    jf    isqrt_ge
-    or    #0
-    jnf   isqrt_ge
-    shr   isqrt_result
-    st    isqrt_result
-    j     isqrt_continue
-isqrt_ge:
-    ld    =1
-    sub   isqrt_result
-    sub   isqrt_bit
-    st    =1
-    shr   isqrt_result
-    add   isqrt_bit
-    st    isqrt_result
-isqrt_continue:
-    shr   isqrt_bit
-    st    isqrt_bit
-    shr   isqrt_bit
-    st    isqrt_bit
-    j     isqrt_loop
-isqrt_done:
-    ld    isqrt_result
-    j     @isqrt_ra
-
-isqrt_ra:
-    .dw   0
-isqrt_top_bit:
-    .dw   $4000   ; Second highest bit set.
-isqrt_bit:
-    .dw   0
-isqrt_result:
-    .dw   0
+  lda   =x0
+  nor   #0
+  add   =x1
+  jnf   isqrt_cont  ; if x0 >= x1 continue
+  shr   =x2     ; return x0 = (x2 / 2) - 1
+  nor   #0
+  add   #1
+  nor   #0
+  sta   =x0
+  jmp   @=ra
+isqrt_cont:
+  lda   =x1
+  add   =x2
+  sta   =x1   ; x1 += x2
+  lda   =x2
+  add   #2
+  sta   =x2   ; x2 += 2
+  jmp   isqrt_loop
 

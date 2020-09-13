@@ -15,9 +15,8 @@ init:
   sta   =x0
   lda   #10
   sta   =x1
-  lda   #@init_ra
+  lda   #$+2
   jmp   sub
-init_ra:
 
   hlt   #0
 

@@ -15,9 +15,8 @@ init:
   sta   =x0
   lda   #15
   sta   =x1
-  lda   #@init_ra
+  lda   #$+2
   jmp   mult
-init_ra:
   lda   =x2
   sta   =x0
   hlt   #0
@@ -56,5 +55,5 @@ multNext:
 
   jmp   multLoop
 multn2:
-  .dw   4094
+  .dw   -2
 

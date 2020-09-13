@@ -28,24 +28,14 @@ the backplane.
   Clock     | 1         | 17      | Clock generator
   ALU       | 1         | 41      | Bit-serial ALU
   Control   | 1         | 53      | Control signal decoder
-  RAM       | 1         |         | 12-bit RAM
+  RAM       | 1         | 2       | 12-bit RAM
   I/O       | 1         |         | I/O interface
-  Backplane | 1         |         | Backplane
+  Backplane | 1         | 25      | Backplane
 
-Total transistor count: 1095
+Total transistor count: ~1122
 
 The tops of the boards face right, with slice boards ordered
 from bit 11 at the left side to bit 0 on the right.
-
-### Backplane Layout
-
- | | | | | | | | | | | | |
- 1 1 1 0 0 0 0 0 0 0 0 0 0
- 2 1 0 9 8 7 6 5 4 3 2 1 0
- | | | | | | | | | | | | |
- ---------- CTL ----------
- --- ALU ---   --- RAM ---
- --- CLK ---   --- I/O ---
 
 ### Control Board
 
@@ -137,37 +127,48 @@ The following address modes are supported:
   @x    | 110 | indirect through current page
   =x    | 101 | zero-page relative
   @=x   | 111 | indirect through zero page
-        | 010 | alternate encoding for current-page relative
-        | 011 | alternate encoding for zero-page relative
+  x     | 010 | alternate encoding for current-page relative
+  =x    | 011 | alternate encoding for zero-page relative
 
 Note that store/jump instructions do not set 'L'. This means that
 specifying "#@x" and "x" is equivalent for a store instruction.
 
 ## Examples
 
+```
 ; Negate: A = -A
   nor   #0
   add   #1
+```
 
+```
 ; Subtract: A - v
   nor   #0
   add   v     ; A = v - A - 1
   nor   #0    ; A = A - v
+```
 
+```
 ; Decrement A
   nor   #0
   add   #1
   nor   #0
+```
 
+```
 ; NOT: A = ~v
   lda   v
   nor   #0
+```
 
+```
 ; OR: A = a | b
   lda   a
   nor   b
   nor   #0
+```
 
+```
 ; AND: A = a & b
   lda   a
   nor   #0
@@ -175,22 +176,35 @@ specifying "#@x" and "x" is equivalent for a store instruction.
   lda   b
   nor   #0    ; A = ~b
   nor   =t0   ; A = ~(~a | ~b) = a & b
+```
 
+```
 ; Function call:
-  lda   #+2   ; A = return address
+  lda   #$+2   ; A = return address
   jmp   func
 
+;...
+func:
+  sta   =ra   ; Save return address
+  ; ...
+  jmp   =ra   ; Return
+
+```
+
+```
 ; Rotate right function
-; =x >>> 1
+; x0 >>> 1
 ror:
   sta   =ra       ; save return address
-  shr   =x        ; A = x >> 1
+  shr   =x0       ; A = x0 >> 1
   jnf   @=ra      ; return if no carry
   add   rortopbit
   jmp   @=ra
 rortopbit:
-  .dw   2048
+  .dw   0x800
+```
 
+```
 ; Multiply x2 = x0 * x1
 ; Destroys x0, x1, and x2
 ; 18 words
@@ -217,7 +231,9 @@ multNext:
   jmp   multLoop
 multn2:
   .dw   -2
+```
 
+```
 ; Push x0 on to the stack
 ; 8 words
 push:
@@ -229,7 +245,9 @@ push:
   lda   =x0
   sta   @=sp
   jmp   @=ra
+```
 
+```
 ; Pop x0 off the stack
 ; 7 words
 pop:
@@ -240,6 +258,7 @@ pop:
   add   #1
   sta   =sp
   jmp   @=ra
+```
 
 ### Zero-Page Layout
 
@@ -267,6 +286,5 @@ Here is a possible layout:
   0017  | =x7   | Argument 7 for function calls
   0020  | =push | Pointer to push
   0021  | =pop  | Pointer to pop
-
 
 

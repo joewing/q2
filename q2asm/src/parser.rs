@@ -29,7 +29,8 @@ pub enum Expression {
     Shr(Box<Expression>, Box<Expression>),
     Shl(Box<Expression>, Box<Expression>),
     Symbol(String),
-    Constant(i64)
+    Constant(i64),
+    CurrentAddress,
 }
 
 impl Listing for Expression {
@@ -46,6 +47,7 @@ impl Listing for Expression {
             Expression::Shl(a, b) => format!("({} << {})", a.emit_listing(), b.emit_listing()),
             Expression::Symbol(s) => s.clone(),
             Expression::Constant(i) => format!("{}", i),
+            Expression::CurrentAddress => format!("$"),
         }
     }
 }
@@ -101,7 +103,7 @@ impl Listing for AddressMode {
         match self {
             AddressMode::Relative           => format!(""),
             AddressMode::ZeroPage           => format!("="),
-            AddressMode::RelativeIndirect   => format!(""),
+            AddressMode::RelativeIndirect   => format!("@"),
             AddressMode::ZeroPageIndirect   => format!("@="),
             AddressMode::Immediate          => format!("#"),
             AddressMode::ImmediateAddress   => format!("#@"),
@@ -173,6 +175,11 @@ fn parse_zeropage(input: &str) -> IResult<&str, bool> {
     parse_flag('=', input)
 }
 
+fn parse_current_address(input: &str) -> IResult<&str, Expression> {
+    let (input, _) = nom::character::complete::char('$')(input)?;
+    Ok((input, Expression::CurrentAddress))
+}
+
 fn parse_binop<'a>(
     op: &'a str,
     a: Expression,
@@ -230,7 +237,7 @@ fn parse_symbol(input: &str) -> IResult<&str, Expression> {
 }
 
 fn parse_bin(input: &str) -> IResult<&str, Expression> {
-    let (input, _) = nom::character::complete::char('%')(input)?;
+    let (input, _) = tag("0b")(input)?;
     let (input, s) = take_while1(|c| c == '0' || c == '1')(input)?;
     let value = i64::from_str_radix(s, 2).unwrap();
     Ok((input, Expression::Constant(value)))
@@ -242,8 +249,15 @@ fn parse_dec(input: &str) -> IResult<&str, Expression> {
     Ok((input, Expression::Constant(value)))
 }
 
+fn parse_oct(input: &str) -> IResult<&str, Expression> {
+    let (input, _) = tag("0o")(input)?;
+    let (input, s) = take_while1(|c| is_oct_digit(c as u8))(input)?;
+    let value = i64::from_str_radix(s, 8).unwrap();
+    Ok((input, Expression::Constant(value)))
+}
+
 fn parse_hex(input: &str) -> IResult<&str, Expression> {
-    let (input, _) = nom::character::complete::char('$')(input)?;
+    let (input, _) = tag("0x")(input)?;
     let (input, s) = take_while1(|c| is_hex_digit(c as u8))(input)?;
     let value = i64::from_str_radix(s, 16).unwrap();
     Ok((input, Expression::Constant(value)))
@@ -258,7 +272,13 @@ fn parse_char(input: &str) -> IResult<&str, Expression> {
 }
 
 fn parse_constant(input: &str) -> IResult<&str, Expression> {
-    alt((parse_dec, parse_hex, parse_bin, parse_char))(input)
+    alt((parse_current_address, parse_hex, parse_bin, parse_oct, parse_dec, parse_char))(input)
+}
+
+fn parse_negate(input: &str) -> IResult<&str, Expression> {
+    let (input, _) = nom::character::complete::char('-')(input)?;
+    let (input, e) = parse_expr(input)?;
+    Ok((input, Expression::Sub(Box::new(Expression::Constant(0)), Box::new(e))))
 }
 
 fn parse_nested(input: &str) -> IResult<&str, Expression> {
@@ -269,7 +289,7 @@ fn parse_nested(input: &str) -> IResult<&str, Expression> {
 }
 
 fn parse_term(input: &str) -> IResult<&str, Expression> {
-    let (input, lhs) = alt((parse_constant, parse_symbol, parse_nested))(input)?;
+    let (input, lhs) = alt((parse_constant, parse_symbol, parse_nested, parse_negate))(input)?;
     let (input, t_opt) = opt(
         alt(
             (
