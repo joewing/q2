@@ -3,11 +3,11 @@ use super::parser;
 use std::collections::HashMap;
 
 pub fn eval(
-    addr: u64,
+    addr: i64,
     expr: &parser::Expression,
     symbols: &HashMap<String, parser::Expression>,
     depth: u32
-) -> Result<u64, String> {
+) -> Result<i64, String> {
     let next = depth + 1;
     let value = match expr {
         parser::Expression::Add(a, b)        =>
@@ -18,6 +18,12 @@ pub fn eval(
             eval(addr, a, symbols, next)? * eval(addr, b, symbols, next)?,
         parser::Expression::Div(a, b)        =>
             eval(addr, a, symbols, next)? / eval(addr, b, symbols, next)?,
+        parser::Expression::Mod(a, b)        =>
+            eval(addr, a, symbols, next)? % eval(addr, b, symbols, next)?,
+        parser::Expression::Negate(a)        =>
+            -(eval(addr, a, symbols, next)?),
+        parser::Expression::Not(a)           =>
+            !(eval(addr, a, symbols, next)?),
         parser::Expression::And(a, b)        =>
             eval(addr, a, symbols, next)? & eval(addr, b, symbols, next)?,
         parser::Expression::Or(a, b)         =>
@@ -33,7 +39,7 @@ pub fn eval(
             eval(addr, inner, symbols, next)?
         },
         parser::Expression::Constant(v)      => *v,
-        parser::Expression::CurrentAddress() => addr
+        parser::Expression::CurrentAddress => addr,
     };
     Ok(value)
 }

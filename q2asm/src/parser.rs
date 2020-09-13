@@ -14,7 +14,7 @@ use nom::InputTake;
 use nom::error::ErrorKind;
 
 pub trait Listing {
-    fn emit_listing(self: &Self) -> String;
+    fn emit_listing(&self) -> String;
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -23,14 +23,17 @@ pub enum Expression {
     Sub(Box<Expression>, Box<Expression>),
     Mul(Box<Expression>, Box<Expression>),
     Div(Box<Expression>, Box<Expression>),
+    Mod(Box<Expression>, Box<Expression>),
+    Negate(Box<Expression>),
+    Not(Box<Expression>),
     And(Box<Expression>, Box<Expression>),
     Or(Box<Expression>, Box<Expression>),
     Xor(Box<Expression>, Box<Expression>),
     Shr(Box<Expression>, Box<Expression>),
     Shl(Box<Expression>, Box<Expression>),
     Symbol(String),
-    Constant(u64),
-    CurrentAddress()
+    Constant(i64),
+    CurrentAddress,
 }
 
 impl Listing for Expression {
@@ -40,6 +43,9 @@ impl Listing for Expression {
             Expression::Sub(a, b) => format!("({} - {})", a.emit_listing(), b.emit_listing()),
             Expression::Mul(a, b) => format!("({} * {})", a.emit_listing(), b.emit_listing()),
             Expression::Div(a, b) => format!("({} / {})", a.emit_listing(), b.emit_listing()),
+            Expression::Mod(a, b) => format!("({} % {})", a.emit_listing(), b.emit_listing()),
+            Expression::Negate(a) => format!("-{}", a.emit_listing()),
+            Expression::Not(a)    => format!("~{}", a.emit_listing()),
             Expression::And(a, b) => format!("({} & {})", a.emit_listing(), b.emit_listing()),
             Expression::Or(a, b)  => format!("({} | {})", a.emit_listing(), b.emit_listing()),
             Expression::Xor(a, b) => format!("({} ^ {})", a.emit_listing(), b.emit_listing()),
@@ -47,70 +53,63 @@ impl Listing for Expression {
             Expression::Shl(a, b) => format!("({} << {})", a.emit_listing(), b.emit_listing()),
             Expression::Symbol(s) => s.clone(),
             Expression::Constant(i) => format!("{}", i),
-            Expression::CurrentAddress() => format!("<pc>")
+            Expression::CurrentAddress => format!("$"),
         }
     }
 }
 
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum InstructionType {
-    Ld  = 0x0,
-    Not = 0x1,
-    And = 0x2,
-    Or  = 0x3,
-    Xor = 0x4,
-    Add = 0x5,
-    Sub = 0x6,
-    Shr = 0x7,
-    Nop = 0x8,
-    St  = 0x9,
-    Jnf = 0xA,
-    Jf  = 0xB,
-    J   = 0xC,
-    Hlt = 0xF
+    Lda = 0x00,
+    Nor = 0x01,
+    Add = 0x02,
+    Shr = 0x03,
+    Lea = 0x04,
+    Sta = 0x05,
+    Jmp = 0x06,
+    Jfc = 0x07,
+}
+
+impl InstructionType {
+    const MAPPING: &'static [(InstructionType, &'static str)] = &[
+        (InstructionType::Lda, "lda"),
+        (InstructionType::Nor, "nor"),
+        (InstructionType::Add, "add"),
+        (InstructionType::Shr, "shr"),
+        (InstructionType::Lea, "lea"),
+        (InstructionType::Sta, "sta"),
+        (InstructionType::Jfc, "jfc"),
+        (InstructionType::Jmp, "jmp"),
+    ];
 }
 
 impl Listing for InstructionType {
     fn emit_listing(self: &Self) -> String {
-        let s = match self {
-            InstructionType::Ld  => "ld",
-            InstructionType::Not => "not",
-            InstructionType::And => "and",
-            InstructionType::Or  => "or",
-            InstructionType::Xor => "xor",
-            InstructionType::Add => "add",
-            InstructionType::Sub => "sub",
-            InstructionType::Shr => "shr",
-            InstructionType::Nop => "nop",
-            InstructionType::St  => "st",
-            InstructionType::Jnf => "jnf",
-            InstructionType::Jf  => "jf",
-            InstructionType::J   => "j",
-            InstructionType::Hlt => "hlt"
-        };
-        String::from(s)
+        for (i, s) in InstructionType::MAPPING {
+            if i == self {
+                return String::from(*s);
+            }
+        }
+        String::from("invalid")
     }
 }
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum AddressMode {
-    Immediate,
-    Relative,
-    ZeroPage,
-    Indirect,
-    ZeroPageIndirect
+    Relative,           // x
+    ZeroPage,           // =x
+    RelativeIndirect,   // @x
+    ZeroPageIndirect,   // @=x
 }
 
 impl Listing for AddressMode {
-    fn emit_listing(self: &Self) -> String {
-        let s = match self {
-            AddressMode::Immediate           => "#",
-            AddressMode::Relative            => "",
-            AddressMode::ZeroPage            => "=",
-            AddressMode::Indirect            => "@",
-            AddressMode::ZeroPageIndirect    => "@="
-        };
-        String::from(s)
+    fn emit_listing(&self) -> String {
+        match self {
+            AddressMode::Relative           => format!(""),
+            AddressMode::ZeroPage           => format!("="),
+            AddressMode::RelativeIndirect   => format!("@"),
+            AddressMode::ZeroPageIndirect   => format!("@="),
+        }
     }
 }
 
@@ -119,8 +118,10 @@ pub enum Statement {
     Define(String, Expression),
     Label(String),
     Origin(Expression),
+    Align(Expression),
     Word(Expression),
-    Instruction(InstructionType, AddressMode, Expression)
+    Reserve(Expression),
+    Instruction(InstructionType, AddressMode, Expression),
 }
 
 impl Listing for Statement {
@@ -129,9 +130,11 @@ impl Listing for Statement {
             Statement::Define(n, e)         => format!(".def\t{}\t{}", n, e.emit_listing()),
             Statement::Label(n)             => format!("{}:", n),
             Statement::Origin(e)            => format!("\t.org\t{}", e.emit_listing()),
+            Statement::Align(e)             => format!("\t.align\t{}", e.emit_listing()),
             Statement::Word(e)              => format!("\t.dw\t{}", e.emit_listing()),
-            Statement::Instruction(t, m, e) =>
-                format!("\t{}\t{}{}", t.emit_listing(), m.emit_listing(), e.emit_listing())
+            Statement::Reserve(e)           => format!("\t.bss\t{}", e.emit_listing()),
+            Statement::Instruction(t, m, o) =>
+                format!("\t{}\t{}{}", t.emit_listing(), m.emit_listing(), o.emit_listing()),
         }
     }
 }
@@ -174,12 +177,9 @@ fn parse_zeropage(input: &str) -> IResult<&str, bool> {
     parse_flag('=', input)
 }
 
-fn parse_immediate(input: &str) -> IResult<&str, bool> {
-    parse_flag('#', input)
-}
-
-fn parse_pcplus(input: &str) -> IResult<&str, bool> {
-    parse_flag('+', input)
+fn parse_current_address(input: &str) -> IResult<&str, Expression> {
+    let (input, _) = nom::character::complete::char('$')(input)?;
+    Ok((input, Expression::CurrentAddress))
 }
 
 fn parse_binop<'a>(
@@ -213,6 +213,10 @@ fn parse_div<'a>(lhs: Expression) -> impl Fn(&'a str) -> IResult<&'a str, Expres
     move |input| parse_binop("/", lhs.clone(), move |a, b| Expression::Div(Box::from(a), Box::from(b)))(input)
 }
 
+fn parse_mod<'a>(lhs: Expression) -> impl Fn(&'a str) -> IResult<&'a str, Expression> {
+    move |input| parse_binop("/", lhs.clone(), move |a, b| Expression::Mod(Box::from(a), Box::from(b)))(input)
+}
+
 fn parse_and<'a>(lhs: Expression) -> impl Fn(&'a str) -> IResult<&'a str, Expression> {
     move |input| parse_binop("&", lhs.clone(), move |a, b| Expression::And(Box::from(a), Box::from(b)))(input)
 }
@@ -239,27 +243,54 @@ fn parse_symbol(input: &str) -> IResult<&str, Expression> {
 }
 
 fn parse_bin(input: &str) -> IResult<&str, Expression> {
-    let (input, _) = nom::character::complete::char('%')(input)?;
+    let (input, _) = tag("0b")(input)?;
     let (input, s) = take_while1(|c| c == '0' || c == '1')(input)?;
-    let value = u64::from_str_radix(s, 2).unwrap();
+    let value = i64::from_str_radix(s, 2).unwrap();
     Ok((input, Expression::Constant(value)))
 }
 
 fn parse_dec(input: &str) -> IResult<&str, Expression> {
     let (input, s) = take_while1(|c| is_digit(c as u8))(input)?;
-    let value = u64::from_str(s).unwrap();
+    let value = i64::from_str(s).unwrap();
+    Ok((input, Expression::Constant(value)))
+}
+
+fn parse_oct(input: &str) -> IResult<&str, Expression> {
+    let (input, _) = tag("0o")(input)?;
+    let (input, s) = take_while1(|c| is_oct_digit(c as u8))(input)?;
+    let value = i64::from_str_radix(s, 8).unwrap();
     Ok((input, Expression::Constant(value)))
 }
 
 fn parse_hex(input: &str) -> IResult<&str, Expression> {
-    let (input, _) = nom::character::complete::char('$')(input)?;
+    let (input, _) = tag("0x")(input)?;
     let (input, s) = take_while1(|c| is_hex_digit(c as u8))(input)?;
-    let value = u64::from_str_radix(s, 16).unwrap();
+    let value = i64::from_str_radix(s, 16).unwrap();
+    Ok((input, Expression::Constant(value)))
+}
+
+fn parse_char(input: &str) -> IResult<&str, Expression> {
+    let (input, _) = nom::character::complete::char('\'')(input)?;
+    let (input, ch) = nom::character::complete::anychar(input)?;
+    let (input, _) = nom::character::complete::char('\'')(input)?;
+    let value = ch as i64;
     Ok((input, Expression::Constant(value)))
 }
 
 fn parse_constant(input: &str) -> IResult<&str, Expression> {
-    alt((parse_dec, parse_hex, parse_bin))(input)
+    alt((parse_current_address, parse_hex, parse_bin, parse_oct, parse_dec, parse_char))(input)
+}
+
+fn parse_not(input: &str) -> IResult<&str, Expression> {
+    let (input, _) = nom::character::complete::char('~')(input)?;
+    let (input, e) = parse_expr(input)?;
+    Ok((input, Expression::Not(Box::new(e))))
+}
+
+fn parse_negate(input: &str) -> IResult<&str, Expression> {
+    let (input, _) = nom::character::complete::char('-')(input)?;
+    let (input, e) = parse_expr(input)?;
+    Ok((input, Expression::Negate(Box::new(e))))
 }
 
 fn parse_nested(input: &str) -> IResult<&str, Expression> {
@@ -270,12 +301,21 @@ fn parse_nested(input: &str) -> IResult<&str, Expression> {
 }
 
 fn parse_term(input: &str) -> IResult<&str, Expression> {
-    let (input, lhs) = alt((parse_constant, parse_symbol, parse_nested))(input)?;
+    let (input, lhs) = alt(
+        (
+            parse_constant,
+            parse_symbol,
+            parse_nested,
+            parse_negate,
+            parse_not,
+        )
+    )(input)?;
     let (input, t_opt) = opt(
         alt(
             (
                 parse_mul(lhs.clone()),
                 parse_div(lhs.clone()),
+                parse_mod(lhs.clone()),
             )
         )
     )(input)?;
@@ -308,51 +348,31 @@ fn parse_expr(input: &str) -> IResult<&str, Expression> {
 }
 
 fn parse_instruction_type(input: &str) -> IResult<&str, InstructionType> {
-    let (input, instr) = alt(
-        (
-            map(tag("ld"), |_| InstructionType::Ld),
-            map(tag("not"), |_| InstructionType::Not),
-            map(tag("and"), |_| InstructionType::And),
-            map(tag("or"), |_| InstructionType::Or),
-            map(tag("xor"), |_| InstructionType::Xor),
-            map(tag("add"), |_| InstructionType::Add),
-            map(tag("sub"), |_| InstructionType::Sub),
-            map(tag("shr"), |_| InstructionType::Shr),
-            map(tag("nop"), |_| InstructionType::Nop),
-            map(tag("st"), |_| InstructionType::St),
-            map(tag("jnf"), |_| InstructionType::Jnf),
-            map(tag("jf"), |_| InstructionType::Jf),
-            map(tag("j"), |_| InstructionType::J),
-            map(tag("hlt"), |_| InstructionType::Hlt)
-        )
-    )(input)?;
-    Ok((input, instr))
+    for (i, s) in InstructionType::MAPPING {
+        if input.starts_with(*s) {
+            return Ok((&input[s.len()..], *i));
+        }
+    }
+    Err(Err::Error((input, ErrorKind::Alpha)))
+}
+
+fn parse_mode(input: &str) -> IResult<&str, AddressMode> {
+    let (input, deref) = parse_deref(input)?;
+    let (input, zp) = parse_zeropage(input)?;
+    match (deref, zp) {
+        (false, false)  => Ok((input, AddressMode::Relative)),
+        (false, true)  => Ok((input, AddressMode::ZeroPage)),
+        (true, false)  => Ok((input, AddressMode::RelativeIndirect)),
+        (true, true)  => Ok((input, AddressMode::ZeroPageIndirect)),
+    }
 }
 
 fn parse_instruction(input: &str) -> IResult<&str, Statement> {
     let (input, inst_type) = parse_instruction_type(input)?;
     let (input, _) = eat_whitespace(input)?;
-    let (input, deref) = parse_deref(input)?;
-    let (input, imm) = parse_immediate(input)?;
-    let (input, zp) = parse_zeropage(input)?;
-    let (input, pcplus) = parse_pcplus(input)?;
-    let (input, _) = eat_whitespace(input)?;
-    let (input, raw_expr) = parse_expr(input)?;
-    let expr = if pcplus {
-        Expression::Add(Box::from(Expression::CurrentAddress()), Box::from(raw_expr))
-    } else { raw_expr };
-    let mode_opt = match (imm, zp, deref) {
-        (true, false, false)       => Some(AddressMode::Immediate),
-        (false, false, false)      => Some(AddressMode::Relative),
-        (false, false, true)       => Some(AddressMode::Indirect),
-        (false, true, false)       => Some(AddressMode::ZeroPage),
-        (false, true, true)        => Some(AddressMode::ZeroPageIndirect),
-        _                           => None
-    };
-    match mode_opt {
-        Some(mode)  => Ok((input, Statement::Instruction(inst_type, mode, expr))),
-        None        => Err(Err::Error((input, ErrorKind::Alpha)))
-    }
+    let (input, m) = parse_mode(input)?;
+    let (input, exp) = parse_expr(input)?;
+    Ok((input, Statement::Instruction(inst_type, m, exp)))
 }
 
 fn parse_label(input: &str) -> IResult<&str, Statement> {
@@ -367,11 +387,25 @@ fn parse_origin(input: &str) -> IResult<&str, Statement> {
     Ok((input, Statement::Origin(expr)))
 }
 
+fn parse_align(input: &str) -> IResult<&str, Statement> {
+    let (input, _) = tag(".align")(input)?;
+    let (input, _) = eat_whitespace(input)?;
+    let (input, expr) = parse_expr(input)?;
+    Ok((input, Statement::Align(expr)))
+}
+
 fn parse_word(input: &str) -> IResult<&str, Statement> {
     let (input, _) = tag(".dw")(input)?;
     let (input, _) = eat_whitespace(input)?;
     let (input, expr) = parse_expr(input)?;
     Ok((input, Statement::Word(expr)))
+}
+
+fn parse_reserve(input: &str) -> IResult<&str, Statement> {
+    let (input, _) = tag(".bss")(input)?;
+    let (input, _) = eat_whitespace(input)?;
+    let (input, expr) = parse_expr(input)?;
+    Ok((input, Statement::Reserve(expr)))
 }
 
 fn parse_define(input: &str) -> IResult<&str, Statement> {
@@ -390,7 +424,9 @@ fn parse_statement(input: &str) -> IResult<&str, Statement> {
             parse_label,
             parse_instruction,
             parse_origin,
+            parse_align,
             parse_word,
+            parse_reserve,
             parse_define
         )
     )(input)?;
@@ -484,16 +520,24 @@ mod tests {
 
     #[test]
     fn test_parse_inst_type() {
-        assert_eq!(parse_instruction_type("ld"), Ok(("", InstructionType::Ld)))
+        assert_eq!(parse_instruction_type("lda"), Ok(("", InstructionType::Lda)))
+    }
+
+    #[test]
+    fn test_parse_mode() {
+        assert_eq!(parse_mode("asdf"), Ok(("asdf", AddressMode::Relative)));
+        assert_eq!(parse_mode("@x"), Ok(("x", AddressMode::RelativeIndirect)));
+        assert_eq!(parse_mode("=asdf"), Ok(("asdf", AddressMode::ZeroPage)));
+        assert_eq!(parse_mode("@=asdf"), Ok(("asdf", AddressMode::ZeroPageIndirect)));
     }
 
     #[test]
     fn test_parse_inst() {
         assert_eq!(
-            parse_instruction("add @=asdf"),
+            parse_instruction("add asdf"),
             Ok(("", Statement::Instruction(
                 InstructionType::Add,
-                AddressMode::ZeroPageIndirect,
+                AddressMode::Relative,
                 Expression::Symbol(String::from("asdf")))
             ))
         )
@@ -502,12 +546,12 @@ mod tests {
     #[test]
     fn test_parse_multiple() {
         assert_eq!(
-            parse("label:\n  add #5\n\n").unwrap(),
+            parse("label:\n  add =5\n\n").unwrap(),
             vec![
                 Statement::Label(String::from("label")),
                 Statement::Instruction(
                     InstructionType::Add,
-                    AddressMode::Immediate,
+                    AddressMode::ZeroPage,
                     Expression::Constant(5)
                 )
             ]

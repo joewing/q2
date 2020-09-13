@@ -1,0 +1,37 @@
+
+  jmp   @$+1
+  .dw   init
+
+ra:
+  .dw   0
+x0:
+  .dw   0
+x1:
+  .dw   0
+
+init:
+
+  lea   =25
+  sta   =x0
+  lea   =10
+  sta   =x1
+  lea   $+2
+  jmp   sub
+  lda   =x0
+  sta   @output_ptr
+  jmp   $
+output_ptr:
+  .dw   0xfff
+
+; Compute x0 = x0 - x1
+sub:
+  sta   =ra
+  lda   =x0
+  nor   sub_zero
+  add   =x1
+  nor   sub_zero
+  sta   =x0
+  jmp   @=ra
+sub_zero:
+  .dw   0
+  

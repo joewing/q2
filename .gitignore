@@ -1,5 +1,6 @@
 *.bak
 *.kicad_pcb-bak
+*.sch-bak
 .DS_Store
 *.lib
 fp-info-cache
@@ -7,3 +8,8 @@ target/
 .idea/
 *.lock
 *.iml
+*.vcd
+*.hex
+*.lst
+a.out
+case.stl
