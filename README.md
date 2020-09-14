@@ -63,8 +63,10 @@ edge-triggered flip-flop.  Two NOR gates are used to
 generate the phases.
 The output of the flip-flop is Q:
 
+```
   WS = ~(Q | CLK)
   SC = ~(~Q | CLK)
+```
 
 When not running, CLK is high. At reset Q is set to 0.
 This means that on reset we have CLK=1 and Q=0. Thus,
@@ -156,26 +158,23 @@ specifying "#@x" and "x" is equivalent for a store instruction.
 ```
 
 ```
-; NOT: A = ~v
+; NOT: A = ~A
+  nor   #0
+```
+
+```
+; OR: A = A | v
+  nor   v
+  nor   #0
+```
+
+```
+; AND: A = A & v
+  nor   #0
+  sta   =t0   ; t0 = ~A
   lda   v
-  nor   #0
-```
-
-```
-; OR: A = a | b
-  lda   a
-  nor   b
-  nor   #0
-```
-
-```
-; AND: A = a & b
-  lda   a
-  nor   #0
-  sta   =t0   ; t0 = ~a
-  lda   b
-  nor   #0    ; A = ~b
-  nor   =t0   ; A = ~(~a | ~b) = a & b
+  nor   #0    ; A = ~v
+  nor   =t0   ; A = ~(~A | ~v) = A & v
 ```
 
 ```
@@ -187,7 +186,7 @@ specifying "#@x" and "x" is equivalent for a store instruction.
 func:
   sta   =ra   ; Save return address
   ; ...
-  jmp   =ra   ; Return
+  jmp   @=ra  ; Return
 
 ```
 
