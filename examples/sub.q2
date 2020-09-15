@@ -15,7 +15,7 @@ init:
   sta   =x0
   lda   #10
   sta   =x1
-  lda   #$+2
+  lda   #@$+2
   jmp   sub
 
   hlt   #0

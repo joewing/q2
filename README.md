@@ -115,7 +115,7 @@ Instruction summary:
   100     | sta x | - | [X] = A
   101     | hlt x | - | Halt
   110     | jmp x | - | Jump
-  111     | jnf x | - | Jump if not F
+  111     | jfc x | - | Jump if F clear
 
 The flag is set if carry ('C'), zero ('Z'), or left unchanged ('-').
 
@@ -178,8 +178,31 @@ specifying "#@x" and "x" is equivalent for a store instruction.
 ```
 
 ```
+; Jump if F set
+  jfc   $+2
+  jmp   label
+```
+
+```
+; Jump if a >= b
+  lda   a
+  nor   #0
+  add   b
+  jfc   ge
+```
+
+```
+; Jump if a != b
+  lda   a
+  nor   #0
+  add   b
+  nor   #0
+  jfc   ne
+```
+
+```
 ; Function call:
-  lda   #$+2   ; A = return address
+  lda   #@$+2   ; A = return address
   jmp   func
 
 ;...
@@ -196,40 +219,11 @@ func:
 ror:
   sta   =ra       ; save return address
   shr   =x0       ; A = x0 >> 1
-  jnf   @=ra      ; return if no carry
+  jfc   @=ra      ; return if no carry
   add   rortopbit
   jmp   @=ra
 rortopbit:
   .dw   0x800
-```
-
-```
-; Multiply x2 = x0 * x1
-; Destroys x0, x1, and x2
-; 18 words
-mult:
-  sta   =ra
-  lda   #0
-  sta   =x2
-multLoop:
-  lda   =x0
-  jnf   multCont
-  jmp  @=ra     ; done when x0 is 0
-multCont:
-  nor   multn2  ; zero if bit 1 is set
-  jnf   multNext
-  lda   =x1   ; bit is set, x2 += x1
-  add   =x2
-  sta   =x2
-multNext:
-  shr   =x0   ; x0 >>= 1
-  sta   =x0
-  lda   =x1   ; x1 <<= 1
-  add   =x1
-  sta   =x1
-  jmp   multLoop
-multn2:
-  .dw   -2
 ```
 
 ```

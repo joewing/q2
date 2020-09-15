@@ -3638,7 +3638,6 @@ NoConn ~ 4000 5850
 NoConn ~ 4700 5850
 NoConn ~ 5000 5850
 NoConn ~ 5100 5850
-NoConn ~ 5200 5850
 NoConn ~ 5300 5850
 NoConn ~ 5500 5850
 NoConn ~ 6100 5850
@@ -3804,8 +3803,41 @@ Text GLabel 21300 1850 2    50   Input ~ 0
 ~X0
 Wire Wire Line
 	21300 1850 21100 1850
-Text GLabel 2500 1850 0    50   Input ~ 0
+Text GLabel 5200 5850 3    50   Input ~ 0
 ~X0
-Wire Wire Line
-	2500 1850 2900 1850
+$Comp
+L power:VCC #PWR0161
+U 1 1 5F64967C
+P 2900 1850
+F 0 "#PWR0161" H 2900 1700 50  0001 C CNN
+F 1 "VCC" H 2917 2023 50  0000 C CNN
+F 2 "" H 2900 1850 50  0001 C CNN
+F 3 "" H 2900 1850 50  0001 C CNN
+	1    2900 1850
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Connector_Generic:Conn_01x02 J30
+U 1 1 5F756C5E
+P 19050 9350
+F 0 "J30" H 19130 9342 50  0000 L CNN
+F 1 "Dep" H 19130 9251 50  0000 L CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 19050 9350 50  0001 C CNN
+F 3 "~" H 19050 9350 50  0001 C CNN
+	1    19050 9350
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR0165
+U 1 1 5F756C64
+P 18850 9450
+F 0 "#PWR0165" H 18850 9200 50  0001 C CNN
+F 1 "GND" H 18855 9277 50  0000 C CNN
+F 2 "" H 18850 9450 50  0001 C CNN
+F 3 "" H 18850 9450 50  0001 C CNN
+	1    18850 9450
+	1    0    0    -1  
+$EndComp
+Text GLabel 18850 9350 0    50   Input ~ 0
+~DEP_SW
 $EndSCHEMATC

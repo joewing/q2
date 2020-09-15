@@ -1,0 +1,113 @@
+
+  .org  0x000
+
+  lda   #@$+2
+  jmp   @load_store_test_ptr
+
+  lda   #@$+2
+  jmp   @flag_test_ptr
+
+; Success if we got here
+  lda   #1
+  sta   =x0
+  hlt   #0
+
+fail:
+  lda   #0
+  sta   =x0
+  hlt   #0
+
+ra:
+  .dw   0
+x0:
+  .dw   0
+x1:
+  .dw   0
+
+load_store_test_ptr:
+  .dw   load_store_test
+flag_test_ptr:
+  .dw   flag_test
+
+
+  .org  0x100
+load_store_test:
+  sta   =ra
+
+  ; Simple relative and immediate load/store
+  lda   #0
+  sta   =x0
+  lda   #1
+  lda   =x0
+  jfc   =fail
+
+  ; Indirect load/store
+  lda   #0
+  sta   =x0
+  lda   #x0
+  sta   =x1
+  lda   #0
+  nor   #0
+  sta   @=x1
+  lda   #0
+  lda   @=x1
+  nor   #0
+  jfc   =fail
+
+  jmp   @=ra
+
+  .org  0x200
+
+flag_test:
+  sta   =ra
+
+  ; shift right, carry=1
+  lda   #1
+  sta   =x0
+  shr   =x0
+  sta   =x0
+  jfc   =fail    ; fail if no carry
+
+  ; shift right, carry=0
+  lda   #2
+  sta   =x0
+  shr   =x0
+  sta   =x0
+  jfc   $+2
+  jmp   =fail    ; fail if carry
+
+
+  ; load, zero=1
+  lda   #0
+  jfc   =fail    ; fail if not zero
+
+  ; load, zero=0
+  lda   #1
+  jfc   $+2
+  jmp   =fail    ; fail if zero
+
+  ; NOR, zero = 1
+  lda   #0
+  nor   #0
+  nor   #0
+  jfc   =fail
+
+  ; NOR, zero = 0
+  lda   #0
+  nor   #0
+  jfc   $+2
+  jmp   =fail
+
+  ; add, carry = 0
+  lda   #5
+  add   #6
+  jfc   $+2
+  jmp   =fail
+
+  ; add, carry = 1
+  lda   #5
+  nor   #0
+  add   #10
+  jfc   =fail
+
+  jmp   @=ra

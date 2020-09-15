@@ -1368,8 +1368,6 @@ Wire Wire Line
 	2350 6200 2350 6800
 Wire Wire Line
 	2350 6800 2550 6800
-Text GLabel 3600 6800 0    50   Input ~ 0
-X0
 Wire Wire Line
 	3900 6450 4550 6450
 Connection ~ 3900 6450
@@ -1871,4 +1869,6 @@ Wire Wire Line
 	2050 5050 2050 6100
 Wire Wire Line
 	2050 6100 6750 6100
+Text GLabel 3600 6800 0    50   Input ~ 0
+F
 $EndSCHEMATC

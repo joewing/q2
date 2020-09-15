@@ -141,7 +141,7 @@ Text GLabel 9150 3050 2    50   Input ~ 0
 FOUT
 Text GLabel 8650 3850 0    50   Input ~ 0
 INCP_DB
-Text GLabel 8200 3050 0    50   Input ~ 0
+Text GLabel 8650 3050 0    50   Input ~ 0
 ~DEP_SW
 Text Notes 9500 1200 0    50   ~ 0
 Upper-Left\n(high bits)
@@ -151,8 +151,6 @@ Wire Wire Line
 	9150 4150 9400 4150
 Wire Wire Line
 	9150 4350 9400 4350
-Wire Wire Line
-	8200 3050 8650 3050
 Text GLabel 8650 4450 0    50   Input ~ 0
 INCP_CLK
 Wire Wire Line
@@ -182,7 +180,6 @@ F 3 "~" H 8850 3050 50  0001 C CNN
 	1    8850 3050
 	1    0    0    1   
 $EndComp
-NoConn ~ 9150 1950
 NoConn ~ 9150 2150
 NoConn ~ 9150 2350
 NoConn ~ 9150 2550
@@ -194,14 +191,19 @@ NoConn ~ 8650 1650
 NoConn ~ 8650 2350
 NoConn ~ 8650 2650
 NoConn ~ 8650 2750
-NoConn ~ 8650 2850
 NoConn ~ 8650 2950
 NoConn ~ 8650 3150
-NoConn ~ 8650 3450
 NoConn ~ 9150 3250
 NoConn ~ 9150 3450
 NoConn ~ 9150 3550
 NoConn ~ 9150 3650
 NoConn ~ 8650 3750
 NoConn ~ 8650 4150
+Text GLabel 9400 1950 2    50   Input ~ 0
+~OP3
+Wire Wire Line
+	9400 1950 9150 1950
+NoConn ~ 8650 3450
+Text GLabel 8650 2850 0    50   Input ~ 0
+~X0
 $EndSCHEMATC

@@ -5,7 +5,7 @@
   lda   input2
   sta   =x1
 
-  lda   #$+2
+  lda   #@$+2
   jmp   gcd
 
   lda   =x0
@@ -35,13 +35,14 @@ gcd_loop1:
 
   ; Done when x1 is 0.
   lda   =x1
-  jnf   gcd_loop2
+  jfc   gcd_loop2
   jmp   @=ra
 
   ; Remove factors of 2 in x1
 gcd_loop2:
   shr   =x1
-  jnf   gcd_skip1
+  jfc   #@$+2
+  jmp   gcd_skip1
   sta   =x1
   jmp   gcd_loop2
 gcd_skip1:
@@ -50,7 +51,7 @@ gcd_skip1:
   nor   #0
   add   #1
   add   =x0   ; x0 - x1
-  jnf   gcd_skip3
+  jfc   gcd_skip3
   lda   =x0   ; swap x0 and x1
   sta   =x2
   lda   =x1

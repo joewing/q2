@@ -1444,15 +1444,15 @@ Text GLabel 7750 6950 0    50   Input ~ 0
 $Comp
 L power:GND #PWR?
 U 1 1 5F57A4C5
-P 6850 7850
+P 7300 8550
 AR Path="/5E49A150/5F57A4C5" Ref="#PWR?"  Part="1" 
 AR Path="/5E56259C/5F57A4C5" Ref="#PWR?"  Part="1" 
 AR Path="/5E5E8038/5F57A4C5" Ref="#PWR046"  Part="1" 
-F 0 "#PWR046" H 6850 7600 50  0001 C CNN
-F 1 "GND" H 6855 7677 50  0000 C CNN
-F 2 "" H 6850 7850 50  0001 C CNN
-F 3 "" H 6850 7850 50  0001 C CNN
-	1    6850 7850
+F 0 "#PWR046" H 7300 8300 50  0001 C CNN
+F 1 "GND" H 7305 8377 50  0000 C CNN
+F 2 "" H 7300 8550 50  0001 C CNN
+F 3 "" H 7300 8550 50  0001 C CNN
+	1    7300 8550
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -1488,7 +1488,7 @@ $EndComp
 Text GLabel 6550 7650 0    50   Input ~ 0
 OP4
 Text Notes 7700 6300 0    50   ~ 0
-000 - LDA (Z start 1)\n001 - NOR (Z start 1)\n010 - ADD (C start 0)\n011 - SHR (C start 0)
+000 - LDA (Z start 1)\n001 - NOR (Z start 1)\n010 - ADD (C start 0)\n011 - SHR (C start X0)
 Wire Wire Line
 	6850 6750 6850 6550
 Wire Wire Line
@@ -1760,4 +1760,61 @@ Text GLabel 5600 1600 2    50   Input ~ 0
 ~STATE_EXEC
 Wire Wire Line
 	5600 1600 5350 1600
+$Comp
+L Transistor_FET:2N7002 Q?
+U 1 1 5F60FB9F
+P 6350 8350
+AR Path="/5E49A150/5F60FB9F" Ref="Q?"  Part="1" 
+AR Path="/5E56259C/5F60FB9F" Ref="Q?"  Part="1" 
+AR Path="/5E5E8038/5F60FB9F" Ref="Q59"  Part="1" 
+F 0 "Q59" H 6556 8396 50  0000 L CNN
+F 1 "2N7002" H 6556 8305 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23_Handsoldering" H 6550 8275 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 6350 8350 50  0001 L CNN
+	1    6350 8350
+	1    0    0    -1  
+$EndComp
+$Comp
+L Transistor_FET:2N7002 Q?
+U 1 1 5F6111B0
+P 7200 8350
+AR Path="/5E49A150/5F6111B0" Ref="Q?"  Part="1" 
+AR Path="/5E56259C/5F6111B0" Ref="Q?"  Part="1" 
+AR Path="/5E5E8038/5F6111B0" Ref="Q60"  Part="1" 
+F 0 "Q60" H 7406 8396 50  0000 L CNN
+F 1 "2N7002" H 7406 8305 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23_Handsoldering" H 7400 8275 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 7200 8350 50  0001 L CNN
+	1    7200 8350
+	1    0    0    -1  
+$EndComp
+Text GLabel 6150 8350 0    50   Input ~ 0
+~OP3
+Text GLabel 7000 8350 0    50   Input ~ 0
+~X0
+$Comp
+L power:GND #PWR?
+U 1 1 5F616096
+P 6450 8550
+AR Path="/5E49A150/5F616096" Ref="#PWR?"  Part="1" 
+AR Path="/5E56259C/5F616096" Ref="#PWR?"  Part="1" 
+AR Path="/5E5E8038/5F616096" Ref="#PWR055"  Part="1" 
+F 0 "#PWR055" H 6450 8300 50  0001 C CNN
+F 1 "GND" H 6455 8377 50  0000 C CNN
+F 2 "" H 6450 8550 50  0001 C CNN
+F 3 "" H 6450 8550 50  0001 C CNN
+	1    6450 8550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6450 8150 6450 8000
+Wire Wire Line
+	6450 8000 6850 8000
+Wire Wire Line
+	6850 8000 6850 7850
+Wire Wire Line
+	6850 8000 7300 8000
+Wire Wire Line
+	7300 8000 7300 8150
+Connection ~ 6850 8000
 $EndSCHEMATC

@@ -61,7 +61,7 @@ pub enum InstructionType {
     Sta = 0x04,
     Hlt = 0x05,
     Jmp = 0x06,
-    Jnf = 0x07,
+    Jfc = 0x07,
 }
 
 impl InstructionType {
@@ -72,7 +72,7 @@ impl InstructionType {
         (InstructionType::Shr, "shr"),
         (InstructionType::Sta, "sta"),
         (InstructionType::Jmp, "jmp"),
-        (InstructionType::Jnf, "jnf"),
+        (InstructionType::Jfc, "jfc"),
         (InstructionType::Hlt, "hlt"),
     ];
 }

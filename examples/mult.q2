@@ -15,7 +15,7 @@ init:
   sta   =x0
   lda   #15
   sta   =x1
-  lda   #$+2
+  lda   #@$+2
   jmp   mult
   lda   =x2
   sta   =x0
@@ -30,14 +30,14 @@ mult:
   sta   =x2
 multLoop:
   lda   =x0
-  jnf   multCont
+  jfc   multCont
 
   ; done when =x0 is 0.
   jmp  @=ra
 
 multCont:
   nor   multn2  ; zero if bit 1 is set
-  jnf   multNext
+  jfc   multNext
 
   ; bit is set, update =x2
   lda   =x1

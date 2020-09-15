@@ -11,6 +11,7 @@ module q2_control(
   input wire op4,
   input wire op5,
   input wire dbus6,
+  input wire x0,
   input wire ws,
   input wire incp_db,
   input wire dep_sw,
@@ -65,7 +66,16 @@ module q2_control(
   assign xlin_dbus = ~state_alu;
   assign xlin_shift = state_alu;
 
-  assign fout = ~((~state_alu | ~alu_cout) & (~state_exec | op4));
+  // 00 - ld  - 1
+  // 01 - nor - 1
+  // 10 - add - 0
+  // 11 - shr - x0
+  assign fout = ~(
+    (~state_alu | ~alu_cout) &
+    (~state_exec | op4) &
+    (~state_exec | ~op3 | ~x0)
+  );
+
   assign halt = state_exec & ws & op3 & ~op4 & op5;
   
 endmodule

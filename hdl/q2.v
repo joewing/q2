@@ -63,6 +63,7 @@ module q2(
   end
 
   q2_control control(
+    .x0(x[0]),
     .s0(s0),
     .s1(s1),
     .s2(s2),
@@ -426,7 +427,7 @@ module q2(
     .rdp(rdp),
     .wrx(wrx),
     .rdx(rdx),
-    .xshift(x[0]),
+    .xshift(1'b0),
     .xin_zero(xhin_zero),
     .xin_shift(xhin_shift),
     .xin_p(xhin_p),

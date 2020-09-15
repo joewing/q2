@@ -7,7 +7,7 @@ fib:
 fib_loop:
     lda   fib1
     add   fib2
-    jnf   fib_cont
+    jfc   fib_cont
     lda   fib2
     hlt   #0
 fib_cont:

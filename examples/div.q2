@@ -1,0 +1,92 @@
+
+  jmp   @=1
+  .dw   init
+ra:
+  .dw   0
+x0:
+  .dw   0
+x1:
+  .dw   0
+x2:
+  .dw   0
+x3:
+  .dw   0
+x4:
+  .dw   0
+
+  .org  0x100
+
+init:
+  lda   #53
+  sta   =x0
+  lda   #7
+  sta   =x1
+  lda   #@($+2)
+  jmp   @div_ptr
+  lda   =x2
+  sta   =x0
+  lda   =x3
+  sta   =x1
+  hlt   #0
+
+div_ptr:
+  .dw   div
+
+  .org 0x200
+
+; Divide x2 = x0 / x1, remainder in x3
+div:
+  sta   =ra
+  lda   #0
+  sta   =x2   ; quotient
+  sta   =x3   ; remainder
+  lda   #11
+div_loop:
+  sta   =x4
+
+  ; x3 <<= 1
+  lda   =x3
+  add   =x3
+  sta   =x3
+
+  ; x2 <<= 1
+  lda   =x2
+  add   =x2
+  sta   =x2
+
+  ; x3 = x3 | x0[x4]
+  lda   =x0
+  add   =x0
+  sta   =x0
+  jfc   div_not_set
+  lda   =x3
+  nor   #1
+  nor   #0
+  sta   =x3
+div_not_set:
+
+  ; if x3 < x1 goto div_skip
+  lda   =x1
+  nor   #0
+  add   #1
+  add   =x3
+  jfc   div_skip
+
+  ; x3 -= x1
+  sta   =x3
+
+  ; x2 |= 1
+  lda   =x2
+  nor   #1
+  nor   #0
+  sta   =x2
+
+div_skip:
+  lda   =x4
+  add   div_n1
+  jfc   @=ra
+  jmp   div_loop
+div_n1:
+  .dw   -1
+
+

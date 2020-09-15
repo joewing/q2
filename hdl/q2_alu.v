@@ -38,7 +38,7 @@ module q2_alu(
       2'b00:  alu_cout = f & ~alu_out;
       2'b01:  alu_cout = f & ~alu_out;
       2'b10:  alu_cout = alu_carry;
-      2'b11:  alu_cout = x0;
+      2'b11:  alu_cout = f;
     endcase
   end
 

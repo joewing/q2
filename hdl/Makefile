@@ -8,3 +8,5 @@ a.out: *.v
 sim:	a.out
 	echo finish | ./a.out
 
+clean:
+	rm -f a.out dump.vcd
