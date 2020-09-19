@@ -18,7 +18,9 @@ module q2_tb;
 
   reg [11:0] ram[0:4095];
   always @(posedge wrm) begin
-    $display("wr [", abus, "] = ", dbus);
+    if (abus == 12'hFFF) begin
+      $display("OUTPUT %03x (%d)", dbus, dbus);
+    end
     ram[abus] <= dbus;
   end
   assign dbus = rdm ? ram[abus] : 12'bz;

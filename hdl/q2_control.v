@@ -10,6 +10,7 @@ module q2_control(
   input wire op3,
   input wire op4,
   input wire op5,
+  input wire dbus5,
   input wire dbus6,
   input wire x0,
   input wire ws,
@@ -61,7 +62,7 @@ module q2_control(
 
   assign xhin_shift = state_alu;
   assign xhin_p = state_fetch & ~dbus6;
-  assign xhin_zero = state_fetch & dbus6;
+  assign xhin_zero = ~(~state_fetch | ~(dbus6 & ~dbus5));  // XXX
   assign xhin_dbus = ~(~state_load & ~state_deref);
   assign xlin_dbus = ~state_alu;
   assign xlin_shift = state_alu;

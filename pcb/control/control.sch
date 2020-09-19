@@ -194,7 +194,6 @@ NoConn ~ 8650 2750
 NoConn ~ 8650 2950
 NoConn ~ 8650 3150
 NoConn ~ 9150 3250
-NoConn ~ 9150 3450
 NoConn ~ 9150 3550
 NoConn ~ 9150 3650
 NoConn ~ 8650 3750
@@ -206,4 +205,6 @@ Wire Wire Line
 NoConn ~ 8650 3450
 Text GLabel 8650 2850 0    50   Input ~ 0
 ~X0
+Text GLabel 9150 3450 2    50   Input ~ 0
+DBUS5
 $EndSCHEMATC

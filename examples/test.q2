@@ -9,12 +9,12 @@
 
 ; Success if we got here
   lda   #1
-  sta   =x0
+  sta   @output_ptr
   hlt   #0
 
 fail:
   lda   #0
-  sta   =x0
+  sta   @output_ptr
   hlt   #0
 
 ra:
@@ -23,6 +23,8 @@ x0:
   .dw   0
 x1:
   .dw   0
+output_ptr:
+  .dw   0xfff
 
 load_store_test_ptr:
   .dw   load_store_test

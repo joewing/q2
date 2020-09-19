@@ -9,7 +9,7 @@
   jmp   gcd
 
   lda   =x0
-  sta   =x0
+  sta   #-1
 
   hlt   #0
 
@@ -65,7 +65,4 @@ gcd_skip3:
   nor   #0
   sta   =x1
   jmp   gcd_loop1
-
-gcd_n1:
-  .dw   -1
 

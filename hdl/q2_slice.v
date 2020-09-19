@@ -36,6 +36,7 @@ module q2_slice(
   reg x;
   always @(posedge wrx) begin
     case ({xin_zero, xin_shift, xin_p, xin_dbus})
+      4'b0000:  x <= 1;
       4'b1000:  x <= 0;
       4'b0100:  x <= xshift;
       4'b0010:  x <= p;

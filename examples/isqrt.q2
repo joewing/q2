@@ -3,6 +3,8 @@
     sta   =x0           ; Store at =x1
     lda   #@$+2         ; Load return address (P+2)
     jmp   @isqrt_ptr    ; Call isqrt
+    lda   =x0
+    sta   #-1
     hlt   #0            ; Halt
 
 ra:
@@ -36,9 +38,7 @@ isqrt_loop:
   add   =x1
   jfc   isqrt_cont  ; if x0 >= x1 continue
   shr   =x2     ; return x0 = (x2 / 2) - 1
-  nor   #0
-  add   #1
-  nor   #0
+  add   #-1
   sta   =x0
   jmp   @=ra
 isqrt_cont:

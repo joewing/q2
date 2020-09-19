@@ -45,7 +45,7 @@ struct RawOutputFormat;
 impl OutputFormat for RawOutputFormat {
     fn name(self: &Self) -> &str { "raw" }
     fn pad(self: &Self, vec: &mut Vec<u8>, last_addr: i64, addr: i64) {
-        for _ in last_addr + 1..addr {
+        for _ in last_addr..addr {
             write_u16_raw(vec, 0);
         }
     }
@@ -61,7 +61,7 @@ struct HexOutputFormat;
 impl OutputFormat for HexOutputFormat {
     fn name(self: &Self) -> &str { "hex" }
     fn pad(self: &Self, vec: &mut Vec<u8>, last_addr: i64, addr: i64) {
-        for _ in last_addr + 1..addr {
+        for _ in last_addr..addr {
             write_u16_hex(vec, 0);
             write_str(vec, "\n");
         }
@@ -113,7 +113,7 @@ fn assemble(input_name: &str, output_name: &str, format: &Box<dyn OutputFormat>)
     for (addr, st, word_opt) in result {
         format.pad(&mut output, last_addr, addr);
         format.write(&mut output, addr, st, word_opt);
-        last_addr = addr;
+        last_addr = addr + if word_opt.is_some() { 1 } else { 0 };
     };
     if output_name == "-" {
         for b in output.iter() {

@@ -1,6 +1,7 @@
 use crate::parser::{Statement, Expression, InstructionType, AddressMode};
 use std::collections::HashMap;
 use crate::eval::eval;
+use crate::parser::Listing;
 
 fn load_bit(i: &InstructionType) -> u16 {
     match i {
@@ -23,9 +24,17 @@ fn mode_bits(i: &InstructionType, mode: &AddressMode) -> u16 {
     }
 }
 
-fn check_range(value: i64) -> Result<u16, String> {
-    if value > 63 {
-        Err(format!("operand out of range: {}", value))
+fn check_imm_range(value: i64, st: &Statement) -> Result<u16, String> {
+    if value < -32 || value > 31 {
+        Err(format!("{}: operand out of range: {}", st.emit_listing(), value))
+    } else {
+        Ok((value & 0x3f) as u16)
+    }
+}
+
+fn check_addr_range(value: i64, st: &Statement) -> Result<u16, String> {
+    if value < 0 || value > 63 {
+        Err(format!("{}: operand out of range: {}", st.emit_listing(), value))
     } else {
         Ok(value as u16)
     }
@@ -36,17 +45,21 @@ fn emit_instruction(
     i: &InstructionType,
     mode: &AddressMode,
     expr: &Expression,
-    symbols: &HashMap<String, Expression>
+    symbols: &HashMap<String, Expression>,
+    st: &Statement
 ) -> Result<u16, String> {
     let opcode = ((*i as u16) << 9) | (mode_bits(i, mode) << 6);
     let operand = eval(addr, expr, symbols, 0)?;
     let offset = match mode {
         AddressMode::Relative | AddressMode::RelativeIndirect | AddressMode::ImmediateAddress => {
             let page = addr & 0xFFC0;
-            check_range(operand - page)
+            check_addr_range(operand - page, st)
         },
-        AddressMode::ZeroPage | AddressMode::ZeroPageIndirect | AddressMode::Immediate => {
-            check_range(operand)
+        AddressMode::ZeroPage | AddressMode::ZeroPageIndirect => {
+            check_addr_range(operand, st)
+        },
+        AddressMode::Immediate => {
+            check_imm_range(operand, st)
         }
     }?;
     Ok(opcode | offset)
@@ -68,8 +81,12 @@ pub fn pass2(
                 addr = eval(addr, e, symbols, 0)?;
                 result.push((addr, st.clone(), None));
             },
+            Statement::Align(e)             => {
+                addr = eval(addr, e, symbols, 0)?;
+                result.push((addr, st.clone(), None));
+            },
             Statement::Instruction(inst, mode, op) => {
-                let word = emit_instruction(addr, inst, mode, op, symbols)?;
+                let word = emit_instruction(addr, inst, mode, op, symbols, st)?;
                 result.push((addr, st.clone(), Some(word)));
                 addr += 1;
             },
@@ -80,6 +97,11 @@ pub fn pass2(
                 }
                 result.push((addr, st.clone(), Some(word as u16)));
                 addr += 1;
+            },
+            Statement::Reserve(e)           => {
+                let count = eval(addr, e, symbols, 0)?;
+                result.push((addr, st.clone(), None));
+                addr += count;
             },
         }
     }

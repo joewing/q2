@@ -13,9 +13,34 @@ pub fn pass1(statements: &Vec<Statement>) -> HashMap<String, Expression> {
             },
             Statement::Instruction(_, _, _)     => addr += 1,
             Statement::Word(_)                  => addr += 1,
+            Statement::Reserve(expr)            => {
+                origin = Expression::Add(
+                    Box::new(expr.clone()),
+                    Box::new(Expression::Constant(addr))
+                );
+                addr = 0;
+            },
             Statement::Origin(expr)             => {
                 addr = 0;
                 origin = expr.clone();
+            },
+            Statement::Align(expr) => {
+                // addr + expr - addr % expr
+                origin = Expression::Add(
+                    Box::new(Expression::Constant(addr)),
+                    Box::new(
+                        Expression::Sub(
+                            Box::new(expr.clone()),
+                            Box::new(
+                                Expression::Mod(
+                                    Box::new(Expression::Constant(addr)),
+                                    Box::new(expr.clone())
+                                )
+                            )
+                        )
+                    )
+                );
+                addr = 0;
             },
             Statement::Label(s)                 => {
                 // Current position in the file is the address plus the last origin.

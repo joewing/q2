@@ -721,15 +721,15 @@ Text GLabel 9800 2150 0    50   Input ~ 0
 $Comp
 L power:GND #PWR?
 U 1 1 5F5BFAF0
-P 10100 2350
+P 10100 2750
 AR Path="/5E49A150/5F5BFAF0" Ref="#PWR?"  Part="1" 
 AR Path="/5E56259C/5F5BFAF0" Ref="#PWR?"  Part="1" 
 AR Path="/5E5E8038/5F5BFAF0" Ref="#PWR024"  Part="1" 
-F 0 "#PWR024" H 10100 2100 50  0001 C CNN
-F 1 "GND" H 10105 2177 50  0000 C CNN
-F 2 "" H 10100 2350 50  0001 C CNN
-F 3 "" H 10100 2350 50  0001 C CNN
-	1    10100 2350
+F 0 "#PWR024" H 10100 2500 50  0001 C CNN
+F 1 "GND" H 10105 2577 50  0000 C CNN
+F 2 "" H 10100 2750 50  0001 C CNN
+F 3 "" H 10100 2750 50  0001 C CNN
+	1    10100 2750
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
@@ -1817,4 +1817,20 @@ Wire Wire Line
 Wire Wire Line
 	7300 8000 7300 8150
 Connection ~ 6850 8000
+$Comp
+L Transistor_FET:2N7002 Q?
+U 1 1 5F659EEB
+P 10000 2550
+AR Path="/5E49A150/5F659EEB" Ref="Q?"  Part="1" 
+AR Path="/5E56259C/5F659EEB" Ref="Q?"  Part="1" 
+AR Path="/5E5E8038/5F659EEB" Ref="Q61"  Part="1" 
+F 0 "Q61" H 10206 2596 50  0000 L CNN
+F 1 "2N7002" H 10206 2505 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23_Handsoldering" H 10200 2475 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 10000 2550 50  0001 L CNN
+	1    10000 2550
+	1    0    0    -1  
+$EndComp
+Text GLabel 9800 2550 0    50   Input ~ 0
+DBUS5
 $EndSCHEMATC

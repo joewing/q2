@@ -3618,7 +3618,6 @@ Wire Wire Line
 Text GLabel 5500 5350 1    50   Input ~ 0
 WRF
 NoConn ~ 5600 5350
-NoConn ~ 5800 5350
 NoConn ~ 5900 5350
 NoConn ~ 6000 5350
 $Comp
@@ -3840,4 +3839,7 @@ F 3 "" H 18850 9450 50  0001 C CNN
 $EndComp
 Text GLabel 18850 9350 0    50   Input ~ 0
 ~DEP_SW
+Text GLabel 5800 5350 1    50   Input ~ 0
+DBUS5
+NoConn ~ 16100 1950
 $EndSCHEMATC

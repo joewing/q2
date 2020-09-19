@@ -23,6 +23,9 @@ pub enum Expression {
     Sub(Box<Expression>, Box<Expression>),
     Mul(Box<Expression>, Box<Expression>),
     Div(Box<Expression>, Box<Expression>),
+    Mod(Box<Expression>, Box<Expression>),
+    Negate(Box<Expression>),
+    Not(Box<Expression>),
     And(Box<Expression>, Box<Expression>),
     Or(Box<Expression>, Box<Expression>),
     Xor(Box<Expression>, Box<Expression>),
@@ -40,6 +43,9 @@ impl Listing for Expression {
             Expression::Sub(a, b) => format!("({} - {})", a.emit_listing(), b.emit_listing()),
             Expression::Mul(a, b) => format!("({} * {})", a.emit_listing(), b.emit_listing()),
             Expression::Div(a, b) => format!("({} / {})", a.emit_listing(), b.emit_listing()),
+            Expression::Mod(a, b) => format!("({} % {})", a.emit_listing(), b.emit_listing()),
+            Expression::Negate(a) => format!("-{}", a.emit_listing()),
+            Expression::Not(a)    => format!("~{}", a.emit_listing()),
             Expression::And(a, b) => format!("({} & {})", a.emit_listing(), b.emit_listing()),
             Expression::Or(a, b)  => format!("({} | {})", a.emit_listing(), b.emit_listing()),
             Expression::Xor(a, b) => format!("({} ^ {})", a.emit_listing(), b.emit_listing()),
@@ -116,7 +122,9 @@ pub enum Statement {
     Define(String, Expression),
     Label(String),
     Origin(Expression),
+    Align(Expression),
     Word(Expression),
+    Reserve(Expression),
     Instruction(InstructionType, AddressMode, Expression),
 }
 
@@ -126,7 +134,9 @@ impl Listing for Statement {
             Statement::Define(n, e)         => format!(".def\t{}\t{}", n, e.emit_listing()),
             Statement::Label(n)             => format!("{}:", n),
             Statement::Origin(e)            => format!("\t.org\t{}", e.emit_listing()),
+            Statement::Align(e)             => format!("\t.align\t{}", e.emit_listing()),
             Statement::Word(e)              => format!("\t.dw\t{}", e.emit_listing()),
+            Statement::Reserve(e)           => format!("\t.bss\t{}", e.emit_listing()),
             Statement::Instruction(t, m, o) =>
                 format!("\t{}\t{}{}", t.emit_listing(), m.emit_listing(), o.emit_listing()),
         }
@@ -211,6 +221,10 @@ fn parse_div<'a>(lhs: Expression) -> impl Fn(&'a str) -> IResult<&'a str, Expres
     move |input| parse_binop("/", lhs.clone(), move |a, b| Expression::Div(Box::from(a), Box::from(b)))(input)
 }
 
+fn parse_mod<'a>(lhs: Expression) -> impl Fn(&'a str) -> IResult<&'a str, Expression> {
+    move |input| parse_binop("/", lhs.clone(), move |a, b| Expression::Mod(Box::from(a), Box::from(b)))(input)
+}
+
 fn parse_and<'a>(lhs: Expression) -> impl Fn(&'a str) -> IResult<&'a str, Expression> {
     move |input| parse_binop("&", lhs.clone(), move |a, b| Expression::And(Box::from(a), Box::from(b)))(input)
 }
@@ -275,10 +289,16 @@ fn parse_constant(input: &str) -> IResult<&str, Expression> {
     alt((parse_current_address, parse_hex, parse_bin, parse_oct, parse_dec, parse_char))(input)
 }
 
+fn parse_not(input: &str) -> IResult<&str, Expression> {
+    let (input, _) = nom::character::complete::char('~')(input)?;
+    let (input, e) = parse_expr(input)?;
+    Ok((input, Expression::Not(Box::new(e))))
+}
+
 fn parse_negate(input: &str) -> IResult<&str, Expression> {
     let (input, _) = nom::character::complete::char('-')(input)?;
     let (input, e) = parse_expr(input)?;
-    Ok((input, Expression::Sub(Box::new(Expression::Constant(0)), Box::new(e))))
+    Ok((input, Expression::Negate(Box::new(e))))
 }
 
 fn parse_nested(input: &str) -> IResult<&str, Expression> {
@@ -289,12 +309,21 @@ fn parse_nested(input: &str) -> IResult<&str, Expression> {
 }
 
 fn parse_term(input: &str) -> IResult<&str, Expression> {
-    let (input, lhs) = alt((parse_constant, parse_symbol, parse_nested, parse_negate))(input)?;
+    let (input, lhs) = alt(
+        (
+            parse_constant,
+            parse_symbol,
+            parse_nested,
+            parse_negate,
+            parse_not,
+        )
+    )(input)?;
     let (input, t_opt) = opt(
         alt(
             (
                 parse_mul(lhs.clone()),
                 parse_div(lhs.clone()),
+                parse_mod(lhs.clone()),
             )
         )
     )(input)?;
@@ -371,11 +400,25 @@ fn parse_origin(input: &str) -> IResult<&str, Statement> {
     Ok((input, Statement::Origin(expr)))
 }
 
+fn parse_align(input: &str) -> IResult<&str, Statement> {
+    let (input, _) = tag(".align")(input)?;
+    let (input, _) = eat_whitespace(input)?;
+    let (input, expr) = parse_expr(input)?;
+    Ok((input, Statement::Align(expr)))
+}
+
 fn parse_word(input: &str) -> IResult<&str, Statement> {
     let (input, _) = tag(".dw")(input)?;
     let (input, _) = eat_whitespace(input)?;
     let (input, expr) = parse_expr(input)?;
     Ok((input, Statement::Word(expr)))
+}
+
+fn parse_reserve(input: &str) -> IResult<&str, Statement> {
+    let (input, _) = tag(".bss")(input)?;
+    let (input, _) = eat_whitespace(input)?;
+    let (input, expr) = parse_expr(input)?;
+    Ok((input, Statement::Reserve(expr)))
 }
 
 fn parse_define(input: &str) -> IResult<&str, Statement> {
@@ -394,7 +437,9 @@ fn parse_statement(input: &str) -> IResult<&str, Statement> {
             parse_label,
             parse_instruction,
             parse_origin,
+            parse_align,
             parse_word,
+            parse_reserve,
             parse_define
         )
     )(input)?;

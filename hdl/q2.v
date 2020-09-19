@@ -74,6 +74,7 @@ module q2(
     .op3(op3),
     .op4(op4),
     .op5(op5),
+    .dbus5(dbus[5]),
     .dbus6(dbus[6]),
     .ws(ws),
     .incp_db(incp_sw),

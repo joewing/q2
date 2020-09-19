@@ -17,20 +17,26 @@ x4:
   .org  0x100
 
 init:
-  lda   #53
+  lda   numerator
   sta   =x0
-  lda   #7
+  lda   denominator
   sta   =x1
   lda   #@($+2)
   jmp   @div_ptr
   lda   =x2
-  sta   =x0
+  sta   @output_ptr
   lda   =x3
-  sta   =x1
+  sta   @output_ptr
   hlt   #0
 
+numerator:
+  .dw   53
+denominator:
+  .dw   7
 div_ptr:
   .dw   div
+output_ptr:
+  .dw   0xfff
 
   .org 0x200
 
@@ -83,10 +89,8 @@ div_not_set:
 
 div_skip:
   lda   =x4
-  add   div_n1
+  add   #-1
   jfc   @=ra
   jmp   div_loop
-div_n1:
-  .dw   -1
 
 
