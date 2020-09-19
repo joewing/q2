@@ -64,8 +64,8 @@ pub enum InstructionType {
     Nor = 0x01,
     Add = 0x02,
     Shr = 0x03,
-    Sta = 0x04,
-    Hlt = 0x05,
+    Lea = 0x04,
+    Sta = 0x05,
     Jmp = 0x06,
     Jfc = 0x07,
 }
@@ -76,10 +76,10 @@ impl InstructionType {
         (InstructionType::Nor, "nor"),
         (InstructionType::Add, "add"),
         (InstructionType::Shr, "shr"),
+        (InstructionType::Lea, "lea"),
         (InstructionType::Sta, "sta"),
-        (InstructionType::Jmp, "jmp"),
         (InstructionType::Jfc, "jfc"),
-        (InstructionType::Hlt, "hlt"),
+        (InstructionType::Jmp, "jmp"),
     ];
 }
 
@@ -100,8 +100,6 @@ pub enum AddressMode {
     ZeroPage,           // =x
     RelativeIndirect,   // @x
     ZeroPageIndirect,   // @=x
-    Immediate,          // #x
-    ImmediateAddress,   // #@x
 }
 
 impl Listing for AddressMode {
@@ -111,8 +109,6 @@ impl Listing for AddressMode {
             AddressMode::ZeroPage           => format!("="),
             AddressMode::RelativeIndirect   => format!("@"),
             AddressMode::ZeroPageIndirect   => format!("@="),
-            AddressMode::Immediate          => format!("#"),
-            AddressMode::ImmediateAddress   => format!("#@"),
         }
     }
 }
@@ -171,10 +167,6 @@ fn is_ident(chr: char) -> bool {
 fn parse_flag<'a>(name: char, input: &'a str) -> IResult<&'a str, bool> {
     let (input, o) = opt(nom::character::complete::char(name))(input)?;
     Ok((input, o.is_some()))
-}
-
-fn parse_imm(input: &str) -> IResult<&str, bool> {
-    parse_flag('#', input)
 }
 
 fn parse_deref(input: &str) -> IResult<&str, bool> {
@@ -365,18 +357,13 @@ fn parse_instruction_type(input: &str) -> IResult<&str, InstructionType> {
 }
 
 fn parse_mode(input: &str) -> IResult<&str, AddressMode> {
-    let (input, imm) = parse_imm(input)?;
     let (input, deref) = parse_deref(input)?;
     let (input, zp) = parse_zeropage(input)?;
-    match (imm, deref, zp) {
-        (true, false, false)  => Ok((input, AddressMode::Immediate)),
-        (true, true, false)  => Ok((input, AddressMode::ImmediateAddress)),
-        (true, false, true)  => Ok((input, AddressMode::Immediate)),
-        (true, true, true)  => Ok((input, AddressMode::ImmediateAddress)),
-        (false, false, false)  => Ok((input, AddressMode::Relative)),
-        (false, false, true)  => Ok((input, AddressMode::ZeroPage)),
-        (false, true, false)  => Ok((input, AddressMode::RelativeIndirect)),
-        (false, true, true)  => Ok((input, AddressMode::ZeroPageIndirect)),
+    match (deref, zp) {
+        (false, false)  => Ok((input, AddressMode::Relative)),
+        (false, true)  => Ok((input, AddressMode::ZeroPage)),
+        (true, false)  => Ok((input, AddressMode::RelativeIndirect)),
+        (true, true)  => Ok((input, AddressMode::ZeroPageIndirect)),
     }
 }
 

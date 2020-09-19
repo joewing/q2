@@ -781,8 +781,6 @@ Text GLabel 4600 5350 1    50   Input ~ 0
 OP2
 Text GLabel 4800 5350 1    50   Input ~ 0
 OP1
-Text GLabel 5700 5350 1    50   Input ~ 0
-DBUS6
 Text GLabel 5100 5350 1    50   Input ~ 0
 WRO
 Wire Wire Line
@@ -807,8 +805,6 @@ Text GLabel 6300 5150 1    50   Input ~ 0
 ~S2
 Text GLabel 6500 5150 1    50   Input ~ 0
 ~S1
-Text GLabel 6300 5850 3    50   Input ~ 0
-RUN
 Text GLabel 6200 5350 1    50   Input ~ 0
 S3
 Text GLabel 6400 5350 1    50   Input ~ 0
@@ -3201,13 +3197,13 @@ Text GLabel 11200 2050 0    50   Input ~ 0
 Text GLabel 11200 2750 0    50   Input ~ 0
 WRX
 Text GLabel 11200 2650 0    50   Input ~ 0
-XHIN_ZERO
+XLIN_ZERO
 Text GLabel 11200 2550 0    50   Input ~ 0
-XHIN_P
+XLIN_P
 Text GLabel 11200 2450 0    50   Input ~ 0
-XHIN_SHIFT
+XLIN_SHIFT
 Text GLabel 11200 2350 0    50   Input ~ 0
-XHIN_DBUS
+XLIN_DBUS
 Text GLabel 11200 2950 0    50   Input ~ 0
 ~SW6
 Wire Wire Line
@@ -3237,14 +3233,6 @@ Text GLabel 9550 2050 0    50   Input ~ 0
 ~WRP
 Text GLabel 9550 2750 0    50   Input ~ 0
 WRX
-Text GLabel 9550 2650 0    50   Input ~ 0
-XHIN_ZERO
-Text GLabel 9550 2550 0    50   Input ~ 0
-XHIN_P
-Text GLabel 9550 2450 0    50   Input ~ 0
-XHIN_SHIFT
-Text GLabel 9550 2350 0    50   Input ~ 0
-XHIN_DBUS
 Text GLabel 9550 2950 0    50   Input ~ 0
 ~SW7
 Wire Wire Line
@@ -3840,6 +3828,16 @@ $EndComp
 Text GLabel 18850 9350 0    50   Input ~ 0
 ~DEP_SW
 Text GLabel 5800 5350 1    50   Input ~ 0
-DBUS5
+DBUS7
 NoConn ~ 16100 1950
+NoConn ~ 5700 5350
+NoConn ~ 6300 5850
+Text GLabel 9550 2650 0    50   Input ~ 0
+XHIN_ZERO
+Text GLabel 9550 2550 0    50   Input ~ 0
+XHIN_P
+Text GLabel 9550 2450 0    50   Input ~ 0
+XHIN_SHIFT
+Text GLabel 9550 2350 0    50   Input ~ 0
+XHIN_DBUS
 $EndSCHEMATC

@@ -99,14 +99,8 @@ Text GLabel 9150 1650 2    50   Input ~ 0
 OP5
 Text GLabel 9150 1850 2    50   Input ~ 0
 OP4
-Text GLabel 9150 2050 2    50   Input ~ 0
-OP3
 Text GLabel 9150 2250 2    50   Input ~ 0
 OP2
-Text GLabel 9150 2450 2    50   Input ~ 0
-OP1
-Text GLabel 9150 3350 2    50   Input ~ 0
-DBUS6
 Text GLabel 8650 3650 0    50   Input ~ 0
 RDM
 Text GLabel 8650 3550 0    50   Input ~ 0
@@ -159,8 +153,6 @@ Text GLabel 9450 2950 2    50   Input ~ 0
 ~F
 Text GLabel 8650 4050 0    50   Input ~ 0
 WS
-Text GLabel 8650 3950 0    50   Input ~ 0
-RUN
 Text GLabel 8650 1550 0    50   Input ~ 0
 ~ALU_COUT
 Text Notes 950  1850 0    50   ~ 0
@@ -206,5 +198,9 @@ NoConn ~ 8650 3450
 Text GLabel 8650 2850 0    50   Input ~ 0
 ~X0
 Text GLabel 9150 3450 2    50   Input ~ 0
-DBUS5
+DBUS7
+NoConn ~ 9150 2450
+NoConn ~ 8650 3950
+NoConn ~ 9150 3350
+NoConn ~ 9150 2050
 $EndSCHEMATC

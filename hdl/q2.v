@@ -57,9 +57,8 @@ module q2(
   wire sc = ~clk & cdiv;
   wire ws = ~clk & ~cdiv;
 
-  wire halt;
-  always @(posedge halt or posedge start_sw or posedge stop_sw) begin
-    run = start_sw & ~halt & ~stop_sw;
+  always @(posedge start_sw or posedge stop_sw) begin
+    run = start_sw & ~stop_sw;
   end
 
   q2_control control(
@@ -69,13 +68,11 @@ module q2(
     .s2(s2),
     .s3(s3),
     .f(f),
-    .op1(op1),
     .op2(op2),
     .op3(op3),
     .op4(op4),
     .op5(op5),
-    .dbus5(dbus[5]),
-    .dbus6(dbus[6]),
+    .dbus7(dbus[7]),
     .ws(ws),
     .incp_db(incp_sw),
     .dep_sw(dep_sw),
@@ -97,8 +94,7 @@ module q2(
     .wrm(wrm),
     .rdm(rdm),
     .wrf(wrf),
-    .fout(f_in),
-    .halt(halt)
+    .fout(f_in)
   );
 
   wire [11:0] a;
@@ -294,10 +290,10 @@ module q2(
     .wrx(wrx),
     .rdx(rdx),
     .xshift(x[7]),
-    .xin_zero(xhin_zero),
-    .xin_shift(xhin_shift),
-    .xin_p(xhin_p),
-    .xin_dbus(xhin_dbus),
+    .xin_zero(1'b0),
+    .xin_shift(xlin_shift),
+    .xin_p(1'b0),
+    .xin_dbus(xlin_dbus),
     .wrs(wro),
     .sin(dbus[6]),
     .sout(op0),

@@ -31,8 +31,8 @@ L power:GND #PWR?
 U 1 1 5E56537D
 P 2800 4550
 AR Path="/5E49A150/5E56537D" Ref="#PWR?"  Part="1" 
-AR Path="/5E56259C/5E56537D" Ref="#PWR014"  Part="1" 
-F 0 "#PWR014" H 2800 4300 50  0001 C CNN
+AR Path="/5E56259C/5E56537D" Ref="#PWR015"  Part="1" 
+F 0 "#PWR015" H 2800 4300 50  0001 C CNN
 F 1 "GND" H 2805 4377 50  0000 C CNN
 F 2 "" H 2800 4550 50  0001 C CNN
 F 3 "" H 2800 4550 50  0001 C CNN
@@ -278,8 +278,8 @@ L Transistor_FET:2N7002 Q?
 U 1 1 5EECC920
 P 2700 4350
 AR Path="/5E49A150/5EECC920" Ref="Q?"  Part="1" 
-AR Path="/5E56259C/5EECC920" Ref="Q13"  Part="1" 
-F 0 "Q13" H 2906 4396 50  0000 L CNN
+AR Path="/5E56259C/5EECC920" Ref="Q14"  Part="1" 
+F 0 "Q14" H 2906 4396 50  0000 L CNN
 F 1 "2N7002" H 2906 4305 50  0000 L CNN
 F 2 "Package_TO_SOT_SMD:SOT-23_Handsoldering" H 2900 4275 50  0001 L CIN
 F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 2700 4350 50  0001 L CNN
@@ -307,7 +307,7 @@ F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 3650 2300 50  000
 	1    0    0    -1  
 $EndComp
 Text GLabel 3450 2300 0    50   Input ~ 0
-OP2
+~OP5
 $Comp
 L Transistor_FET:2N7002 Q?
 U 1 1 5EEFB1D7
@@ -322,7 +322,7 @@ F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 4600 2300 50  000
 	1    0    0    -1  
 $EndComp
 Text GLabel 4400 2300 0    50   Input ~ 0
-OP1
+OP2
 Wire Wire Line
 	2800 1800 2800 2350
 Wire Wire Line
@@ -393,8 +393,6 @@ F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 6650 3650 50  000
 	1    6650 3650
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	10450 1650 10450 1600
 $Comp
 L power:VCC #PWR?
 U 1 1 5F2CEDC1
@@ -428,14 +426,14 @@ Text GLabel 7150 3100 1    50   Input ~ 0
 $Comp
 L power:GND #PWR?
 U 1 1 5F2D0991
-P 6750 4250
+P 6750 4400
 AR Path="/5E49A150/5F2D0991" Ref="#PWR?"  Part="1" 
-AR Path="/5E56259C/5F2D0991" Ref="#PWR013"  Part="1" 
-F 0 "#PWR013" H 6750 4000 50  0001 C CNN
-F 1 "GND" H 6755 4077 50  0000 C CNN
-F 2 "" H 6750 4250 50  0001 C CNN
-F 3 "" H 6750 4250 50  0001 C CNN
-	1    6750 4250
+AR Path="/5E56259C/5F2D0991" Ref="#PWR014"  Part="1" 
+F 0 "#PWR014" H 6750 4150 50  0001 C CNN
+F 1 "GND" H 6755 4227 50  0000 C CNN
+F 2 "" H 6750 4400 50  0001 C CNN
+F 3 "" H 6750 4400 50  0001 C CNN
+	1    6750 4400
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
@@ -493,19 +491,19 @@ F 3 "~" H 7900 3100 50  0001 C CNN
 $EndComp
 Text GLabel 8050 3350 2    50   Input ~ 0
 STATE_ALU
-Text GLabel 6450 4050 0    50   Input ~ 0
+Text GLabel 6450 4200 0    50   Input ~ 0
 ~OP5
 $Comp
 L Transistor_FET:2N7002 Q?
 U 1 1 5EF3C949
-P 6650 4050
+P 6650 4200
 AR Path="/5E49A150/5EF3C949" Ref="Q?"  Part="1" 
-AR Path="/5E56259C/5EF3C949" Ref="Q12"  Part="1" 
-F 0 "Q12" H 6856 4096 50  0000 L CNN
-F 1 "2N7002" H 6856 4005 50  0000 L CNN
-F 2 "Package_TO_SOT_SMD:SOT-23_Handsoldering" H 6850 3975 50  0001 L CIN
-F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 6650 4050 50  0001 L CNN
-	1    6650 4050
+AR Path="/5E56259C/5EF3C949" Ref="Q13"  Part="1" 
+F 0 "Q13" H 6856 4246 50  0000 L CNN
+F 1 "2N7002" H 6856 4155 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23_Handsoldering" H 6850 4125 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 6650 4200 50  0001 L CNN
+	1    6650 4200
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -524,68 +522,68 @@ $EndComp
 $Comp
 L power:GND #PWR?
 U 1 1 5F84B085
-P 4900 5650
+P 8650 5450
 AR Path="/5E49A150/5F84B085" Ref="#PWR?"  Part="1" 
-AR Path="/5E56259C/5F84B085" Ref="#PWR016"  Part="1" 
+AR Path="/5E56259C/5F84B085" Ref="#PWR017"  Part="1" 
 AR Path="/5E5E8038/5F84B085" Ref="#PWR?"  Part="1" 
-F 0 "#PWR016" H 4900 5400 50  0001 C CNN
-F 1 "GND" H 4905 5477 50  0000 C CNN
-F 2 "" H 4900 5650 50  0001 C CNN
-F 3 "" H 4900 5650 50  0001 C CNN
-	1    4900 5650
+F 0 "#PWR017" H 8650 5200 50  0001 C CNN
+F 1 "GND" H 8655 5277 50  0000 C CNN
+F 2 "" H 8650 5450 50  0001 C CNN
+F 3 "" H 8650 5450 50  0001 C CNN
+	1    8650 5450
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	4900 5100 4900 5250
-Connection ~ 4900 5100
+	8650 4900 8650 5050
+Connection ~ 8650 4900
 Wire Wire Line
-	4900 5100 5150 5100
+	8650 4900 8900 4900
 Wire Wire Line
-	4900 4850 4900 5100
+	8650 4650 8650 4900
 $Comp
 L power:VCC #PWR?
 U 1 1 5F84B08F
-P 4900 4550
+P 8650 4350
 AR Path="/5E49A150/5F84B08F" Ref="#PWR?"  Part="1" 
-AR Path="/5E56259C/5F84B08F" Ref="#PWR015"  Part="1" 
+AR Path="/5E56259C/5F84B08F" Ref="#PWR013"  Part="1" 
 AR Path="/5E5E8038/5F84B08F" Ref="#PWR?"  Part="1" 
-F 0 "#PWR015" H 4900 4400 50  0001 C CNN
-F 1 "VCC" H 4917 4723 50  0000 C CNN
-F 2 "" H 4900 4550 50  0001 C CNN
-F 3 "" H 4900 4550 50  0001 C CNN
-	1    4900 4550
+F 0 "#PWR013" H 8650 4200 50  0001 C CNN
+F 1 "VCC" H 8667 4523 50  0000 C CNN
+F 2 "" H 8650 4350 50  0001 C CNN
+F 3 "" H 8650 4350 50  0001 C CNN
+	1    8650 4350
 	1    0    0    -1  
 $EndComp
 $Comp
 L Device:R R?
 U 1 1 5F84B095
-P 4900 4700
+P 8650 4500
 AR Path="/5E49A150/5F84B095" Ref="R?"  Part="1" 
 AR Path="/5E56259C/5F84B095" Ref="R8"  Part="1" 
 AR Path="/5E5E8038/5F84B095" Ref="R?"  Part="1" 
-F 0 "R8" H 4970 4746 50  0000 L CNN
-F 1 "R" H 4970 4655 50  0000 L CNN
-F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" V 4830 4700 50  0001 C CNN
-F 3 "~" H 4900 4700 50  0001 C CNN
-	1    4900 4700
+F 0 "R8" H 8720 4546 50  0000 L CNN
+F 1 "R" H 8720 4455 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" V 8580 4500 50  0001 C CNN
+F 3 "~" H 8650 4500 50  0001 C CNN
+	1    8650 4500
 	1    0    0    -1  
 $EndComp
-Text GLabel 5150 5100 2    50   Input ~ 0
+Text GLabel 8900 4900 2    50   Input ~ 0
 STATE_FETCH
-Text GLabel 4600 5450 0    50   Input ~ 0
+Text GLabel 8350 5250 0    50   Input ~ 0
 ~STATE_FETCH
 $Comp
 L Transistor_FET:2N7002 Q?
 U 1 1 5F84B09D
-P 4800 5450
+P 8550 5250
 AR Path="/5E49A150/5F84B09D" Ref="Q?"  Part="1" 
-AR Path="/5E56259C/5F84B09D" Ref="Q14"  Part="1" 
+AR Path="/5E56259C/5F84B09D" Ref="Q16"  Part="1" 
 AR Path="/5E5E8038/5F84B09D" Ref="Q?"  Part="1" 
-F 0 "Q14" H 5006 5496 50  0000 L CNN
-F 1 "2N7002" H 5006 5405 50  0000 L CNN
-F 2 "Package_TO_SOT_SMD:SOT-23_Handsoldering" H 5000 5375 50  0001 L CIN
-F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 4800 5450 50  0001 L CNN
-	1    4800 5450
+F 0 "Q16" H 8756 5296 50  0000 L CNN
+F 1 "2N7002" H 8756 5205 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23_Handsoldering" H 8750 5175 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 8550 5250 50  0001 L CNN
+	1    8550 5250
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
@@ -600,4 +598,58 @@ Wire Wire Line
 Wire Wire Line
 	7450 3300 7450 3650
 Connection ~ 7150 3300
+$Comp
+L power:GND #PWR?
+U 1 1 5F6A8EC0
+P 5800 4800
+AR Path="/5E49A150/5F6A8EC0" Ref="#PWR?"  Part="1" 
+AR Path="/5E56259C/5F6A8EC0" Ref="#PWR016"  Part="1" 
+F 0 "#PWR016" H 5800 4550 50  0001 C CNN
+F 1 "GND" H 5805 4627 50  0000 C CNN
+F 2 "" H 5800 4800 50  0001 C CNN
+F 3 "" H 5800 4800 50  0001 C CNN
+	1    5800 4800
+	1    0    0    -1  
+$EndComp
+Text GLabel 5500 4200 0    50   Input ~ 0
+~OP3
+$Comp
+L Transistor_FET:2N7002 Q?
+U 1 1 5F6A8EC7
+P 5700 4200
+AR Path="/5E49A150/5F6A8EC7" Ref="Q?"  Part="1" 
+AR Path="/5E56259C/5F6A8EC7" Ref="Q12"  Part="1" 
+F 0 "Q12" H 5906 4246 50  0000 L CNN
+F 1 "2N7002" H 5906 4155 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23_Handsoldering" H 5900 4125 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 5700 4200 50  0001 L CNN
+	1    5700 4200
+	1    0    0    -1  
+$EndComp
+$Comp
+L Transistor_FET:2N7002 Q?
+U 1 1 5F6B0297
+P 5700 4600
+AR Path="/5E49A150/5F6B0297" Ref="Q?"  Part="1" 
+AR Path="/5E56259C/5F6B0297" Ref="Q15"  Part="1" 
+F 0 "Q15" H 5906 4646 50  0000 L CNN
+F 1 "2N7002" H 5906 4555 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23_Handsoldering" H 5900 4525 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 5700 4600 50  0001 L CNN
+	1    5700 4600
+	1    0    0    -1  
+$EndComp
+Text GLabel 5500 4600 0    50   Input ~ 0
+~OP4
+Wire Wire Line
+	6750 3850 6750 3900
+Wire Wire Line
+	6750 3900 5800 3900
+Wire Wire Line
+	5800 3900 5800 4000
+Connection ~ 6750 3900
+Wire Wire Line
+	6750 3900 6750 4000
+Text Notes 6100 4850 0    50   ~ 0
+ALU instruction (0xx) or LEA (100)
 $EndSCHEMATC

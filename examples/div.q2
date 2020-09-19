@@ -1,6 +1,12 @@
 
-  jmp   @=1
+  jmp   @$+1
   .dw   init
+zero:
+  .dw   0
+one:
+  .dw   1
+minus1:
+  .dw   -1
 ra:
   .dw   0
 x0:
@@ -13,21 +19,23 @@ x3:
   .dw   0
 x4:
   .dw   0
+output_ptr:
+  .dw   -1
 
-  .org  0x100
+  .org  128
 
 init:
   lda   numerator
   sta   =x0
   lda   denominator
   sta   =x1
-  lda   #@($+2)
+  lea   $+2
   jmp   @div_ptr
   lda   =x2
-  sta   @output_ptr
+  sta   @=output_ptr
   lda   =x3
-  sta   @output_ptr
-  hlt   #0
+  sta   @=output_ptr
+  jmp   $
 
 numerator:
   .dw   53
@@ -35,18 +43,16 @@ denominator:
   .dw   7
 div_ptr:
   .dw   div
-output_ptr:
-  .dw   0xfff
 
-  .org 0x200
+  .org 256
 
 ; Divide x2 = x0 / x1, remainder in x3
 div:
   sta   =ra
-  lda   #0
+  lea   =0
   sta   =x2   ; quotient
   sta   =x3   ; remainder
-  lda   #11
+  lea   =11
 div_loop:
   sta   =x4
 
@@ -66,15 +72,15 @@ div_loop:
   sta   =x0
   jfc   div_not_set
   lda   =x3
-  nor   #1
-  nor   #0
+  nor   =one
+  nor   =zero
   sta   =x3
 div_not_set:
 
   ; if x3 < x1 goto div_skip
   lda   =x1
-  nor   #0
-  add   #1
+  nor   =zero
+  add   =one
   add   =x3
   jfc   div_skip
 
@@ -83,13 +89,13 @@ div_not_set:
 
   ; x2 |= 1
   lda   =x2
-  nor   #1
-  nor   #0
+  nor   =one
+  nor   =zero
   sta   =x2
 
 div_skip:
   lda   =x4
-  add   #-1
+  add   =minus1
   jfc   @=ra
   jmp   div_loop
 

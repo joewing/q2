@@ -5,13 +5,13 @@
   lda   input2
   sta   =x1
 
-  lda   #@$+2
+  lea   $+2
   jmp   gcd
 
   lda   =x0
-  sta   #-1
+  sta   @=output_ptr
 
-  hlt   #0
+  jmp   $
 
 input1:
   .dw   252
@@ -26,6 +26,12 @@ x2:
   .dw   0
 ra:
   .dw   0
+zero:
+  .dw   0
+one:
+  .dw   1
+output_ptr:
+  .dw   -1
 
 ; Compute x0 = gcd(x0, x1)
 gcd:
@@ -41,15 +47,15 @@ gcd_loop1:
   ; Remove factors of 2 in x1
 gcd_loop2:
   shr   =x1
-  jfc   #@$+2
+  jfc   $+2
   jmp   gcd_skip1
   sta   =x1
   jmp   gcd_loop2
 gcd_skip1:
 
   lda   =x1
-  nor   #0
-  add   #1
+  nor   =zero
+  add   =one
   add   =x0   ; x0 - x1
   jfc   gcd_skip3
   lda   =x0   ; swap x0 and x1
@@ -60,9 +66,9 @@ gcd_skip1:
   sta   =x1
 gcd_skip3:
   lda   =x1   ; x1 -= x0
-  nor   #0
+  nor   =zero
   add   =x0
-  nor   #0
+  nor   =zero
   sta   =x1
   jmp   gcd_loop1
 

@@ -15,22 +15,24 @@ init:
   sta   =x0
   lda   value2
   sta   =x1
-  lda   #@$+2
+  lea   $+2
   jmp   mult
   lda   =x2
-  sta   #-1
-  hlt   #0
+  sta   @=minus1
+  jmp   $
 
 value1:
   .dw   35
 value2:
   .dw   15
+minus1:
+  .dw   -1
 
 ; Multiply x2 = x0 * x1
 ; Destroys x0, x1, and x2
 mult:
   sta   =ra
-  lda   #0
+  lea   =0
   sta   =x2
 multLoop:
   lda   =x0
@@ -40,7 +42,7 @@ multLoop:
   jmp  @=ra
 
 multCont:
-  nor   #-2     ; zero if bit 1 is set
+  nor   minus2    ; zero if bit 1 is set
   jfc   multNext
 
   ; bit is set, update =x2
@@ -58,4 +60,6 @@ multNext:
   sta   =x1
 
   jmp   multLoop
+minus2:
+  .dw   -2
 

@@ -1,5 +1,5 @@
 
-  jmp   @=1
+  jmp   @$+1
   .dw   init
 
 ra:
@@ -11,15 +11,15 @@ x1:
 
 init:
 
-  lda   #25
+  lea   =25
   sta   =x0
-  lda   #10
+  lea   =10
   sta   =x1
-  lda   #@$+2
+  lea   $+2
   jmp   sub
   lda   =x0
   sta   @output_ptr
-  hlt   #0
+  jmp   $
 output_ptr:
   .dw   0xfff
 
@@ -27,9 +27,11 @@ output_ptr:
 sub:
   sta   =ra
   lda   =x0
-  nor   #0
+  nor   sub_zero
   add   =x1
-  nor   #0
+  nor   sub_zero
   sta   =x0
   jmp   @=ra
+sub_zero:
+  .dw   0
   

@@ -98,11 +98,10 @@ the starting sequence looks like this:
 
 All instructions are 1 word with the following format:
 
-  FFF LDZ XXXXXX
+  FFF DZ XXXXXXX
 
-where FFF is the opcode, L is the load flag,
-D is the dereference flag, Z is the zero-page flag,
-and XXXXXX is the operand.
+where FFF is the opcode, D is the dereference flag,
+Z is the zero-page flag, and XXXXXX is the operand.
 
 Instruction summary:
 
@@ -112,8 +111,8 @@ Instruction summary:
   001     | nor x | Z | A = ~(A | X)
   010     | add x | C | A = A + X
   011     | shr x | C | A = X >> 1
-  100     | sta x | - | [X] = A
-  101     | hlt x | - | Halt
+  100     | lea x | - | A = &X
+  101     | sta x | - | [X] = A
   110     | jmp x | - | Jump
   111     | jfc x | - | Jump if F clear
 
@@ -121,59 +120,50 @@ The flag is set if carry ('C'), zero ('Z'), or left unchanged ('-').
 
 The following address modes are supported:
 
-  Value | LDZ | Meaning
+  Value | DZ | Meaning
   ----- | --- | --------------------------------
-  #x    | 001 | immediate (zero-page address)
-  #@x   | 000 | immediate address
-  x     | 100 | current-page relative
-  @x    | 110 | indirect through current page
-  =x    | 101 | zero-page relative
-  @=x   | 111 | indirect through zero page
-  x     | 010 | alternate encoding for current-page relative
-  =x    | 011 | alternate encoding for zero-page relative
-
-Note that store/jump instructions do not set 'L'. This means that
-specifying "#@x" and "x" is equivalent for a store instruction.
+  x     | 00 | current-page relative
+  @x    | 10 | indirect through current page
+  =x    | 01 | zero-page relative
+  @=x   | 11 | indirect through zero page
 
 ## Examples
 
 ```
 ; Negate: A = -A
-  nor   #0
-  add   #1
+  nor   =zero
+  add   =one
 ```
 
 ```
 ; Subtract: A - v
-  nor   #0
-  add   v     ; A = v - A - 1
-  nor   #0    ; A = A - v
+  nor   =zero
+  add   v       ; A = v - A - 1
+  nor   =zero   ; A = A - v
 ```
 
 ```
 ; Decrement A
-  nor   #0
-  add   #1
-  nor   #0
+  add   =neg1
 ```
 
 ```
 ; NOT: A = ~A
-  nor   #0
+  nor   =zero
 ```
 
 ```
 ; OR: A = A | v
   nor   v
-  nor   #0
+  nor   =zero
 ```
 
 ```
 ; AND: A = A & v
-  nor   #0
+  nor   =zero
   sta   =t0   ; t0 = ~A
   lda   v
-  nor   #0    ; A = ~v
+  nor   =zero ; A = ~v
   nor   =t0   ; A = ~(~A | ~v) = A & v
 ```
 
@@ -186,7 +176,7 @@ specifying "#@x" and "x" is equivalent for a store instruction.
 ```
 ; Jump if a >= b
   lda   a
-  nor   #0
+  nor   =zero
   add   b
   jfc   ge
 ```
@@ -194,15 +184,15 @@ specifying "#@x" and "x" is equivalent for a store instruction.
 ```
 ; Jump if a != b
   lda   a
-  nor   #0
+  nor   =zero
   add   b
-  nor   #0
+  nor   =zero
   jfc   ne
 ```
 
 ```
 ; Function call:
-  lda   #@$+2   ; A = return address
+  lea   $+2   ; A = return address
   jmp   func
 
 ;...
@@ -231,9 +221,8 @@ rortopbit:
 ; 8 words
 push:
   sta   =ra
-  lda   #0
-  nor   #0
-  add   =sp
+  lda   =sp
+  add   =neg1
   sta   =sp
   lda   =x0
   sta   @=sp
@@ -248,14 +237,14 @@ pop:
   lda   @=sp
   sta   =x0
   lda   =sp
-  add   #1
+  add   =one
   sta   =sp
   jmp   @=ra
 ```
 
 ### Zero-Page Layout
 
-The zero page is the first 64 words, which can be accessed directly by
+The zero page is the first 128 words, which can be accessed directly by
 any instruction from anywhere.
 Here is a possible layout:
 
@@ -277,7 +266,11 @@ Here is a possible layout:
   0015  | =x5   | Argument 5 for function calls
   0016  | =x6   | Argument 6 for function calls
   0017  | =x7   | Argument 7 for function calls
-  0020  | =push | Pointer to push
-  0021  | =pop  | Pointer to pop
+  0020  | =zero | 0
+  0021  | =one  | 1
+  0022  | =two  | 2
+  0023  | =neg1 | -1
+  0030  | =push | Pointer to push
+  0031  | =pop  | Pointer to pop
 
 

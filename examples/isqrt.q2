@@ -1,11 +1,11 @@
 
     lda   value         ; Load the value whose sqrt to compute.
     sta   =x0           ; Store at =x1
-    lda   #@$+2         ; Load return address (P+2)
+    lea   $+2           ; Load return address (P+2)
     jmp   @isqrt_ptr    ; Call isqrt
     lda   =x0
-    sta   #-1
-    hlt   #0            ; Halt
+    sta   @=minus1
+    jmp   $
 
 ra:
     .dw   0
@@ -15,6 +15,14 @@ x1:
     .dw   0
 x2:
     .dw   0
+minus1:
+    .dw   -1
+zero:
+    .dw   0
+one:
+    .dw   1
+two:
+    .dw   2
 
 isqrt_ptr:
     .dw   isqrt
@@ -28,17 +36,17 @@ value:
 ; Destroys =x0, =x1, =x2, =ra
 isqrt:
   sta   =ra
-  lda   #1
+  lea   =1
   sta   =x1       ; x1 = 1
-  lda   #3
+  lea   =3
   sta   =x2       ; x2 = 3
 isqrt_loop:
   lda   =x0
-  nor   #0
+  nor   =zero
   add   =x1
   jfc   isqrt_cont  ; if x0 >= x1 continue
   shr   =x2     ; return x0 = (x2 / 2) - 1
-  add   #-1
+  add   =minus1
   sta   =x0
   jmp   @=ra
 isqrt_cont:
@@ -46,7 +54,7 @@ isqrt_cont:
   add   =x2
   sta   =x1   ; x1 += x2
   lda   =x2
-  add   #2
+  add   =two
   sta   =x2   ; x2 += 2
   jmp   isqrt_loop
 
