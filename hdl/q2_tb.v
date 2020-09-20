@@ -36,13 +36,16 @@ module q2_tb;
     #10 rst = 0; stop_sw = 0;
     #10 start_sw = 1;
     #10 start_sw = 0;
-    for (i = 0; i < 50000; i = i + 1) begin
-      #10 clk <= ~clk;
+    for (i = 0; i < 100000; i = i + 1) begin
+      #10 clk <= 1;
+      #10 clk <= 0;
       if (!run) begin
         $display("halted after ", i, " clocks");
+        $display(i / 5000, " seconds at 5kHz, ", i / 10, " seconds at 10Hz");
         $stop;
       end
     end
+    $stop;
   end
 
   q2 dut(

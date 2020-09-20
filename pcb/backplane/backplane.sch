@@ -2119,24 +2119,24 @@ $EndComp
 $Comp
 L Connector_Generic:Conn_02x08_Odd_Even J25
 U 1 1 5F9B4C0F
-P 8650 5800
-F 0 "J25" H 8700 6317 50  0000 C CNN
-F 1 "Clock" H 8700 6226 50  0000 C CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_2x08_P2.54mm_Vertical" H 8650 5800 50  0001 C CNN
-F 3 "~" H 8650 5800 50  0001 C CNN
-	1    8650 5800
-	1    0    0    -1  
+P 8750 5800
+F 0 "J25" H 8800 6317 50  0000 C CNN
+F 1 "Clock" H 8800 6226 50  0000 C CNN
+F 2 "Connector_PinSocket_2.54mm:PinSocket_2x08_P2.54mm_Vertical" H 8750 5800 50  0001 C CNN
+F 3 "~" H 8750 5800 50  0001 C CNN
+	1    8750 5800
+	-1   0    0    -1  
 $EndComp
 $Comp
 L Connector_Generic:Conn_02x08_Odd_Even J26
 U 1 1 5F9B6534
-P 10400 5750
-F 0 "J26" H 10450 6267 50  0000 C CNN
-F 1 "ALU" H 10450 6176 50  0000 C CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_2x08_P2.54mm_Vertical" H 10400 5750 50  0001 C CNN
-F 3 "~" H 10400 5750 50  0001 C CNN
-	1    10400 5750
-	1    0    0    -1  
+P 10500 5750
+F 0 "J26" H 10550 6267 50  0000 C CNN
+F 1 "ALU" H 10550 6176 50  0000 C CNN
+F 2 "Connector_PinSocket_2.54mm:PinSocket_2x08_P2.54mm_Vertical" H 10500 5750 50  0001 C CNN
+F 3 "~" H 10500 5750 50  0001 C CNN
+	1    10500 5750
+	-1   0    0    -1  
 $EndComp
 $Comp
 L Connector_Generic:Conn_02x16_Odd_Even J27

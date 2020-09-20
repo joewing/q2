@@ -82,7 +82,7 @@ impl OutputFormat for ListOutputFormat {
     fn name(self: &Self) -> &str { "lst" }
     fn pad(self: &Self, _vec: &mut Vec<u8>, _last_addr: i64, _addr: i64) {}
     fn write(self: &Self, vec: &mut Vec<u8>, addr: i64, st: Statement, word_opt: Option<u16>) {
-        write_str(vec, format!("{:04X}  ", addr).as_ref());
+        write_str(vec, format!("{:03X}  ", addr).as_ref());
         match word_opt {
             Some(word)  => write_u16_hex(vec, word),
             None        => write_str(vec, "    ")

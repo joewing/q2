@@ -57,8 +57,11 @@ module q2(
   wire sc = ~clk & cdiv;
   wire ws = ~clk & ~cdiv;
 
-  always @(posedge start_sw or posedge stop_sw) begin
-    run = start_sw & ~stop_sw;
+  // Halt condition for simulation.
+  // Halt when executing "jmp $".
+  wire halt = s0 & s1 & ~s2 & ~s3 && op5 & op4 & ~op3 & ~op2 && (x == p - 1);
+  always @(posedge halt or posedge start_sw or posedge stop_sw) begin
+    run = start_sw & ~stop_sw & ~halt;
   end
 
   q2_control control(

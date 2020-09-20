@@ -2,7 +2,7 @@
   lea   $+2
   jmp   output
 
-  lea   =6
+  lea   =to_sort_end - to_sort
   sta   =x0
   lda   data_ptr
   sta   =x1
@@ -18,7 +18,7 @@
 
 output:
   sta   =ra
-  lea   =6
+  lea   =to_sort_end - to_sort
   sta   =x0
   lda   data_ptr
   sta   =x1
@@ -66,17 +66,20 @@ sort_ptr:
 output_ptr:
   .dw   -1
 
-  .org    0o200
+  .org    0x080
 
 to_sort:
   .dw   5
   .dw   3
   .dw   9
+  .dw   34
   .dw   8
   .dw   5
+  .dw   15
   .dw   2
+to_sort_end:
 
-  .org    0o400
+  .org    0x100
 
 ; Sort x0 words starting at x1
 sort:

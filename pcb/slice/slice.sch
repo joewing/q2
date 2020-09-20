@@ -135,7 +135,7 @@ Text GLabel 10000 6300 3    50   Input ~ 0
 ABUS
 Wire Wire Line
 	10000 5900 10000 6300
-Text GLabel 13100 6300 2    50   Input ~ 0
+Text GLabel 13100 6200 2    50   Input ~ 0
 ABUS
 Text GLabel 12600 6100 0    50   Input ~ 0
 WRX
@@ -365,7 +365,7 @@ Wire Wire Line
 	9350 9500 9350 9550
 Wire Wire Line
 	13100 5200 13500 5200
-Text GLabel 13100 6200 2    50   Input ~ 0
+Text GLabel 13100 6300 2    50   Input ~ 0
 DBUS
 $Comp
 L Connector_Generic:Conn_02x16_Odd_Even J1
