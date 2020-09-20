@@ -6,8 +6,8 @@ module q2_alu(
   input wire f,
   input wire op3,
   input wire op4,
-  output reg alu_out,
-  output reg alu_cout
+  output wire alu_out,
+  output wire alu_cout
 );
 
   wire alu_nor = ~(a0 | x0);
@@ -24,22 +24,17 @@ module q2_alu(
 
   wire alu_carry = ~(t4 & t0);
 
-  always @(*) begin
-    case ({op4, op3})
-      2'b00:  alu_out = x0;
-      2'b01:  alu_out = alu_nor;
-      2'b10:  alu_out = alu_sum;
-      2'b11:  alu_out = x1;
-    endcase
-  end
+  assign alu_out = (
+      (x0 & ~op3 & ~op4)
+    | (alu_nor & op3 & ~op4)
+    | (alu_sum & ~op3 & op4)
+    | (x1 & op3 & op4)
+  );
 
-  always @(*) begin
-    case ({op4, op3})
-      2'b00:  alu_cout = f & ~alu_out;
-      2'b01:  alu_cout = f & ~alu_out;
-      2'b10:  alu_cout = alu_carry;
-      2'b11:  alu_cout = f;
-    endcase
-  end
+  assign alu_cout = (
+      (~alu_out & f & ~op4)
+    | (alu_carry & ~op3 & op4)
+    | (f & op3 & op4)
+  );
 
 endmodule

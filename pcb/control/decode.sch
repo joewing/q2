@@ -23,6 +23,7 @@ F 0 "Q11" H 2906 3996 50  0000 L CNN
 F 1 "2N7002" H 2906 3905 50  0000 L CNN
 F 2 "Package_TO_SOT_SMD:SOT-23_Handsoldering" H 2900 3875 50  0001 L CIN
 F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 2700 3950 50  0001 L CNN
+F 4 "C8545" H 2700 3950 50  0001 C CNN "LCSC"
 	1    2700 3950
 	1    0    0    -1  
 $EndComp
@@ -46,9 +47,10 @@ P 2800 1650
 AR Path="/5E49A150/5E565385" Ref="R?"  Part="1" 
 AR Path="/5E56259C/5E565385" Ref="R1"  Part="1" 
 F 0 "R1" H 2870 1696 50  0000 L CNN
-F 1 "R" H 2870 1605 50  0000 L CNN
+F 1 "10k" H 2870 1605 50  0000 L CNN
 F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" V 2730 1650 50  0001 C CNN
 F 3 "~" H 2800 1650 50  0001 C CNN
+F 4 "C17414" H 2800 1650 50  0001 C CNN "LCSC"
 	1    2800 1650
 	1    0    0    -1  
 $EndComp
@@ -75,6 +77,7 @@ F 0 "Q8" H 2906 3396 50  0000 L CNN
 F 1 "2N7002" H 2906 3305 50  0000 L CNN
 F 2 "Package_TO_SOT_SMD:SOT-23_Handsoldering" H 2900 3275 50  0001 L CIN
 F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 2700 3350 50  0001 L CNN
+F 4 "C8545" H 2700 3350 50  0001 C CNN "LCSC"
 	1    2700 3350
 	1    0    0    -1  
 $EndComp
@@ -88,6 +91,7 @@ F 0 "Q3" H 2906 2746 50  0000 L CNN
 F 1 "2N7002" H 2906 2655 50  0000 L CNN
 F 2 "Package_TO_SOT_SMD:SOT-23_Handsoldering" H 2900 2625 50  0001 L CIN
 F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 2700 2700 50  0001 L CNN
+F 4 "C8545" H 2700 2700 50  0001 C CNN "LCSC"
 	1    2700 2700
 	1    0    0    -1  
 $EndComp
@@ -113,6 +117,7 @@ F 0 "Q4" H 3856 2746 50  0000 L CNN
 F 1 "2N7002" H 3856 2655 50  0000 L CNN
 F 2 "Package_TO_SOT_SMD:SOT-23_Handsoldering" H 3850 2625 50  0001 L CIN
 F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 3650 2700 50  0001 L CNN
+F 4 "C8545" H 3650 2700 50  0001 C CNN "LCSC"
 	1    3650 2700
 	1    0    0    -1  
 $EndComp
@@ -132,9 +137,10 @@ P 3750 1650
 AR Path="/5E49A150/5E5A308F" Ref="R?"  Part="1" 
 AR Path="/5E56259C/5E5A308F" Ref="R2"  Part="1" 
 F 0 "R2" H 3820 1696 50  0000 L CNN
-F 1 "R" H 3820 1605 50  0000 L CNN
+F 1 "10k" H 3820 1605 50  0000 L CNN
 F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" V 3680 1650 50  0001 C CNN
 F 3 "~" H 3750 1650 50  0001 C CNN
+F 4 "C17414" H 3750 1650 50  0001 C CNN "LCSC"
 	1    3750 1650
 	1    0    0    -1  
 $EndComp
@@ -163,6 +169,7 @@ F 0 "Q5" H 4806 2746 50  0000 L CNN
 F 1 "2N7002" H 4806 2655 50  0000 L CNN
 F 2 "Package_TO_SOT_SMD:SOT-23_Handsoldering" H 4800 2625 50  0001 L CIN
 F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 4600 2700 50  0001 L CNN
+F 4 "C8545" H 4600 2700 50  0001 C CNN "LCSC"
 	1    4600 2700
 	1    0    0    -1  
 $EndComp
@@ -177,9 +184,10 @@ P 4700 1650
 AR Path="/5E49A150/5E5A6607" Ref="R?"  Part="1" 
 AR Path="/5E56259C/5E5A6607" Ref="R3"  Part="1" 
 F 0 "R3" H 4770 1696 50  0000 L CNN
-F 1 "R" H 4770 1605 50  0000 L CNN
+F 1 "10k" H 4770 1605 50  0000 L CNN
 F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" V 4630 1650 50  0001 C CNN
 F 3 "~" H 4700 1650 50  0001 C CNN
+F 4 "C17414" H 4700 1650 50  0001 C CNN "LCSC"
 	1    4700 1650
 	1    0    0    -1  
 $EndComp
@@ -208,6 +216,7 @@ F 0 "Q7" H 4806 3296 50  0000 L CNN
 F 1 "2N7002" H 4806 3205 50  0000 L CNN
 F 2 "Package_TO_SOT_SMD:SOT-23_Handsoldering" H 4800 3175 50  0001 L CIN
 F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 4600 3250 50  0001 L CNN
+F 4 "C8545" H 4600 3250 50  0001 C CNN "LCSC"
 	1    4600 3250
 	1    0    0    -1  
 $EndComp
@@ -230,6 +239,7 @@ F 0 "Q6" H 5756 2746 50  0000 L CNN
 F 1 "2N7002" H 5756 2655 50  0000 L CNN
 F 2 "Package_TO_SOT_SMD:SOT-23_Handsoldering" H 5750 2625 50  0001 L CIN
 F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 5550 2700 50  0001 L CNN
+F 4 "C8545" H 5550 2700 50  0001 C CNN "LCSC"
 	1    5550 2700
 	1    0    0    -1  
 $EndComp
@@ -242,9 +252,10 @@ P 5650 1650
 AR Path="/5E49A150/5E5AC6A2" Ref="R?"  Part="1" 
 AR Path="/5E56259C/5E5AC6A2" Ref="R4"  Part="1" 
 F 0 "R4" H 5720 1696 50  0000 L CNN
-F 1 "R" H 5720 1605 50  0000 L CNN
+F 1 "10k" H 5720 1605 50  0000 L CNN
 F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" V 5580 1650 50  0001 C CNN
 F 3 "~" H 5650 1650 50  0001 C CNN
+F 4 "C17414" H 5650 1650 50  0001 C CNN "LCSC"
 	1    5650 1650
 	1    0    0    -1  
 $EndComp
@@ -283,6 +294,7 @@ F 0 "Q14" H 2906 4396 50  0000 L CNN
 F 1 "2N7002" H 2906 4305 50  0000 L CNN
 F 2 "Package_TO_SOT_SMD:SOT-23_Handsoldering" H 2900 4275 50  0001 L CIN
 F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 2700 4350 50  0001 L CNN
+F 4 "C8545" H 2700 4350 50  0001 C CNN "LCSC"
 	1    2700 4350
 	1    0    0    -1  
 $EndComp
@@ -303,6 +315,7 @@ F 0 "Q1" H 3856 2346 50  0000 L CNN
 F 1 "2N7002" H 3856 2255 50  0000 L CNN
 F 2 "Package_TO_SOT_SMD:SOT-23_Handsoldering" H 3850 2225 50  0001 L CIN
 F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 3650 2300 50  0001 L CNN
+F 4 "C8545" H 3650 2300 50  0001 C CNN "LCSC"
 	1    3650 2300
 	1    0    0    -1  
 $EndComp
@@ -318,6 +331,7 @@ F 0 "Q2" H 4806 2346 50  0000 L CNN
 F 1 "2N7002" H 4806 2255 50  0000 L CNN
 F 2 "Package_TO_SOT_SMD:SOT-23_Handsoldering" H 4800 2225 50  0001 L CIN
 F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 4600 2300 50  0001 L CNN
+F 4 "C8545" H 4600 2300 50  0001 C CNN "LCSC"
 	1    4600 2300
 	1    0    0    -1  
 $EndComp
@@ -371,9 +385,10 @@ P 6100 3300
 AR Path="/5E49A150/5F2893C2" Ref="R?"  Part="1" 
 AR Path="/5E56259C/5F2893C2" Ref="R7"  Part="1" 
 F 0 "R7" H 6170 3346 50  0000 L CNN
-F 1 "R" H 6170 3255 50  0000 L CNN
+F 1 "10k" H 6170 3255 50  0000 L CNN
 F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" V 6030 3300 50  0001 C CNN
 F 3 "~" H 6100 3300 50  0001 C CNN
+F 4 "C17414" H 6100 3300 50  0001 C CNN "LCSC"
 	1    6100 3300
 	1    0    0    -1  
 $EndComp
@@ -390,6 +405,7 @@ F 0 "Q9" H 6856 3696 50  0000 L CNN
 F 1 "2N7002" H 6856 3605 50  0000 L CNN
 F 2 "Package_TO_SOT_SMD:SOT-23_Handsoldering" H 6850 3575 50  0001 L CIN
 F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 6650 3650 50  0001 L CNN
+F 4 "C8545" H 6650 3650 50  0001 C CNN "LCSC"
 	1    6650 3650
 	1    0    0    -1  
 $EndComp
@@ -413,9 +429,10 @@ P 6750 2950
 AR Path="/5E49A150/5F2CEDC7" Ref="R?"  Part="1" 
 AR Path="/5E56259C/5F2CEDC7" Ref="R5"  Part="1" 
 F 0 "R5" H 6820 2996 50  0000 L CNN
-F 1 "R" H 6820 2905 50  0000 L CNN
+F 1 "10k" H 6820 2905 50  0000 L CNN
 F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" V 6680 2950 50  0001 C CNN
 F 3 "~" H 6750 2950 50  0001 C CNN
+F 4 "C17414" H 6750 2950 50  0001 C CNN "LCSC"
 	1    6750 2950
 	1    0    0    -1  
 $EndComp
@@ -483,9 +500,10 @@ P 7900 3100
 AR Path="/5E49A150/5EF4128F" Ref="R?"  Part="1" 
 AR Path="/5E56259C/5EF4128F" Ref="R6"  Part="1" 
 F 0 "R6" H 7970 3146 50  0000 L CNN
-F 1 "R" H 7970 3055 50  0000 L CNN
+F 1 "10k" H 7970 3055 50  0000 L CNN
 F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" V 7830 3100 50  0001 C CNN
 F 3 "~" H 7900 3100 50  0001 C CNN
+F 4 "C17414" H 7900 3100 50  0001 C CNN "LCSC"
 	1    7900 3100
 	1    0    0    -1  
 $EndComp
@@ -503,6 +521,7 @@ F 0 "Q13" H 6856 4246 50  0000 L CNN
 F 1 "2N7002" H 6856 4155 50  0000 L CNN
 F 2 "Package_TO_SOT_SMD:SOT-23_Handsoldering" H 6850 4125 50  0001 L CIN
 F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 6650 4200 50  0001 L CNN
+F 4 "C8545" H 6650 4200 50  0001 C CNN "LCSC"
 	1    6650 4200
 	1    0    0    -1  
 $EndComp
@@ -516,6 +535,7 @@ F 0 "Q10" H 8006 3696 50  0000 L CNN
 F 1 "2N7002" H 8006 3605 50  0000 L CNN
 F 2 "Package_TO_SOT_SMD:SOT-23_Handsoldering" H 8000 3575 50  0001 L CIN
 F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 7800 3650 50  0001 L CNN
+F 4 "C8545" H 7800 3650 50  0001 C CNN "LCSC"
 	1    7800 3650
 	1    0    0    -1  
 $EndComp
@@ -562,9 +582,10 @@ AR Path="/5E49A150/5F84B095" Ref="R?"  Part="1"
 AR Path="/5E56259C/5F84B095" Ref="R8"  Part="1" 
 AR Path="/5E5E8038/5F84B095" Ref="R?"  Part="1" 
 F 0 "R8" H 8720 4546 50  0000 L CNN
-F 1 "R" H 8720 4455 50  0000 L CNN
+F 1 "10k" H 8720 4455 50  0000 L CNN
 F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" V 8580 4500 50  0001 C CNN
 F 3 "~" H 8650 4500 50  0001 C CNN
+F 4 "C17414" H 8650 4500 50  0001 C CNN "LCSC"
 	1    8650 4500
 	1    0    0    -1  
 $EndComp
@@ -583,6 +604,7 @@ F 0 "Q16" H 8756 5296 50  0000 L CNN
 F 1 "2N7002" H 8756 5205 50  0000 L CNN
 F 2 "Package_TO_SOT_SMD:SOT-23_Handsoldering" H 8750 5175 50  0001 L CIN
 F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 8550 5250 50  0001 L CNN
+F 4 "C8545" H 8550 5250 50  0001 C CNN "LCSC"
 	1    8550 5250
 	1    0    0    -1  
 $EndComp
@@ -623,6 +645,7 @@ F 0 "Q12" H 5906 4246 50  0000 L CNN
 F 1 "2N7002" H 5906 4155 50  0000 L CNN
 F 2 "Package_TO_SOT_SMD:SOT-23_Handsoldering" H 5900 4125 50  0001 L CIN
 F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 5700 4200 50  0001 L CNN
+F 4 "C8545" H 5700 4200 50  0001 C CNN "LCSC"
 	1    5700 4200
 	1    0    0    -1  
 $EndComp
@@ -636,6 +659,7 @@ F 0 "Q15" H 5906 4646 50  0000 L CNN
 F 1 "2N7002" H 5906 4555 50  0000 L CNN
 F 2 "Package_TO_SOT_SMD:SOT-23_Handsoldering" H 5900 4525 50  0001 L CIN
 F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 5700 4600 50  0001 L CNN
+F 4 "C8545" H 5700 4600 50  0001 C CNN "LCSC"
 	1    5700 4600
 	1    0    0    -1  
 $EndComp
