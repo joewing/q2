@@ -12,8 +12,9 @@ switch_spacing = 3.5;
 screw_radius = 1.7;
 screw_head_radius = 2.8;
 screw_head_height = 3;
-standoff_height = base_height - 1.6;
-standoff_radius = screw_head_radius * 1.5;
+standoff_height = base_height - 3.2;
+standoff_radius = screw_head_radius * 1.8;
+board_offset = panel_depth * 2;
 
 
 // center to center of the standoffs should be 143mm.
@@ -22,7 +23,8 @@ standoff_positions = [
     [screw_offset, screw_offset],
     [board_width - screw_offset, screw_offset],
     [screw_offset, board_depth - screw_offset],
-    [board_width - screw_offset, board_depth - screw_offset]
+    [board_width - screw_offset, board_depth - screw_offset],
+    [board_width / 2, 60]
 ];
 
 module meniscus(height, radius) {
@@ -42,15 +44,20 @@ module rounded_cube(x, y, z, r = 3) {
     }
 }
 
-module switches(x, y, count, notch) {
+module switches(x, y, count, is_switch = true) {
     for (i = [0:count-1]) {
         bump = x + i > 4 ? (x + i > 8 ? 9 : 5) : 1;
         translate([
             bump + (x + i) * switch_radius * switch_spacing + tol + 0.5,
             y * switch_radius * switch_spacing + tol,
-            panel_depth - thickness
+            panel_depth - thickness - tol
         ]) {
-            cylinder(thickness, switch_radius, switch_radius, $fn=32);
+            cylinder(panel_depth, switch_radius, switch_radius, $fn=32);
+            if (!is_switch) {
+                translate([0, 0,  tol - panel_depth]) {
+                    cylinder(panel_depth, switch_radius * 1.5, switch_radius * 1.5, $fn=32);
+                }
+            }
         }
     }
 }
@@ -70,15 +77,15 @@ module label(x, y, text) {
 }
 
 module standoff(x, y) {
-    translate([x + thickness, y + thickness, thickness]) {
-        cylinder(standoff_height, standoff_radius, standoff_radius, $fn=16);
+    translate([x + thickness, y + thickness + board_offset, thickness]) {
+        cylinder(standoff_height, standoff_radius, standoff_radius, $fn=32);
     }
 }
 
 module standoff_hole(x, y) {
-    translate([x + thickness, y + thickness, 0]) {
-        cylinder(standoff_height + thickness + tol, screw_radius, screw_radius, $fn=16);
-        cylinder(screw_head_height, screw_head_radius, screw_head_radius, $fn=16);
+    translate([x + thickness, y + thickness + board_offset, -0.1]) {
+        cylinder(standoff_height + thickness + tol, screw_radius, screw_radius, $fn=32);
+        cylinder(screw_head_height + tol, screw_head_radius, screw_head_radius, $fn=32);
     }
 }
 
@@ -86,10 +93,10 @@ module render_base() {
     difference() {
         rounded_cube(
             board_width + 2 * thickness,
-            board_depth + 2 * thickness,
+            board_depth + 2 * thickness + board_offset,
             base_height + thickness
         );
-        translate([thickness - tol, thickness - tol, thickness]) {
+        translate([thickness - tol, thickness - tol + panel_depth * 2, thickness]) {
             rounded_cube(board_width + tol * 2, board_depth + tol * 2, base_height);
         }
     }
@@ -100,11 +107,26 @@ module render_base() {
 
 module render_panel() {
     difference() {
-        rounded_cube(panel_width + 2 * thickness, panel_height + 2 * thickness, panel_depth);
-        translate([thickness - tol, thickness - tol, -thickness]) {
-            rounded_cube(panel_width + tol * 2, panel_height + tol * 2, panel_depth);
+        union() {
+            difference() {
+                rounded_cube(panel_width + 2 * thickness, panel_height + 2 * thickness, panel_depth);
+                translate([thickness - tol, thickness - tol, -thickness]) {
+                    rounded_cube(panel_width + tol * 2, panel_height + tol * 2, panel_depth);
+                }
+            }
+            for (i = [0:12]) {
+                bump = i > 4 ? (i > 8 ? 9 : 1 + 4) : 1;
+                spacer_width = switch_radius + ((i == 4 || i == 8) ? 4 : 0);
+                translate([
+                    bump + i * switch_radius * switch_spacing + switch_radius * 2,
+                    tol + thickness,
+                    0
+                ]) {
+                    cube([spacer_width, panel_height + thickness - tol, panel_depth - thickness]);
+                }
+            }
         }
-        
+
         // Data LEDs
         switches(1, 8, 12, false);
         label(1, 8, "Address");
@@ -119,7 +141,7 @@ module render_panel() {
         label(1, 4, "Power");
         
         // Speed
-        switches(4, 4, 1, false);
+        switches(4, 4, 1, true);
         label(4, 4, " 5k");
         
         // Run LED, start, stop

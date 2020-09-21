@@ -1,0 +1,187 @@
+
+  lda   program_ptr
+  sta   =x0
+  lda   data_ptr
+  sta   =x1
+  lea   $+2
+  jmp   @=bfrun_ptr
+  jmp   $
+
+ra:   .dw   0
+x0:   .dw   0
+x1:   .dw   0
+x2:   .dw   0
+zero: .dw   0
+one:  .dw   1
+neg1: .dw   -1
+
+program_ptr:  .dw   program
+data_ptr:     .dw   data
+bfrun_ptr:    .dw   bfrun
+
+  .align 128
+program:
+
+  ; Multiply
+;  .dw   "+++>++++<"
+;  .dw   "[>[->+.>+<<]>>[-<<+>>]<<<-]>>."
+
+  ; Square root
+  .dw   "+++++++++"
+  .dw   ">>>+<<<[->>+>-[<-]<[->>+.[-<++<+>>]<+<[->>+<<]<]<]"
+
+  .dw   0
+
+  .align 128
+data:
+  .bss  128
+
+  .align 128
+; Run BF program at =x0 using data array at =x1
+bfrun:
+  sta   =ra
+bf_loop:
+  lda   @=x0
+  lea   bf_tokens
+  sta   =x2
+bf_dispatch_loop:
+  lda   @=x0
+  nor   =zero
+  add   @=x2
+  nor   =zero
+  jfc   bf_not_found
+  lea   =1
+  add   =x2
+  sta   =x2
+  lda   @=x2
+  sta   =x2
+  jmp   @=x2
+bf_not_found:
+  lea   =2
+  add   =x2
+  sta   =x2
+  jmp   bf_dispatch_loop
+
+bf_tokens:
+  .dw   '+'
+  .dw   bf_inc
+  .dw   '-'
+  .dw   bf_dec
+  .dw   '>'
+  .dw   bf_next
+  .dw   '<'
+  .dw   bf_prev
+  .dw   ','
+  .dw   bf_input
+  .dw   '.'
+  .dw   bf_output
+bf_start_tok:
+  .dw   '['
+  .dw   bf_start
+bf_end_tok:
+  .dw   ']'
+  .dw   bf_end
+  .dw   0
+  .dw   bf_exit
+
+bf_inc:
+  lda   @=x1
+  add   =one
+  sta   @=x1
+  jmp   bf_cont
+
+bf_dec:
+  lda   @=x1
+  add   =neg1
+  sta   @=x1
+  jmp   bf_cont
+
+bf_next:
+  lda   =x1
+  add   =one
+  sta   =x1
+  jmp   bf_cont
+
+bf_prev:
+  lda   =x1
+  add   =neg1
+  sta   =x1
+  jmp   bf_cont
+
+bf_input:
+  lda   @=neg1
+  sta   @=x1
+  jmp   bf_cont
+
+bf_output:
+  lda   @=x1
+  sta   @=neg1
+  jmp   bf_cont
+
+bf_start:
+  lda   @=x1
+  jfc   bf_cont
+  lea   =0
+  sta   =x2
+bf_skip_loop:
+  lda   =x0
+  add   =one
+  sta   =x0
+  lda   bf_end_tok
+  nor   =zero
+  add   @=x0
+  nor   =zero
+  jfc   bf_skip_not_end
+  lda   =x2
+  add   =neg1
+  sta   =x2
+  jfc   bf_cont
+  jmp   bf_skip_loop
+bf_skip_not_end:
+  lda   bf_start_tok
+  nor   =zero
+  add   @=x0
+  nor   =zero
+  jfc   bf_skip_loop
+  lda   =x2
+  add   =one
+  sta   =x2
+  jmp   bf_skip_loop
+
+bf_end:
+  lea   =0
+  sta   =x2
+bf_back_loop:
+  lda   =x0
+  add   =neg1
+  sta   =x0
+  lda   bf_end_tok
+  nor   =zero
+  add   @=x0
+  nor   =zero
+  jfc   bf_back_not_end
+  lda   =x2
+  add   =one
+  sta   =x2
+  jmp   bf_back_loop
+bf_back_not_end:
+  lda   bf_start_tok
+  nor   =zero
+  add   @=x0
+  nor   =zero
+  jfc   bf_back_loop
+  lda   =x2
+  add   =neg1
+  sta   =x2
+  jfc   bf_loop
+  jmp   bf_back_loop
+
+bf_cont:
+  lda   =x0
+  add   =one
+  sta   =x0
+  jmp   bf_loop
+
+bf_exit:
+  jmp   @=ra
+

@@ -2188,17 +2188,6 @@ F 3 "~" H 10500 5750 50  0001 C CNN
 	-1   0    0    -1  
 $EndComp
 $Comp
-L Connector_Generic:Conn_02x16_Odd_Even J27
-U 1 1 5F9B7F28
-P 13000 6450
-F 0 "J27" H 13050 7367 50  0000 C CNN
-F 1 "RAM" H 13050 7276 50  0000 C CNN
-F 2 "Connector_PinSocket_2.54mm:PinSocket_2x16_P2.54mm_Vertical" H 13000 6450 50  0001 C CNN
-F 3 "~" H 13000 6450 50  0001 C CNN
-	1    13000 6450
-	-1   0    0    -1  
-$EndComp
-$Comp
 L Connector_Generic:Conn_02x16_Odd_Even J28
 U 1 1 5F9BA6B1
 P 14200 6450
@@ -2435,62 +2424,32 @@ Text GLabel 14400 6850 2    50   Input ~ 0
 DBUS1
 NoConn ~ 14400 7150
 NoConn ~ 14400 7050
-NoConn ~ 13200 7150
-NoConn ~ 13200 7050
 Text GLabel 13900 5850 0    50   Input ~ 0
-ABUS11
-Text GLabel 12700 5850 0    50   Input ~ 0
 ABUS11
 Text GLabel 13900 5950 0    50   Input ~ 0
 ABUS10
-Text GLabel 12700 5950 0    50   Input ~ 0
-ABUS10
 Text GLabel 13900 6050 0    50   Input ~ 0
 ABUS9
-Text GLabel 12700 6050 0    50   Input ~ 0
-ABUS9
-Text GLabel 12700 6150 0    50   Input ~ 0
-ABUS8
 Text GLabel 13900 6150 0    50   Input ~ 0
 ABUS8
-Text GLabel 12700 6250 0    50   Input ~ 0
-ABUS7
 Text GLabel 13900 6250 0    50   Input ~ 0
 ABUS7
-Text GLabel 12700 6350 0    50   Input ~ 0
-ABUS6
 Text GLabel 13900 6350 0    50   Input ~ 0
 ABUS6
-Text GLabel 12700 6450 0    50   Input ~ 0
-ABUS5
 Text GLabel 13900 6450 0    50   Input ~ 0
 ABUS5
-Text GLabel 12700 6550 0    50   Input ~ 0
-ABUS4
 Text GLabel 13900 6550 0    50   Input ~ 0
 ABUS4
-Text GLabel 12700 6650 0    50   Input ~ 0
-ABUS3
 Text GLabel 13900 6650 0    50   Input ~ 0
 ABUS3
-Text GLabel 12700 6750 0    50   Input ~ 0
-ABUS2
 Text GLabel 13900 6750 0    50   Input ~ 0
 ABUS2
-Text GLabel 12700 6850 0    50   Input ~ 0
-ABUS1
 Text GLabel 13900 6850 0    50   Input ~ 0
 ABUS1
-Text GLabel 12700 6950 0    50   Input ~ 0
-ABUS0
 Text GLabel 13900 6950 0    50   Input ~ 0
 ABUS0
-Text GLabel 12700 7050 0    50   Input ~ 0
-WRM
 Text GLabel 13900 7050 0    50   Input ~ 0
 WRM
-Text GLabel 12700 7150 0    50   Input ~ 0
-RDM
 Text GLabel 13900 7150 0    50   Input ~ 0
 RDM
 $Comp
@@ -3741,7 +3700,7 @@ L Connector_Generic:Conn_01x02 J29
 U 1 1 5FFE4FFA
 P 18100 10200
 F 0 "J29" H 18180 10192 50  0000 L CNN
-F 1 "Speed" H 18180 10101 50  0000 L CNN
+F 1 "Fast" H 18180 10101 50  0000 L CNN
 F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 18100 10200 50  0001 C CNN
 F 3 "~" H 18100 10200 50  0001 C CNN
 	1    18100 10200
@@ -3893,4 +3852,67 @@ Text GLabel 9550 2450 0    50   Input ~ 0
 XHIN_SHIFT
 Text GLabel 9550 2350 0    50   Input ~ 0
 XHIN_DBUS
+Text GLabel 12700 6950 0    50   Input ~ 0
+ABUS0
+Text GLabel 12700 6850 0    50   Input ~ 0
+ABUS1
+Text GLabel 12700 6750 0    50   Input ~ 0
+ABUS2
+Text GLabel 12700 6650 0    50   Input ~ 0
+ABUS3
+Text GLabel 12700 6550 0    50   Input ~ 0
+ABUS4
+Text GLabel 12700 6450 0    50   Input ~ 0
+ABUS5
+Text GLabel 12700 6350 0    50   Input ~ 0
+ABUS6
+Text GLabel 12700 6250 0    50   Input ~ 0
+ABUS7
+Text GLabel 12700 6150 0    50   Input ~ 0
+ABUS8
+Text GLabel 12700 6050 0    50   Input ~ 0
+ABUS9
+Text GLabel 12700 5950 0    50   Input ~ 0
+ABUS10
+Text GLabel 12700 5850 0    50   Input ~ 0
+ABUS11
+Text GLabel 12700 7150 0    50   Input ~ 0
+RDM
+Text GLabel 12700 7050 0    50   Input ~ 0
+WRM
+$Comp
+L Connector_Generic:Conn_02x16_Odd_Even J27
+U 1 1 5F9B7F28
+P 13000 6450
+F 0 "J27" H 13050 7367 50  0000 C CNN
+F 1 "RAM" H 13050 7276 50  0000 C CNN
+F 2 "Connector_PinSocket_2.54mm:PinSocket_2x16_P2.54mm_Vertical" H 13000 6450 50  0001 C CNN
+F 3 "~" H 13000 6450 50  0001 C CNN
+	1    13000 6450
+	-1   0    0    -1  
+$EndComp
+NoConn ~ 13200 7050
+NoConn ~ 13200 7150
+$Comp
+L Mechanical:MountingHole_Pad H5
+U 1 1 5F928F29
+P 14300 13800
+F 0 "H5" H 14400 13849 50  0000 L CNN
+F 1 "MountingHole_Pad" H 14400 13758 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3_Pad_Via" H 14300 13800 50  0001 C CNN
+F 3 "~" H 14300 13800 50  0001 C CNN
+	1    14300 13800
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR0166
+U 1 1 5F928F2F
+P 14300 13900
+F 0 "#PWR0166" H 14300 13650 50  0001 C CNN
+F 1 "GND" H 14305 13727 50  0000 C CNN
+F 2 "" H 14300 13900 50  0001 C CNN
+F 3 "" H 14300 13900 50  0001 C CNN
+	1    14300 13900
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC

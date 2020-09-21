@@ -59,7 +59,8 @@ pub fn pass2(
                 result.push((addr, st.clone(), None));
             },
             Statement::Align(e)             => {
-                addr = eval(addr, e, symbols, 0)?;
+                let alignment = eval(addr, e, symbols, 0)?;
+                addr = addr + alignment - addr % alignment;
                 result.push((addr, st.clone(), None));
             },
             Statement::Instruction(inst, mode, op) => {
@@ -67,13 +68,15 @@ pub fn pass2(
                 result.push((addr, st.clone(), Some(word)));
                 addr += 1;
             },
-            Statement::Word(e)              => {
-                let word = eval(addr, e, symbols, 0)?;
-                if word > 0xfff {
-                    return Err(format!("word {} out of range", word));
+            Statement::Word(es)              => {
+                for e in es {
+                    let word = eval(addr, e, symbols, 0)?;
+                    if word > 0xfff {
+                        return Err(format!("word {} out of range", word));
+                    }
+                    result.push((addr, Statement::Word(vec![e.clone()]), Some(word as u16)));
+                    addr += 1;
                 }
-                result.push((addr, st.clone(), Some(word as u16)));
-                addr += 1;
             },
             Statement::Reserve(e)           => {
                 let count = eval(addr, e, symbols, 0)?;
