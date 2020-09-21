@@ -12,8 +12,8 @@ switch_spacing = 3.5;
 screw_radius = 1.7;
 screw_head_radius = 2.8;
 screw_head_height = 3;
-standoff_height = base_height - 1.6;
-standoff_radius = screw_head_radius * 1.5;
+standoff_height = base_height - 3.2;
+standoff_radius = screw_head_radius * 1.8;
 
 
 // center to center of the standoffs should be 143mm.
@@ -71,14 +71,14 @@ module label(x, y, text) {
 
 module standoff(x, y) {
     translate([x + thickness, y + thickness, thickness]) {
-        cylinder(standoff_height, standoff_radius, standoff_radius, $fn=16);
+        cylinder(standoff_height, standoff_radius, standoff_radius, $fn=32);
     }
 }
 
 module standoff_hole(x, y) {
     translate([x + thickness, y + thickness, 0]) {
-        cylinder(standoff_height + thickness + tol, screw_radius, screw_radius, $fn=16);
-        cylinder(screw_head_height, screw_head_radius, screw_head_radius, $fn=16);
+        cylinder(standoff_height + thickness + tol * 2, screw_radius, screw_radius, $fn=32);
+        cylinder(screw_head_height, screw_head_radius, screw_head_radius, $fn=32);
     }
 }
 

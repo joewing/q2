@@ -3,13 +3,30 @@
 
 A 12-bit discrete transistor computer.
 
+This repo contains the following subdirectories:
+  - hdl - A Verilog model of the computer and test bench
+    for simulating Q2 programs.
+  - scad - An OpenSCAD 3d model for the case.
+  - q2asm - A Q2 assembler (in Rust).
+  - examples - Q2 assembly language examples.
+  - pcb - Schematics and PCBs in KiCad
+    - slice - Register bit slice
+    - clock - Clock generator
+    - alu - ALU 
+    - control - Control signal driver
+    - ram - RAM board
+    - backplane - Backplane board
+    - I/O - Input/Output board (optional)
+
 ## Frontpanel
 
 The frontpanel provides the main interface to the computer.
 
-  - 12 Address LEDs
-  - 12 Data LEDs
-  - 12 Toggle switches
+  - 12 address LEDs
+  - 12 data LEDs
+  - 12 toggle switches for input
+  - 1 toggle switch for clock speed
+  - 1 power switch
   - Buttons:
     - Reset/Set Address
     - Increment Address

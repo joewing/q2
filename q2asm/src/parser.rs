@@ -12,6 +12,8 @@ use std::str::FromStr;
 use nom::multi::{many0, many0_count};
 use nom::InputTake;
 use nom::error::ErrorKind;
+use std::fs::read_to_string;
+use self::nom::Err::Failure;
 
 pub trait Listing {
     fn emit_listing(&self) -> String;
@@ -437,6 +439,22 @@ fn parse_statement_list(input: &str) -> IResult<&str, Vec<Statement>> {
     let (input, ss) = many0(parse_statement)(input)?;
     let (input, _) = eat_whitespace(input)?;
     Ok((input, ss))
+}
+
+fn parse_include(input: &str) -> IResult<&str, Vec<Statement>> {
+    let (input, _) = eat_whitespace(input)?;
+    let (input, _) = tag(".include")(input)?;
+    let (input, _) = eat_whitespace(input)?;
+    let (input, path) = take_till(|c| c == '\r' || c == '\n')(input)?;
+    match read_to_string(path) {
+        Ok(inner) => {
+            match parse(&inner) {
+                Ok(sl) => Ok((input, sl)),
+                Err(s) => panic!("could not parse include {}: {}", path, s)
+            }
+        },
+        Err(e) => panic!("could not read include {}: {}", path, e)
+    }
 }
 
 pub fn parse(input: &str) -> Result<Vec<Statement>, String> {
