@@ -16,7 +16,8 @@ This repo contains the following subdirectories:
     - control - Control signal driver
     - ram - RAM board
     - backplane - Backplane board
-    - I/O - Input/Output board (optional)
+    - io - Input/Output board (optional)
+    - terminal - Terminal board (optional)
 
 ## Frontpanel
 

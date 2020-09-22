@@ -1,0 +1,715 @@
+EESchema Schematic File Version 4
+EELAYER 30 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L Connector_Generic:Conn_02x08_Odd_Even J1
+U 1 1 5F69046C
+P 6350 5100
+F 0 "J1" H 6400 5617 50  0000 C CNN
+F 1 "Conn_02x08_Odd_Even" H 6400 5526 50  0000 C CNN
+F 2 "Connector_IDC:IDC-Header_2x08_P2.54mm_Vertical" H 6350 5100 50  0001 C CNN
+F 3 "~" H 6350 5100 50  0001 C CNN
+	1    6350 5100
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR0101
+U 1 1 5F6910DD
+P 6650 5500
+F 0 "#PWR0101" H 6650 5250 50  0001 C CNN
+F 1 "GND" H 6655 5327 50  0000 C CNN
+F 2 "" H 6650 5500 50  0001 C CNN
+F 3 "" H 6650 5500 50  0001 C CNN
+	1    6650 5500
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VCC #PWR0102
+U 1 1 5F69155A
+P 6150 4800
+F 0 "#PWR0102" H 6150 4650 50  0001 C CNN
+F 1 "VCC" V 6165 4927 50  0000 L CNN
+F 2 "" H 6150 4800 50  0001 C CNN
+F 3 "" H 6150 4800 50  0001 C CNN
+	1    6150 4800
+	0    -1   -1   0   
+$EndComp
+Text GLabel 6150 5500 0    50   Input ~ 0
+D0
+Text GLabel 6650 5400 2    50   Input ~ 0
+D1
+Text GLabel 6150 5400 0    50   Input ~ 0
+D2
+Text GLabel 6650 5300 2    50   Input ~ 0
+D3
+Text GLabel 6150 5300 0    50   Input ~ 0
+D4
+Text GLabel 6650 5200 2    50   Input ~ 0
+D5
+Text GLabel 6150 5200 0    50   Input ~ 0
+D6
+Text GLabel 6150 5100 0    50   Input ~ 0
+D8
+Text GLabel 6150 5000 0    50   Input ~ 0
+D10
+Text GLabel 6650 5100 2    50   Input ~ 0
+D7
+Text GLabel 6650 5000 2    50   Input ~ 0
+D9
+Text GLabel 6650 4900 2    50   Input ~ 0
+D11
+Text GLabel 6150 4900 0    50   Input ~ 0
+RD
+Text GLabel 6650 4800 2    50   Input ~ 0
+WR
+$Comp
+L Switch:SW_Push SW1
+U 1 1 5F69731B
+P 2800 2650
+F 0 "SW1" H 2800 2935 50  0000 C CNN
+F 1 "1" H 2800 2844 50  0000 C CNN
+F 2 "Button_Switch_THT:SW_PUSH_6mm" H 2800 2850 50  0001 C CNN
+F 3 "~" H 2800 2850 50  0001 C CNN
+	1    2800 2650
+	1    0    0    -1  
+$EndComp
+$Comp
+L Switch:SW_Push SW2
+U 1 1 5F698EE7
+P 4000 2650
+F 0 "SW2" H 4000 2935 50  0000 C CNN
+F 1 "2" H 4000 2844 50  0000 C CNN
+F 2 "Button_Switch_THT:SW_PUSH_6mm" H 4000 2850 50  0001 C CNN
+F 3 "~" H 4000 2850 50  0001 C CNN
+	1    4000 2650
+	1    0    0    -1  
+$EndComp
+$Comp
+L Switch:SW_Push SW3
+U 1 1 5F69964F
+P 5150 2650
+F 0 "SW3" H 5150 2935 50  0000 C CNN
+F 1 "3" H 5150 2844 50  0000 C CNN
+F 2 "Button_Switch_THT:SW_PUSH_6mm" H 5150 2850 50  0001 C CNN
+F 3 "~" H 5150 2850 50  0001 C CNN
+	1    5150 2650
+	1    0    0    -1  
+$EndComp
+$Comp
+L Switch:SW_Push SW4
+U 1 1 5F699D66
+P 4000 4050
+F 0 "SW4" H 4000 4335 50  0000 C CNN
+F 1 "A" H 4000 4244 50  0000 C CNN
+F 2 "Button_Switch_THT:SW_PUSH_6mm" H 4000 4250 50  0001 C CNN
+F 3 "~" H 4000 4250 50  0001 C CNN
+	1    4000 4050
+	1    0    0    -1  
+$EndComp
+$Comp
+L Switch:SW_Push SW5
+U 1 1 5F69C9C6
+P 2800 3150
+F 0 "SW5" H 2800 3435 50  0000 C CNN
+F 1 "4" H 2800 3344 50  0000 C CNN
+F 2 "Button_Switch_THT:SW_PUSH_6mm" H 2800 3350 50  0001 C CNN
+F 3 "~" H 2800 3350 50  0001 C CNN
+	1    2800 3150
+	1    0    0    -1  
+$EndComp
+$Comp
+L Switch:SW_Push SW6
+U 1 1 5F69C9CC
+P 4000 3150
+F 0 "SW6" H 4000 3435 50  0000 C CNN
+F 1 "5" H 4000 3344 50  0000 C CNN
+F 2 "Button_Switch_THT:SW_PUSH_6mm" H 4000 3350 50  0001 C CNN
+F 3 "~" H 4000 3350 50  0001 C CNN
+	1    4000 3150
+	1    0    0    -1  
+$EndComp
+$Comp
+L Switch:SW_Push SW7
+U 1 1 5F69C9D2
+P 5150 3150
+F 0 "SW7" H 5150 3435 50  0000 C CNN
+F 1 "6" H 5150 3344 50  0000 C CNN
+F 2 "Button_Switch_THT:SW_PUSH_6mm" H 5150 3350 50  0001 C CNN
+F 3 "~" H 5150 3350 50  0001 C CNN
+	1    5150 3150
+	1    0    0    -1  
+$EndComp
+$Comp
+L Switch:SW_Push SW8
+U 1 1 5F69C9D8
+P 5150 4050
+F 0 "SW8" H 5150 4335 50  0000 C CNN
+F 1 "B" H 5150 4244 50  0000 C CNN
+F 2 "Button_Switch_THT:SW_PUSH_6mm" H 5150 4250 50  0001 C CNN
+F 3 "~" H 5150 4250 50  0001 C CNN
+	1    5150 4050
+	1    0    0    -1  
+$EndComp
+$Comp
+L Switch:SW_Push SW9
+U 1 1 5F69E7DE
+P 2800 3600
+F 0 "SW9" H 2800 3885 50  0000 C CNN
+F 1 "7" H 2800 3794 50  0000 C CNN
+F 2 "Button_Switch_THT:SW_PUSH_6mm" H 2800 3800 50  0001 C CNN
+F 3 "~" H 2800 3800 50  0001 C CNN
+	1    2800 3600
+	1    0    0    -1  
+$EndComp
+$Comp
+L Switch:SW_Push SW10
+U 1 1 5F69E7E4
+P 4000 3600
+F 0 "SW10" H 4000 3885 50  0000 C CNN
+F 1 "8" H 4000 3794 50  0000 C CNN
+F 2 "Button_Switch_THT:SW_PUSH_6mm" H 4000 3800 50  0001 C CNN
+F 3 "~" H 4000 3800 50  0001 C CNN
+	1    4000 3600
+	1    0    0    -1  
+$EndComp
+$Comp
+L Switch:SW_Push SW11
+U 1 1 5F69E7EA
+P 5150 3600
+F 0 "SW11" H 5150 3885 50  0000 C CNN
+F 1 "9" H 5150 3794 50  0000 C CNN
+F 2 "Button_Switch_THT:SW_PUSH_6mm" H 5150 3800 50  0001 C CNN
+F 3 "~" H 5150 3800 50  0001 C CNN
+	1    5150 3600
+	1    0    0    -1  
+$EndComp
+$Comp
+L Switch:SW_Push SW13
+U 1 1 5F69F79E
+P 2800 4050
+F 0 "SW13" H 2800 4335 50  0000 C CNN
+F 1 "0" H 2800 4244 50  0000 C CNN
+F 2 "Button_Switch_THT:SW_PUSH_6mm" H 2800 4250 50  0001 C CNN
+F 3 "~" H 2800 4250 50  0001 C CNN
+	1    2800 4050
+	1    0    0    -1  
+$EndComp
+$Comp
+L Display_Character:WC1602A DS1
+U 1 1 5F695676
+P 8200 3400
+F 0 "DS1" H 8350 4300 50  0000 C CNN
+F 1 "WC1602A" H 8450 4200 50  0000 C CNN
+F 2 "Display:WC1602A" H 8200 2500 50  0001 C CIN
+F 3 "http://www.wincomlcd.com/pdf/WC1602A-SFYLYHTC06.pdf" H 8900 3400 50  0001 C CNN
+	1    8200 3400
+	1    0    0    -1  
+$EndComp
+Text GLabel 7800 3300 0    50   Input ~ 0
+D0
+Text GLabel 7800 2800 0    50   Input ~ 0
+WR
+$Comp
+L power:GND #PWR0103
+U 1 1 5F697631
+P 8200 4200
+F 0 "#PWR0103" H 8200 3950 50  0001 C CNN
+F 1 "GND" H 8205 4027 50  0000 C CNN
+F 2 "" H 8200 4200 50  0001 C CNN
+F 3 "" H 8200 4200 50  0001 C CNN
+	1    8200 4200
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VCC #PWR0104
+U 1 1 5F697AB0
+P 8200 2600
+F 0 "#PWR0104" H 8200 2450 50  0001 C CNN
+F 1 "VCC" V 8215 2727 50  0000 L CNN
+F 2 "" H 8200 2600 50  0001 C CNN
+F 3 "" H 8200 2600 50  0001 C CNN
+	1    8200 2600
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VCC #PWR0105
+U 1 1 5F6983D9
+P 8600 3100
+F 0 "#PWR0105" H 8600 2950 50  0001 C CNN
+F 1 "VCC" V 8615 3227 50  0000 L CNN
+F 2 "" H 8600 3100 50  0001 C CNN
+F 3 "" H 8600 3100 50  0001 C CNN
+	1    8600 3100
+	0    1    1    0   
+$EndComp
+$Comp
+L power:GND #PWR0106
+U 1 1 5F69893C
+P 8600 3200
+F 0 "#PWR0106" H 8600 2950 50  0001 C CNN
+F 1 "GND" H 8605 3027 50  0000 C CNN
+F 2 "" H 8600 3200 50  0001 C CNN
+F 3 "" H 8600 3200 50  0001 C CNN
+	1    8600 3200
+	0    -1   -1   0   
+$EndComp
+Text GLabel 7800 3400 0    50   Input ~ 0
+D1
+Text GLabel 7800 3500 0    50   Input ~ 0
+D2
+Text GLabel 7800 3600 0    50   Input ~ 0
+D3
+Text GLabel 7800 3700 0    50   Input ~ 0
+D4
+Text GLabel 7800 3800 0    50   Input ~ 0
+D5
+Text GLabel 7800 3900 0    50   Input ~ 0
+D6
+Text GLabel 7800 4000 0    50   Input ~ 0
+D7
+Text GLabel 6800 3300 0    50   Input ~ 0
+D8
+$Comp
+L power:GND #PWR0107
+U 1 1 5F699E8A
+P 7800 2900
+F 0 "#PWR0107" H 7800 2650 50  0001 C CNN
+F 1 "GND" H 7805 2727 50  0000 C CNN
+F 2 "" H 7800 2900 50  0001 C CNN
+F 3 "" H 7800 2900 50  0001 C CNN
+	1    7800 2900
+	0    1    1    0   
+$EndComp
+$Comp
+L Transistor_FET:2N7002 Q3
+U 1 1 5F69B377
+P 3500 4650
+F 0 "Q3" H 3704 4696 50  0000 L CNN
+F 1 "2N7002" H 3704 4605 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 3700 4575 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 3500 4650 50  0001 L CNN
+	1    3500 4650
+	1    0    0    -1  
+$EndComp
+Text GLabel 3300 4650 0    50   Input ~ 0
+RD
+$Comp
+L power:GND #PWR0108
+U 1 1 5F69CFEB
+P 3600 4850
+F 0 "#PWR0108" H 3600 4600 50  0001 C CNN
+F 1 "GND" H 3605 4677 50  0000 C CNN
+F 2 "" H 3600 4850 50  0001 C CNN
+F 3 "" H 3600 4850 50  0001 C CNN
+	1    3600 4850
+	1    0    0    -1  
+$EndComp
+$Comp
+L Transistor_FET:2N7002 Q1
+U 1 1 5F6AB237
+P 7000 3300
+F 0 "Q1" H 7204 3346 50  0000 L CNN
+F 1 "2N7002" H 7204 3255 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 7200 3225 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 7000 3300 50  0001 L CNN
+	1    7000 3300
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR0109
+U 1 1 5F6AB23E
+P 7100 3500
+F 0 "#PWR0109" H 7100 3250 50  0001 C CNN
+F 1 "GND" H 7105 3327 50  0000 C CNN
+F 2 "" H 7100 3500 50  0001 C CNN
+F 3 "" H 7100 3500 50  0001 C CNN
+	1    7100 3500
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R1
+U 1 1 5F6AB70A
+P 7100 2750
+F 0 "R1" H 7170 2796 50  0000 L CNN
+F 1 "10k" H 7170 2705 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" V 7030 2750 50  0001 C CNN
+F 3 "~" H 7100 2750 50  0001 C CNN
+	1    7100 2750
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VCC #PWR0110
+U 1 1 5F6AC70D
+P 7100 2600
+F 0 "#PWR0110" H 7100 2450 50  0001 C CNN
+F 1 "VCC" V 7115 2727 50  0000 L CNN
+F 2 "" H 7100 2600 50  0001 C CNN
+F 3 "" H 7100 2600 50  0001 C CNN
+	1    7100 2600
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7100 2900 7100 3000
+Wire Wire Line
+	7800 3000 7100 3000
+Connection ~ 7100 3000
+Wire Wire Line
+	7100 3000 7100 3100
+$Comp
+L Device:D D1
+U 1 1 5F6B8596
+P 3150 2650
+F 0 "D1" H 3150 2867 50  0000 C CNN
+F 1 "1N4148" H 3150 2776 50  0000 C CNN
+F 2 "Diode_SMD:D_MiniMELF_Handsoldering" H 3150 2650 50  0001 C CNN
+F 3 "~" H 3150 2650 50  0001 C CNN
+	1    3150 2650
+	1    0    0    -1  
+$EndComp
+Text GLabel 3300 2650 2    50   Input ~ 0
+D1
+$Comp
+L Device:D D2
+U 1 1 5F6B91DE
+P 4350 2650
+F 0 "D2" H 4350 2867 50  0000 C CNN
+F 1 "1N4148" H 4350 2776 50  0000 C CNN
+F 2 "Diode_SMD:D_MiniMELF_Handsoldering" H 4350 2650 50  0001 C CNN
+F 3 "~" H 4350 2650 50  0001 C CNN
+	1    4350 2650
+	1    0    0    -1  
+$EndComp
+Text GLabel 4500 2650 2    50   Input ~ 0
+D2
+$Comp
+L Device:D D3
+U 1 1 5F6B97FE
+P 5500 2650
+F 0 "D3" H 5500 2867 50  0000 C CNN
+F 1 "1N4148" H 5500 2776 50  0000 C CNN
+F 2 "Diode_SMD:D_MiniMELF_Handsoldering" H 5500 2650 50  0001 C CNN
+F 3 "~" H 5500 2650 50  0001 C CNN
+	1    5500 2650
+	1    0    0    -1  
+$EndComp
+Text GLabel 5650 2650 2    50   Input ~ 0
+D3
+$Comp
+L Device:D D4
+U 1 1 5F6C2031
+P 3150 3150
+F 0 "D4" H 3150 3367 50  0000 C CNN
+F 1 "1N4148" H 3150 3276 50  0000 C CNN
+F 2 "Diode_SMD:D_MiniMELF_Handsoldering" H 3150 3150 50  0001 C CNN
+F 3 "~" H 3150 3150 50  0001 C CNN
+	1    3150 3150
+	1    0    0    -1  
+$EndComp
+Text GLabel 3300 3150 2    50   Input ~ 0
+D4
+$Comp
+L Device:D D5
+U 1 1 5F6C203A
+P 4350 3150
+F 0 "D5" H 4350 3367 50  0000 C CNN
+F 1 "1N4148" H 4350 3276 50  0000 C CNN
+F 2 "Diode_SMD:D_MiniMELF_Handsoldering" H 4350 3150 50  0001 C CNN
+F 3 "~" H 4350 3150 50  0001 C CNN
+	1    4350 3150
+	1    0    0    -1  
+$EndComp
+Text GLabel 4500 3150 2    50   Input ~ 0
+D5
+$Comp
+L Device:D D6
+U 1 1 5F6CD5EC
+P 5500 3150
+F 0 "D6" H 5500 3367 50  0000 C CNN
+F 1 "1N4148" H 5500 3276 50  0000 C CNN
+F 2 "Diode_SMD:D_MiniMELF_Handsoldering" H 5500 3150 50  0001 C CNN
+F 3 "~" H 5500 3150 50  0001 C CNN
+	1    5500 3150
+	1    0    0    -1  
+$EndComp
+Text GLabel 5650 3150 2    50   Input ~ 0
+D6
+$Comp
+L Device:D D7
+U 1 1 5F6D27CB
+P 3150 3600
+F 0 "D7" H 3150 3817 50  0000 C CNN
+F 1 "1N4148" H 3150 3726 50  0000 C CNN
+F 2 "Diode_SMD:D_MiniMELF_Handsoldering" H 3150 3600 50  0001 C CNN
+F 3 "~" H 3150 3600 50  0001 C CNN
+	1    3150 3600
+	1    0    0    -1  
+$EndComp
+Text GLabel 3300 3600 2    50   Input ~ 0
+D7
+$Comp
+L Device:D D8
+U 1 1 5F6D3666
+P 4350 3600
+F 0 "D8" H 4350 3817 50  0000 C CNN
+F 1 "1N4148" H 4350 3726 50  0000 C CNN
+F 2 "Diode_SMD:D_MiniMELF_Handsoldering" H 4350 3600 50  0001 C CNN
+F 3 "~" H 4350 3600 50  0001 C CNN
+	1    4350 3600
+	1    0    0    -1  
+$EndComp
+Text GLabel 4500 3600 2    50   Input ~ 0
+D8
+$Comp
+L Device:D D9
+U 1 1 5F6D4392
+P 5500 3600
+F 0 "D9" H 5500 3817 50  0000 C CNN
+F 1 "1N4148" H 5500 3726 50  0000 C CNN
+F 2 "Diode_SMD:D_MiniMELF_Handsoldering" H 5500 3600 50  0001 C CNN
+F 3 "~" H 5500 3600 50  0001 C CNN
+	1    5500 3600
+	1    0    0    -1  
+$EndComp
+Text GLabel 5650 3600 2    50   Input ~ 0
+D9
+$Comp
+L Device:D D10
+U 1 1 5F6D8D32
+P 3150 4050
+F 0 "D10" H 3150 4267 50  0000 C CNN
+F 1 "1N4148" H 3150 4176 50  0000 C CNN
+F 2 "Diode_SMD:D_MiniMELF_Handsoldering" H 3150 4050 50  0001 C CNN
+F 3 "~" H 3150 4050 50  0001 C CNN
+	1    3150 4050
+	1    0    0    -1  
+$EndComp
+Text GLabel 3300 4050 2    50   Input ~ 0
+D0
+$Comp
+L Device:D D11
+U 1 1 5F6D95A6
+P 4350 4050
+F 0 "D11" H 4350 4267 50  0000 C CNN
+F 1 "1N4148" H 4350 4176 50  0000 C CNN
+F 2 "Diode_SMD:D_MiniMELF_Handsoldering" H 4350 4050 50  0001 C CNN
+F 3 "~" H 4350 4050 50  0001 C CNN
+	1    4350 4050
+	1    0    0    -1  
+$EndComp
+Text GLabel 4500 4050 2    50   Input ~ 0
+D10
+$Comp
+L Device:D D12
+U 1 1 5F6D9A58
+P 5500 4050
+F 0 "D12" H 5500 4267 50  0000 C CNN
+F 1 "1N4148" H 5500 4176 50  0000 C CNN
+F 2 "Diode_SMD:D_MiniMELF_Handsoldering" H 5500 4050 50  0001 C CNN
+F 3 "~" H 5500 4050 50  0001 C CNN
+	1    5500 4050
+	1    0    0    -1  
+$EndComp
+Text GLabel 5650 4050 2    50   Input ~ 0
+D11
+Wire Wire Line
+	2600 2650 2400 2650
+Wire Wire Line
+	2400 2650 2400 3150
+Wire Wire Line
+	2400 3150 2600 3150
+Wire Wire Line
+	2400 3150 2400 3600
+Wire Wire Line
+	2400 3600 2600 3600
+Connection ~ 2400 3150
+Wire Wire Line
+	2400 3600 2400 4050
+Wire Wire Line
+	2400 4050 2600 4050
+Connection ~ 2400 3600
+Wire Wire Line
+	3800 2650 3600 2650
+Wire Wire Line
+	3600 2650 3600 3150
+Wire Wire Line
+	3600 3150 3800 3150
+Wire Wire Line
+	3600 3150 3600 3600
+Wire Wire Line
+	3600 3600 3800 3600
+Connection ~ 3600 3150
+Wire Wire Line
+	3600 3600 3600 4050
+Wire Wire Line
+	3600 4050 3800 4050
+Connection ~ 3600 3600
+Wire Wire Line
+	4950 2650 4750 2650
+Wire Wire Line
+	4750 2650 4750 3150
+Wire Wire Line
+	4750 3150 4950 3150
+Wire Wire Line
+	4750 3150 4750 3600
+Wire Wire Line
+	4750 3600 4950 3600
+Connection ~ 4750 3150
+Wire Wire Line
+	4750 3600 4750 4050
+Wire Wire Line
+	4750 4050 4950 4050
+Connection ~ 4750 3600
+Wire Wire Line
+	2400 4050 2400 4250
+Wire Wire Line
+	2400 4250 3600 4250
+Wire Wire Line
+	3600 4250 3600 4450
+Connection ~ 2400 4050
+Wire Wire Line
+	3600 4250 3600 4050
+Connection ~ 3600 4250
+Connection ~ 3600 4050
+Wire Wire Line
+	3600 4250 4750 4250
+Wire Wire Line
+	4750 4250 4750 4050
+Connection ~ 4750 4050
+$Comp
+L Device:CP C1
+U 1 1 5F6E94A2
+P 7450 5000
+F 0 "C1" H 7568 5046 50  0000 L CNN
+F 1 "0.47u" H 7568 4955 50  0000 L CNN
+F 2 "Capacitor_THT:CP_Radial_D6.3mm_P2.50mm" H 7488 4850 50  0001 C CNN
+F 3 "~" H 7450 5000 50  0001 C CNN
+	1    7450 5000
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR0111
+U 1 1 5F6E9CD8
+P 7450 5150
+F 0 "#PWR0111" H 7450 4900 50  0001 C CNN
+F 1 "GND" H 7455 4977 50  0000 C CNN
+F 2 "" H 7450 5150 50  0001 C CNN
+F 3 "" H 7450 5150 50  0001 C CNN
+	1    7450 5150
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VCC #PWR0112
+U 1 1 5F6EA075
+P 7450 4850
+F 0 "#PWR0112" H 7450 4700 50  0001 C CNN
+F 1 "VCC" V 7465 4977 50  0000 L CNN
+F 2 "" H 7450 4850 50  0001 C CNN
+F 3 "" H 7450 4850 50  0001 C CNN
+	1    7450 4850
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R_POT RV1
+U 1 1 5F6EB0F8
+P 9150 2800
+F 0 "RV1" H 9080 2754 50  0000 R CNN
+F 1 "10k" H 9080 2845 50  0000 R CNN
+F 2 "Potentiometer_THT:Potentiometer_Bourns_3386F_Vertical" H 9150 2800 50  0001 C CNN
+F 3 "~" H 9150 2800 50  0001 C CNN
+	1    9150 2800
+	-1   0    0    1   
+$EndComp
+$Comp
+L power:GND #PWR0113
+U 1 1 5F6EBB05
+P 9150 2950
+F 0 "#PWR0113" H 9150 2700 50  0001 C CNN
+F 1 "GND" H 9155 2777 50  0000 C CNN
+F 2 "" H 9150 2950 50  0001 C CNN
+F 3 "" H 9150 2950 50  0001 C CNN
+	1    9150 2950
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VCC #PWR0114
+U 1 1 5F6EBE3C
+P 9150 2650
+F 0 "#PWR0114" H 9150 2500 50  0001 C CNN
+F 1 "VCC" V 9165 2777 50  0000 L CNN
+F 2 "" H 9150 2650 50  0001 C CNN
+F 3 "" H 9150 2650 50  0001 C CNN
+	1    9150 2650
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	8600 2800 9000 2800
+$Comp
+L Transistor_FET:2N7002 Q2
+U 1 1 5F6FE2CD
+P 1500 4650
+F 0 "Q2" H 1704 4696 50  0000 L CNN
+F 1 "2N7002" H 1704 4605 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 1700 4575 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 1500 4650 50  0001 L CNN
+	1    1500 4650
+	1    0    0    -1  
+$EndComp
+Text GLabel 1300 4650 0    50   Input ~ 0
+RD
+$Comp
+L power:GND #PWR0115
+U 1 1 5F6FE2D4
+P 1600 4850
+F 0 "#PWR0115" H 1600 4600 50  0001 C CNN
+F 1 "GND" H 1605 4677 50  0000 C CNN
+F 2 "" H 1600 4850 50  0001 C CNN
+F 3 "" H 1600 4850 50  0001 C CNN
+	1    1600 4850
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R2
+U 1 1 5F6FF1C1
+P 1600 4000
+F 0 "R2" H 1670 4046 50  0000 L CNN
+F 1 "10k" H 1670 3955 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" V 1530 4000 50  0001 C CNN
+F 3 "~" H 1600 4000 50  0001 C CNN
+	1    1600 4000
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VCC #PWR0116
+U 1 1 5F6FF1C7
+P 1600 3850
+F 0 "#PWR0116" H 1600 3700 50  0001 C CNN
+F 1 "VCC" V 1615 3977 50  0000 L CNN
+F 2 "" H 1600 3850 50  0001 C CNN
+F 3 "" H 1600 3850 50  0001 C CNN
+	1    1600 3850
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:LED D13
+U 1 1 5F6FFC1F
+P 1600 4300
+F 0 "D13" V 1639 4182 50  0000 R CNN
+F 1 "RD" V 1548 4182 50  0000 R CNN
+F 2 "Diode_SMD:D_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 1600 4300 50  0001 C CNN
+F 3 "~" H 1600 4300 50  0001 C CNN
+	1    1600 4300
+	0    -1   -1   0   
+$EndComp
+$EndSCHEMATC
