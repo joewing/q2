@@ -490,13 +490,13 @@ Wire Wire Line
 $Comp
 L Connector_Generic:Conn_02x16_Odd_Even J2
 U 1 1 5F62A550
-P 7000 2750
-F 0 "J2" H 7050 3667 50  0000 C CNN
-F 1 "Conn_02x16_Odd_Even" H 7050 3576 50  0000 C CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_2x16_P2.54mm_Horizontal" H 7000 2750 50  0001 C CNN
-F 3 "~" H 7000 2750 50  0001 C CNN
-	1    7000 2750
-	1    0    0    -1  
+P 7100 2750
+F 0 "J2" H 7150 3667 50  0000 C CNN
+F 1 "Conn_02x16_Odd_Even" H 7150 3576 50  0000 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_2x16_P2.54mm_Horizontal" H 7100 2750 50  0001 C CNN
+F 3 "~" H 7100 2750 50  0001 C CNN
+	1    7100 2750
+	-1   0    0    -1  
 $EndComp
 NoConn ~ 7300 3350
 NoConn ~ 7300 3450
