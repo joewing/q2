@@ -14,6 +14,8 @@ use nom::InputTake;
 use nom::error::ErrorKind;
 use std::fs::read_to_string;
 use self::nom::Err::Failure;
+use self::nom::multi::{separated_list, separated_nonempty_list};
+use self::nom::character::complete::char;
 
 pub trait Listing {
     fn emit_listing(&self) -> String;
@@ -39,7 +41,7 @@ pub enum Expression {
 }
 
 impl Listing for Expression {
-    fn emit_listing(self: &Self) -> String {
+    fn emit_listing(&self) -> String {
         match self {
             Expression::Add(a, b) => format!("({} + {})", a.emit_listing(), b.emit_listing()),
             Expression::Sub(a, b) => format!("({} - {})", a.emit_listing(), b.emit_listing()),
@@ -57,6 +59,20 @@ impl Listing for Expression {
             Expression::Constant(i) => format!("{}", i),
             Expression::CurrentAddress => format!("$"),
         }
+    }
+}
+
+impl<T: Listing> Listing for Vec<T> {
+    fn emit_listing(&self) -> String {
+        let mut result = String::new();
+        let n = self.len();
+        for i in 0..n {
+            if i > 0 {
+                result.extend(", ".chars());
+            }
+            result.extend(self.get(i).unwrap().emit_listing().chars());
+        }
+        result
     }
 }
 
@@ -121,7 +137,7 @@ pub enum Statement {
     Label(String),
     Origin(Expression),
     Align(Expression),
-    Word(Expression),
+    Word(Vec<Expression>),
     Reserve(Expression),
     Instruction(InstructionType, AddressMode, Expression),
 }
@@ -328,6 +344,7 @@ fn parse_term(input: &str) -> IResult<&str, Expression> {
 }
 
 fn parse_expr(input: &str) -> IResult<&str, Expression> {
+    let (input, _) = eat_whitespace(input)?;
     let (input, lhs) = parse_term(input)?;
     let (input, e_opt) = opt(
         alt(
@@ -396,11 +413,30 @@ fn parse_align(input: &str) -> IResult<&str, Statement> {
     Ok((input, Statement::Align(expr)))
 }
 
+fn parse_string(input: &str) -> IResult<&str, Vec<Expression>> {
+    let (input, _) = tag("\"")(input)?;
+    let (input, s) = take_while(|c| c != '\"')(input)?;
+    let (input, _) = tag("\"")(input)?;
+    let mut result = Vec::new();
+    for c in s.bytes() {
+        result.push(Expression::Constant(c as i64));
+    }
+    Ok((input, result))
+}
+
 fn parse_word(input: &str) -> IResult<&str, Statement> {
     let (input, _) = tag(".dw")(input)?;
     let (input, _) = eat_whitespace(input)?;
-    let (input, expr) = parse_expr(input)?;
-    Ok((input, Statement::Word(expr)))
+    let (input, exprs) = alt(
+        (
+            separated_nonempty_list(
+                char(','),
+                parse_expr
+            ),
+            parse_string
+        )
+    )(input)?;
+    Ok((input, Statement::Word(exprs)))
 }
 
 fn parse_reserve(input: &str) -> IResult<&str, Statement> {
@@ -419,7 +455,7 @@ fn parse_define(input: &str) -> IResult<&str, Statement> {
     Ok((input, Statement::Define(String::from(name), expr)))
 }
 
-fn parse_statement(input: &str) -> IResult<&str, Statement> {
+fn parse_statement(input: &str) -> IResult<&str, Vec<Statement>> {
     let (input, _) = eat_whitespace(input)?;
     let (input, statement) = alt(
         (
@@ -432,13 +468,7 @@ fn parse_statement(input: &str) -> IResult<&str, Statement> {
             parse_define
         )
     )(input)?;
-    Ok((input, statement))
-}
-
-fn parse_statement_list(input: &str) -> IResult<&str, Vec<Statement>> {
-    let (input, ss) = many0(parse_statement)(input)?;
-    let (input, _) = eat_whitespace(input)?;
-    Ok((input, ss))
+    Ok((input, vec![statement]))
 }
 
 fn parse_include(input: &str) -> IResult<&str, Vec<Statement>> {
@@ -455,6 +485,23 @@ fn parse_include(input: &str) -> IResult<&str, Vec<Statement>> {
         },
         Err(e) => panic!("could not read include {}: {}", path, e)
     }
+}
+
+fn parse_statement_list(input: &str) -> IResult<&str, Vec<Statement>> {
+    let (input, sss) = many0(
+        alt(
+            (
+                parse_statement,
+                parse_include
+            )
+        )
+    )(input)?;
+    let (input, _) = eat_whitespace(input)?;
+    let mut result = Vec::new();
+    for ss in sss {
+       result.extend(ss);
+    }
+    Ok((input, result))
 }
 
 pub fn parse(input: &str) -> Result<Vec<Statement>, String> {

@@ -16,23 +16,23 @@ $EndDescr
 $Comp
 L power:GND #PWR0101
 U 1 1 5F6910DD
-P 4900 5950
-F 0 "#PWR0101" H 4900 5700 50  0001 C CNN
-F 1 "GND" H 4905 5777 50  0000 C CNN
-F 2 "" H 4900 5950 50  0001 C CNN
-F 3 "" H 4900 5950 50  0001 C CNN
-	1    4900 5950
+P 5100 2800
+F 0 "#PWR0101" H 5100 2550 50  0001 C CNN
+F 1 "GND" H 5105 2627 50  0000 C CNN
+F 2 "" H 5100 2800 50  0001 C CNN
+F 3 "" H 5100 2800 50  0001 C CNN
+	1    5100 2800
 	1    0    0    -1  
 $EndComp
 $Comp
 L power:VCC #PWR0102
 U 1 1 5F69155A
-P 4900 4550
-F 0 "#PWR0102" H 4900 4400 50  0001 C CNN
-F 1 "VCC" V 4915 4677 50  0000 L CNN
-F 2 "" H 4900 4550 50  0001 C CNN
-F 3 "" H 4900 4550 50  0001 C CNN
-	1    4900 4550
+P 5100 1400
+F 0 "#PWR0102" H 5100 1250 50  0001 C CNN
+F 1 "VCC" V 5115 1527 50  0000 L CNN
+F 2 "" H 5100 1400 50  0001 C CNN
+F 3 "" H 5100 1400 50  0001 C CNN
+	1    5100 1400
 	0    -1   -1   0   
 $EndComp
 $Comp
@@ -184,7 +184,7 @@ U 1 1 5F6AB237
 P 8550 1800
 F 0 "Q1" H 8754 1846 50  0000 L CNN
 F 1 "2N7002" H 8754 1755 50  0000 L CNN
-F 2 "Package_TO_SOT_SMD:SOT-23" H 8750 1725 50  0001 L CIN
+F 2 "Package_TO_SOT_SMD:SOT-23_Handsoldering" H 8750 1725 50  0001 L CIN
 F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 8550 1800 50  0001 L CNN
 	1    8550 1800
 	1    0    0    -1  
@@ -286,7 +286,7 @@ L Device:CP C1
 U 1 1 5F6E94A2
 P 6200 6600
 F 0 "C1" H 6318 6646 50  0000 L CNN
-F 1 "0.47u" H 6318 6555 50  0000 L CNN
+F 1 "47u" H 6318 6555 50  0000 L CNN
 F 2 "Capacitor_THT:CP_Radial_D6.3mm_P2.50mm" H 6238 6450 50  0001 C CNN
 F 3 "~" H 6200 6600 50  0001 C CNN
 	1    6200 6600
@@ -355,7 +355,7 @@ U 1 1 5F6FE2CD
 P 7400 1950
 F 0 "Q2" H 7604 1996 50  0000 L CNN
 F 1 "2N7002" H 7604 1905 50  0000 L CNN
-F 2 "Package_TO_SOT_SMD:SOT-23" H 7600 1875 50  0001 L CIN
+F 2 "Package_TO_SOT_SMD:SOT-23_Handsoldering" H 7600 1875 50  0001 L CIN
 F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 7400 1950 50  0001 L CNN
 	1    7400 1950
 	1    0    0    -1  
@@ -580,7 +580,7 @@ U 1 1 5F69B377
 P 8100 5500
 F 0 "Q3" H 8304 5546 50  0000 L CNN
 F 1 "2N7002" H 8304 5455 50  0000 L CNN
-F 2 "Package_TO_SOT_SMD:SOT-23" H 8300 5425 50  0001 L CIN
+F 2 "Package_TO_SOT_SMD:SOT-23_Handsoldering" H 8300 5425 50  0001 L CIN
 F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 8100 5500 50  0001 L CNN
 	1    8100 5500
 	1    0    0    -1  
@@ -674,73 +674,284 @@ F 3 "~" H 7400 3700 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Connector_Generic:Conn_02x15_Odd_Even J?
+L Connector_Generic:Conn_02x15_Odd_Even J1
 U 1 1 5F9C1D82
-P 5100 5250
-F 0 "J?" H 5150 6167 50  0000 C CNN
-F 1 "Conn_02x15_Odd_Even" H 5150 6076 50  0000 C CNN
-F 2 "Connector_IDC:IDC-Header_2x13_P2.54mm_Vertical" H 5100 5250 50  0001 C CNN
-F 3 "~" H 5100 5250 50  0001 C CNN
-	1    5100 5250
+P 5300 2100
+F 0 "J1" H 5350 3017 50  0000 C CNN
+F 1 "Conn_02x15_Odd_Even" H 5350 2926 50  0000 C CNN
+F 2 "Connector_IDC:IDC-Header_2x15_P2.54mm_Vertical" H 5300 2100 50  0001 C CNN
+F 3 "~" H 5300 2100 50  0001 C CNN
+	1    5300 2100
 	1    0    0    -1  
 $EndComp
 $Comp
-L power:GND #PWR?
+L power:GND #PWR0117
 U 1 1 5F9C526D
-P 5400 5950
-F 0 "#PWR?" H 5400 5700 50  0001 C CNN
-F 1 "GND" H 5405 5777 50  0000 C CNN
-F 2 "" H 5400 5950 50  0001 C CNN
-F 3 "" H 5400 5950 50  0001 C CNN
-	1    5400 5950
+P 5600 2800
+F 0 "#PWR0117" H 5600 2550 50  0001 C CNN
+F 1 "GND" H 5605 2627 50  0000 C CNN
+F 2 "" H 5600 2800 50  0001 C CNN
+F 3 "" H 5600 2800 50  0001 C CNN
+	1    5600 2800
 	1    0    0    -1  
 $EndComp
-Text GLabel 5400 4550 2    50   Input ~ 0
+Text GLabel 5600 1400 2    50   Input ~ 0
 D11
-Text GLabel 5400 4650 2    50   Input ~ 0
+Text GLabel 5600 1500 2    50   Input ~ 0
 D10
-Text GLabel 5400 4750 2    50   Input ~ 0
+Text GLabel 5600 1600 2    50   Input ~ 0
 D9
-Text GLabel 5400 4850 2    50   Input ~ 0
+Text GLabel 5600 1700 2    50   Input ~ 0
 D8
-Text GLabel 5400 4950 2    50   Input ~ 0
+Text GLabel 5600 1800 2    50   Input ~ 0
 D7
-Text GLabel 5400 5050 2    50   Input ~ 0
+Text GLabel 5600 1900 2    50   Input ~ 0
 D6
-Text GLabel 5400 5150 2    50   Input ~ 0
+Text GLabel 5600 2000 2    50   Input ~ 0
 D5
-Text GLabel 5400 5250 2    50   Input ~ 0
+Text GLabel 5600 2100 2    50   Input ~ 0
 D4
-Text GLabel 5400 5350 2    50   Input ~ 0
+Text GLabel 5600 2200 2    50   Input ~ 0
 D3
-Text GLabel 5400 5450 2    50   Input ~ 0
+Text GLabel 5600 2300 2    50   Input ~ 0
 D2
-Text GLabel 5400 5550 2    50   Input ~ 0
+Text GLabel 5600 2400 2    50   Input ~ 0
 D1
-Text GLabel 5400 5650 2    50   Input ~ 0
+Text GLabel 5600 2500 2    50   Input ~ 0
 D0
-Text GLabel 5400 5850 2    50   Input ~ 0
+Text GLabel 5600 2700 2    50   Input ~ 0
 RD_TERM
-Text GLabel 5400 5750 2    50   Input ~ 0
+Text GLabel 5600 2600 2    50   Input ~ 0
 WR_TERM
-Text GLabel 4900 5750 0    50   Input ~ 0
+Text GLabel 5100 2600 0    50   Input ~ 0
 WR_DISK
-Text GLabel 4900 5850 0    50   Input ~ 0
+Text GLabel 5100 2700 0    50   Input ~ 0
 RD_DISK
-Text GLabel 4900 4650 0    50   Input ~ 0
+Text GLabel 5100 1500 0    50   Input ~ 0
 A10
-Text GLabel 4900 4750 0    50   Input ~ 0
+Text GLabel 5100 1600 0    50   Input ~ 0
 A9
-Text GLabel 4900 4850 0    50   Input ~ 0
+Text GLabel 5100 1700 0    50   Input ~ 0
 A8
-Text GLabel 4900 4950 0    50   Input ~ 0
+Text GLabel 5100 1800 0    50   Input ~ 0
 A7
-Text GLabel 4900 5150 0    50   Input ~ 0
+Text GLabel 5100 2000 0    50   Input ~ 0
 A5
-Text GLabel 4900 5050 0    50   Input ~ 0
+Text GLabel 5100 1900 0    50   Input ~ 0
 A6
-Text GLabel 4900 5250 0    50   Input ~ 0
+Text GLabel 5100 2100 0    50   Input ~ 0
 A4
-Text GLabel 4900 5350 0    50   Input ~ 0
+Text GLabel 5100 2200 0    50   Input ~ 0
 A3
+$Comp
+L MCU_Microchip_ATtiny:ATtiny88-PU U1
+U 1 1 5F6C3A04
+P 2700 4150
+F 0 "U1" H 2170 4196 50  0000 R CNN
+F 1 "ATtiny88" H 2170 4105 50  0000 R CNN
+F 2 "Package_DIP:DIP-28_W7.62mm" H 2700 4150 50  0001 C CIN
+F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/doc8008.pdf" H 2700 4150 50  0001 C CNN
+	1    2700 4150
+	1    0    0    -1  
+$EndComp
+Text GLabel 5100 2300 0    50   Input ~ 0
+A2
+Text GLabel 5100 2400 0    50   Input ~ 0
+A1
+Text GLabel 5100 2500 0    50   Input ~ 0
+A0
+$Comp
+L power:GND #PWR0118
+U 1 1 5F6C4879
+P 2700 5750
+F 0 "#PWR0118" H 2700 5500 50  0001 C CNN
+F 1 "GND" H 2705 5577 50  0000 C CNN
+F 2 "" H 2700 5750 50  0001 C CNN
+F 3 "" H 2700 5750 50  0001 C CNN
+	1    2700 5750
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VCC #PWR0120
+U 1 1 5F6C5A09
+P 2800 1950
+F 0 "#PWR0120" H 2800 1800 50  0001 C CNN
+F 1 "VCC" V 2815 2077 50  0000 L CNN
+F 2 "" H 2800 1950 50  0001 C CNN
+F 3 "" H 2800 1950 50  0001 C CNN
+	1    2800 1950
+	0    1    1    0   
+$EndComp
+Text GLabel 3300 2850 2    50   Input ~ 0
+D0
+Text GLabel 3300 2950 2    50   Input ~ 0
+D1
+Text GLabel 3300 3050 2    50   Input ~ 0
+D2
+Text GLabel 3650 3150 2    50   Input ~ 0
+D3
+Text GLabel 3650 3350 2    50   Input ~ 0
+D4
+Text GLabel 3650 3550 2    50   Input ~ 0
+D5
+Text GLabel 3300 3450 2    50   Input ~ 0
+D6
+Text GLabel 3300 3550 2    50   Input ~ 0
+D7
+Text GLabel 3300 3750 2    50   Input ~ 0
+D8
+Text GLabel 3300 3850 2    50   Input ~ 0
+D9
+Text GLabel 3300 3950 2    50   Input ~ 0
+D10
+Text GLabel 3300 4050 2    50   Input ~ 0
+D11
+Text GLabel 3300 4150 2    50   Input ~ 0
+WR_DISK
+Text GLabel 3300 4250 2    50   Input ~ 0
+RD_DISK
+Text GLabel 3300 4650 2    50   Input ~ 0
+A0
+Text GLabel 3300 4750 2    50   Input ~ 0
+A1
+Text GLabel 3300 4850 2    50   Input ~ 0
+A2
+Text GLabel 3300 4950 2    50   Input ~ 0
+A3
+Text GLabel 3300 5050 2    50   Input ~ 0
+A4
+Text GLabel 3300 5150 2    50   Input ~ 0
+A5
+Text GLabel 3300 5250 2    50   Input ~ 0
+A6
+Text GLabel 3300 5350 2    50   Input ~ 0
+A7
+Text GLabel 3300 4450 2    50   Input ~ 0
+A8
+$Comp
+L Connector_Generic:Conn_02x03_Odd_Even J2
+U 1 1 5F6D053C
+P 5300 4200
+F 0 "J2" H 5350 4517 50  0000 C CNN
+F 1 "ISP" H 5350 4426 50  0000 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_2x03_P2.54mm_Vertical" H 5300 4200 50  0001 C CNN
+F 3 "~" H 5300 4200 50  0001 C CNN
+	1    5300 4200
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C2
+U 1 1 5F6D2C57
+P 1750 2750
+F 0 "C2" H 1865 2796 50  0000 L CNN
+F 1 "0.1u" H 1865 2705 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 1788 2600 50  0001 C CNN
+F 3 "~" H 1750 2750 50  0001 C CNN
+	1    1750 2750
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR0122
+U 1 1 5F6D3886
+P 1750 2900
+F 0 "#PWR0122" H 1750 2650 50  0001 C CNN
+F 1 "GND" H 1755 2727 50  0000 C CNN
+F 2 "" H 1750 2900 50  0001 C CNN
+F 3 "" H 1750 2900 50  0001 C CNN
+	1    1750 2900
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2700 2050 2700 1950
+Wire Wire Line
+	2700 1950 2800 1950
+Wire Wire Line
+	2700 2350 2700 2450
+Wire Wire Line
+	2700 2450 2800 2450
+Wire Wire Line
+	2800 2450 2800 2550
+Connection ~ 2700 2450
+Wire Wire Line
+	2700 2450 2700 2550
+Wire Wire Line
+	2700 2450 1750 2450
+Wire Wire Line
+	1750 2450 1750 2600
+Text GLabel 3000 2450 2    50   Input ~ 0
+AT_VCC
+Wire Wire Line
+	3000 2450 2800 2450
+Connection ~ 2800 2450
+Text GLabel 5600 4100 2    50   Input ~ 0
+AT_VCC
+$Comp
+L power:GND #PWR0119
+U 1 1 5F6EC979
+P 5600 4300
+F 0 "#PWR0119" H 5600 4050 50  0001 C CNN
+F 1 "GND" H 5605 4127 50  0000 C CNN
+F 2 "" H 5600 4300 50  0001 C CNN
+F 3 "" H 5600 4300 50  0001 C CNN
+	1    5600 4300
+	1    0    0    -1  
+$EndComp
+Text GLabel 5600 4200 2    50   Input ~ 0
+MOSI
+Text GLabel 5100 4100 0    50   Input ~ 0
+MISO
+Text GLabel 5100 4200 0    50   Input ~ 0
+SCK
+Text GLabel 5100 4300 0    50   Input ~ 0
+RST
+Text GLabel 3300 4350 2    50   Input ~ 0
+RST
+Text GLabel 3650 3250 2    50   Input ~ 0
+MISO
+Wire Wire Line
+	3300 3250 3550 3250
+Wire Wire Line
+	3550 3250 3550 3350
+Wire Wire Line
+	3550 3350 3650 3350
+Connection ~ 3550 3250
+Wire Wire Line
+	3550 3250 3650 3250
+Text GLabel 3650 3050 2    50   Input ~ 0
+MOSI
+Wire Wire Line
+	3300 3150 3550 3150
+Wire Wire Line
+	3550 3150 3550 3050
+Wire Wire Line
+	3550 3050 3650 3050
+Connection ~ 3550 3150
+Wire Wire Line
+	3550 3150 3650 3150
+Text GLabel 3650 3450 2    50   Input ~ 0
+SCK
+Wire Wire Line
+	3300 3350 3500 3350
+Wire Wire Line
+	3500 3350 3500 3450
+Wire Wire Line
+	3500 3450 3550 3450
+Wire Wire Line
+	3550 3450 3550 3550
+Wire Wire Line
+	3550 3550 3650 3550
+Connection ~ 3550 3450
+Wire Wire Line
+	3550 3450 3650 3450
+$Comp
+L Diode:1N5818 D14
+U 1 1 5F6FBA6B
+P 2700 2200
+F 0 "D14" V 2746 2120 50  0000 R CNN
+F 1 "1N5818" V 2655 2120 50  0000 R CNN
+F 2 "Diode_THT:D_DO-41_SOD81_P10.16mm_Horizontal" H 2700 2025 50  0001 C CNN
+F 3 "http://www.vishay.com/docs/88525/1n5817.pdf" H 2700 2200 50  0001 C CNN
+	1    2700 2200
+	0    -1   -1   0   
+$EndComp
 $EndSCHEMATC

@@ -66,7 +66,7 @@ sort_ptr:
 output_ptr:
   .dw   -1
 
-  .org    0x080
+  .align 128
 
 to_sort:
   .dw   5
@@ -79,7 +79,7 @@ to_sort:
   .dw   2
 to_sort_end:
 
-  .org    0x100
+  .align  128
 
 ; Sort x0 words starting at x1
 sort:

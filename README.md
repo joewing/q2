@@ -40,20 +40,34 @@ The frontpanel provides the main interface to the computer.
 The computer is comprised of several PCBs that plug into
 the backplane.
 
-  Name      | Quantity  | Qs Each | Description
-  --------- | --------- | ------- | -----------------------
-  Slice     | 12        | 82      | 1-bit A/P/X/S slice
-  Clock     | 1         | 17      | Clock generator
-  ALU       | 1         | 41      | Bit-serial ALU
-  Control   | 1         | 53      | Control signal decoder
-  RAM       | 1         | 2       | 12-bit RAM
-  I/O       | 1         |         | I/O interface
-  Backplane | 1         | 25      | Backplane
+  Name      | Quantity  | Transistors | mA    | Description
+  --------- | --------- | ----------- | ----- | -----------------------
+  Slice     | 12        | 82          |  27.5 | 1-bit A/P/X/S slice
+  Clock     | 1         | 17          |   7.5 | Clock generator
+  ALU       | 1         | 41          |   7.5 | Bit-serial ALU
+  Control   | 1         | 53          |  10.5 | Control signal decoder
+  RAM       | 1         | 2           |  44.0 | 12-bit RAM
+  I/O       | 1         | 25          |   4.5 | I/O interface
+  Backplane | 1         | 26          |  78.5 | Backplane
 
-Total transistor count: ~1122
+Total transistor count: ~1148
+Total current draw: 482.5 mA (2.4 Watts)
 
 The tops of the boards face right, with slice boards ordered
 from bit 11 at the left side to bit 0 on the right.
+
+### Power estimation
+
+LEDs are driven through a 1k resistor. Assuming a 5v power
+supply and 2v voltage drop through an LED, we can assume ~3mA
+for each 1k resistor.  Each gate uses a 10k resistor pull up,
+so we assume 0.5mA for each 10k resistor. This provides an
+absolute worst case estimate since we don't expect all gates
+and LEDs to be on.
+
+We assume each 6116 RAM chip uses ~20mA.
+We assume the MCU used on the terminal board uses ~1mA.
+We assume the LCD draws ~200mA.
 
 ### Control Board
 
