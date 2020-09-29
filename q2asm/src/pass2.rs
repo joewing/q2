@@ -74,7 +74,9 @@ pub fn pass2(
                     if word > 0xfff {
                         return Err(format!("word {} out of range", word));
                     }
-                    result.push((addr, Statement::Word(vec![e.clone()]), Some(word as u16)));
+                    result.push(
+                        (addr, Statement::Word(vec![e.clone()]), Some((word & 0xfff) as u16))
+                    );
                     addr += 1;
                 }
             },

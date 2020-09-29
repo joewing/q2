@@ -5,6 +5,7 @@ use clap::{App, Arg, crate_version, crate_name, crate_authors};
 use std::fs;
 use std::env;
 use std::error::Error;
+use std::str::FromStr;
 
 mod parser;
 mod eval;
@@ -14,7 +15,7 @@ mod pass2;
 use parser::{Listing, Statement};
 
 fn write_u16_raw(vec: &mut Vec<u8>, word: u16) -> () {
-    vec.push((word >> 8) as u8);
+    vec.push(((word >> 4) & 0xf0) as u8);
     vec.push((word & 255) as u8);
 }
 
@@ -33,7 +34,6 @@ fn write_u16_hex(vec: &mut Vec<u8>, word: u16) -> () {
     insert(vec, word >> 4);
     insert(vec, word >> 0);
 }
-
 
 trait OutputFormat {
     fn name(self: &Self) -> &str;
@@ -59,14 +59,14 @@ impl OutputFormat for RawOutputFormat {
 
 struct HexOutputFormat;
 impl OutputFormat for HexOutputFormat {
-    fn name(self: &Self) -> &str { "hex" }
-    fn pad(self: &Self, vec: &mut Vec<u8>, last_addr: i64, addr: i64) {
+    fn name(&self) -> &str { "hex" }
+    fn pad(&self, vec: &mut Vec<u8>, last_addr: i64, addr: i64) {
         for _ in last_addr..addr {
             write_u16_hex(vec, 0);
             write_str(vec, "\n");
         }
     }
-    fn write(self: &Self, vec: &mut Vec<u8>, _addr: i64, _st: Statement, word_opt: Option<u16>) {
+    fn write(&self, vec: &mut Vec<u8>, _addr: i64, _st: Statement, word_opt: Option<u16>) {
         match word_opt {
             Some(word) => {
                 write_u16_hex(vec, word);
@@ -102,14 +102,19 @@ fn get_output_name(name: &str, suffix: &str) -> String {
     }
 }
 
-fn assemble(input_name: &str, output_name: &str, format: &Box<dyn OutputFormat>) -> Result<(), Box<dyn Error>> {
+fn assemble(
+    input_name: &str,
+    output_name: &str,
+    format: &Box<dyn OutputFormat>,
+    base: u16
+) -> Result<(), Box<dyn Error>> {
     let content = fs::read_to_string(input_name)?;
     let statements = parser::parse(&content)?;
     let symbols = pass1::pass1(&statements);
     let mut result = pass2::pass2(&statements, &symbols)?;
     result.sort_by_key(|(a, _, _)| a.clone());
     let mut output: Vec<u8> = Vec::new();
-    let mut last_addr: i64 = 0;
+    let mut last_addr: i64 = base as i64;
     for (addr, st, word_opt) in result {
         format.pad(&mut output, last_addr, addr);
         format.write(&mut output, addr, st, word_opt);
@@ -135,6 +140,7 @@ fn main() {
     let input_key = "INPUT";
     let output_key = "OUTPUT";
     let format_key = "FORMAT";
+    let base_key = "BASE";
     let matches = App::new(crate_name!())
         .version(crate_version!())
         .author(crate_authors!())
@@ -157,6 +163,11 @@ fn main() {
             .default_value(output_formats[0].name())
             .help("Output format")
         )
+        .arg(Arg::with_name(base_key)
+            .short("b")
+            .long("base")
+            .help("Base address")
+        )
         .get_matches();
 
     let input_name = matches.value_of(input_key).unwrap();
@@ -165,7 +176,8 @@ fn main() {
     let output_name = matches.value_of(output_key).map(String::from).unwrap_or_else(||
         get_output_name(&input_name, &format_str)
     );
-    match assemble(input_name, &output_name, format) {
+    let base = matches.value_of(base_key).map(u16::from_str).unwrap_or_else(|| Ok(0u16)).unwrap();
+    match assemble(input_name, &output_name, format, base) {
         Ok(_) => (),
         Err(e) => eprintln!("ERROR: {}", e)
     };

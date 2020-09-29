@@ -41,7 +41,7 @@ module q2_tb;
       #10 clk <= 0;
       if (!run) begin
         $display("halted after ", i, " clocks");
-        $display(i / 5000, " seconds at 5kHz, ", i / 10, " seconds at 10Hz");
+        $display(i / 7000, " seconds at 7kHz, ", i / 100, " seconds at 100Hz");
         $stop;
       end
     end
