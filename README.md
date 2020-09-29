@@ -68,6 +68,7 @@ and LEDs to be on.
 We assume each 6116 RAM chip uses ~20mA.
 We assume the MCU used on the terminal board uses ~1mA.
 We assume the LCD draws ~200mA.
+The total combined worst-case current draw is ~683.55mA.
 
 ### Control Board
 
@@ -133,14 +134,14 @@ All instructions are 1 word with the following format:
   FFF DZ XXXXXXX
 
 where FFF is the opcode, D is the dereference flag,
-Z is the zero-page flag, and XXXXXX is the operand.
+Z is the zero-page flag, and XXXXXXX is the operand.
 
 Instruction summary:
 
   Opcode  | Name  | F | Description
   ------- | ----- | - | ----------------
   000     | lda x | Z | A = X
-  001     | nor x | Z | A = ~(A | X)
+  001     | nor x | Z | A = A NOR X
   010     | add x | C | A = A + X
   011     | shr x | C | A = X >> 1
   100     | lea x | - | A = &X
@@ -250,7 +251,6 @@ rortopbit:
 
 ```
 ; Push x0 on to the stack
-; 8 words
 push:
   sta   =ra
   lda   =sp
@@ -263,7 +263,6 @@ push:
 
 ```
 ; Pop x0 off the stack
-; 7 words
 pop:
   sta   =ra
   lda   @=sp
@@ -282,27 +281,26 @@ Here is a possible layout:
 
   Addr  | Name  | Description
   ----- | ----- | ------------------------------
-  0000  | -     | Jump to the entry point (jmp @=init)
-  0001  | =init | Address of the entry point
-  0002  | =t0   | Temporary 0
-  0003  | =t1   | Temporary 1
-  0004  | =t2   | Temporary 2
-  0005  | =t3   | Temporary 3
-  0006  | =sp   | Stack pointer
-  0007  | =ra   | Return address for function calls
-  0010  | =x0   | Argument 0 for function calls
-  0011  | =x1   | Argument 1 for function calls
-  0012  | =x2   | Argument 2 for function calls
-  0013  | =x3   | Argument 3 for function calls
-  0014  | =x4   | Argument 4 for function calls
-  0015  | =x5   | Argument 5 for function calls
-  0016  | =x6   | Argument 6 for function calls
-  0017  | =x7   | Argument 7 for function calls
-  0020  | =zero | 0
-  0021  | =one  | 1
-  0022  | =two  | 2
-  0023  | =neg1 | -1
-  0030  | =push | Pointer to push
-  0031  | =pop  | Pointer to pop
-
+  000   | -     | Jump to the entry point (jmp @=init)
+  001   | =init | Address of the entry point
+  002   | =t0   | Temporary 0
+  003   | =t1   | Temporary 1
+  004   | =t2   | Temporary 2
+  005   | =t3   | Temporary 3
+  006   | =sp   | Stack pointer
+  007   | =ra   | Return address for function calls
+  008   | =x0   | Argument 0 for function calls
+  009   | =x1   | Argument 1 for function calls
+  00A   | =x2   | Argument 2 for function calls
+  00B   | =x3   | Argument 3 for function calls
+  00C   | =x4   | Argument 4 for function calls
+  00D   | =x5   | Argument 5 for function calls
+  00E   | =x6   | Argument 6 for function calls
+  00F   | =x7   | Argument 7 for function calls
+  010   | =zero | 0
+  011   | =one  | 1
+  012   | =two  | 2
+  013   | =neg1 | -1
+  014   | =push | Pointer to push
+  015   | =pop  | Pointer to pop
 

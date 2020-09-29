@@ -5,6 +5,7 @@ base_height = 10;
 panel_width = board_width;
 panel_height = 100;
 panel_depth = 10;
+panel_angle = 60;
 tol = 2;
 thickness = 1.6 + tol;
 switch_radius = 3.1;
@@ -15,6 +16,7 @@ screw_head_height = 3;
 standoff_height = base_height - 3.2;
 standoff_radius = screw_head_radius * 1.8;
 board_offset = panel_depth * 2;
+switch_offset = 2;
 
 
 // center to center of the standoffs should be 143mm.
@@ -49,7 +51,7 @@ module switches(x, y, count, is_switch = true) {
         bump = x + i > 4 ? (x + i > 8 ? 9 : 5) : 1;
         translate([
             bump + (x + i) * switch_radius * switch_spacing + tol + 0.5,
-            y * switch_radius * switch_spacing + tol,
+            y * switch_radius * switch_spacing + tol + switch_offset,
             panel_depth - thickness - tol
         ]) {
             cylinder(panel_depth, switch_radius, switch_radius, $fn=32);
@@ -67,7 +69,7 @@ module label(x, y, text) {
     bump = x > 4 ? (x > 8 ? 9 : 5) : 1;
     translate([
         bump + x * switch_radius * switch_spacing - switch_radius + tol,
-        y * switch_radius * switch_spacing - switch_radius * 2.5 + tol,
+        y * switch_radius * switch_spacing - switch_radius * 2.5 + tol + switch_offset,
         panel_depth - thickness / 2
     ]) {
         linear_extrude(thickness / 2) {
@@ -83,7 +85,7 @@ module standoff(x, y) {
 }
 
 module standoff_hole(x, y) {
-    translate([x + thickness, y + thickness + board_offset, -0.1]) {
+    translate([x + thickness, y + thickness + board_offset, -tol]) {
         cylinder(standoff_height + thickness + tol, screw_radius, screw_radius, $fn=32);
         cylinder(screw_head_height + tol, screw_head_radius, screw_head_radius, $fn=32);
     }
@@ -96,8 +98,8 @@ module render_base() {
             board_depth + 2 * thickness + board_offset,
             base_height + thickness
         );
-        translate([thickness - tol, thickness - tol + panel_depth * 2, thickness]) {
-            rounded_cube(board_width + tol * 2, board_depth + tol * 2, base_height);
+        translate([thickness - tol, thickness - tol + board_offset / 2, thickness]) {
+            rounded_cube(board_width + tol * 2, board_depth + tol * 2 + board_offset / 2, base_height);
         }
     }
     for (pos = standoff_positions) {
@@ -118,11 +120,11 @@ module render_panel() {
                 bump = i > 4 ? (i > 8 ? 9 : 1 + 4) : 1;
                 spacer_width = switch_radius + ((i == 4 || i == 8) ? 4 : 0);
                 translate([
-                    bump + i * switch_radius * switch_spacing + switch_radius * 2,
+                    bump + i * switch_radius * switch_spacing + switch_radius * 2 + 0.1,
                     tol + thickness,
                     0
                 ]) {
-                    cube([spacer_width, panel_height + thickness - tol, panel_depth - thickness]);
+                    cube([spacer_width - 0.2, panel_height + thickness - tol, panel_depth - thickness]);
                 }
             }
         }
@@ -142,7 +144,7 @@ module render_panel() {
         
         // Speed
         switches(4, 4, 1, true);
-        label(4, 4, " 5k");
+        label(4, 4, " Hz");
         
         // Run LED, start, stop
         switches(6, 4, 1, false);
@@ -166,7 +168,7 @@ difference() {
     union() {
         render_base();
         translate([0, base_height / 2 - tol, 0]) {
-            rotate([60, 0, 0]) {
+            rotate([panel_angle, 0, 0]) {
                 render_panel();
             }
         }

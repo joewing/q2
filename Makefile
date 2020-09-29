@@ -13,6 +13,9 @@ sim-%: examples/%.hex
 examples/%.lst: examples/%.q2
 	$(ASM) -f lst $<
 
+examples/%.raw: examples/%.q2
+	$(ASM) -f raw $<
+
 examples/%.hex: examples/%.q2
 	$(ASM) -f hex $<
 

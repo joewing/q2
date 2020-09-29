@@ -18,8 +18,8 @@ module q2_tb;
 
   reg [11:0] ram[0:4095];
   always @(posedge wrm) begin
-    if (abus == 12'hFFF) begin
-      $display("OUTPUT %03x (%d)", dbus, dbus);
+    if (abus[11]) begin
+      $display("OUTPUT %03x: %03x (%d)", abus, dbus, dbus);
     end
     ram[abus] <= dbus;
   end
@@ -41,7 +41,7 @@ module q2_tb;
       #10 clk <= 0;
       if (!run) begin
         $display("halted after ", i, " clocks");
-        $display(i / 5000, " seconds at 5kHz, ", i / 10, " seconds at 10Hz");
+        $display(i / 7000, " seconds at 7kHz, ", i / 100, " seconds at 100Hz");
         $stop;
       end
     end
