@@ -54,8 +54,8 @@ module q2(
   wire alu_cout;
 
   // Clock generation.
-  wire sc = ~clk & cdiv;
-  wire ws = ~clk & ~cdiv;
+  wire sc = ~(clk | ~cdiv);
+  wire ws = ~(clk | cdiv);
 
   // Halt condition for simulation.
   // Halt when executing "jmp $".

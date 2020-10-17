@@ -70,8 +70,7 @@ module q2_control(
   // 11 - shr - x0
   assign fout = ~(
     (~state_alu | ~alu_cout) &
-    (~state_exec | op4) &
-    (~state_exec | ~op3 | ~x0)
+    (~state_exec | (op4 & (~op3 | ~x0)))
   );
 
 endmodule
