@@ -676,4 +676,73 @@ Wire Wire Line
 	6750 3900 6750 4000
 Text Notes 6100 4850 0    50   ~ 0
 ALU instruction (0xx) or LEA (100)
+$Comp
+L power:GND #PWR?
+U 1 1 5F95EB7E
+P 4100 6400
+AR Path="/5E49A150/5F95EB7E" Ref="#PWR?"  Part="1" 
+AR Path="/5E56259C/5F95EB7E" Ref="#PWR057"  Part="1" 
+AR Path="/5E5E8038/5F95EB7E" Ref="#PWR?"  Part="1" 
+F 0 "#PWR057" H 4100 6150 50  0001 C CNN
+F 1 "GND" H 4105 6227 50  0000 C CNN
+F 2 "" H 4100 6400 50  0001 C CNN
+F 3 "" H 4100 6400 50  0001 C CNN
+	1    4100 6400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4100 5850 4100 6000
+Connection ~ 4100 5850
+Wire Wire Line
+	4100 5850 4350 5850
+Wire Wire Line
+	4100 5600 4100 5850
+$Comp
+L power:VCC #PWR?
+U 1 1 5F95EB88
+P 4100 5300
+AR Path="/5E49A150/5F95EB88" Ref="#PWR?"  Part="1" 
+AR Path="/5E56259C/5F95EB88" Ref="#PWR056"  Part="1" 
+AR Path="/5E5E8038/5F95EB88" Ref="#PWR?"  Part="1" 
+F 0 "#PWR056" H 4100 5150 50  0001 C CNN
+F 1 "VCC" H 4117 5473 50  0000 C CNN
+F 2 "" H 4100 5300 50  0001 C CNN
+F 3 "" H 4100 5300 50  0001 C CNN
+	1    4100 5300
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R?
+U 1 1 5F95EB8F
+P 4100 5450
+AR Path="/5E49A150/5F95EB8F" Ref="R?"  Part="1" 
+AR Path="/5E56259C/5F95EB8F" Ref="R22"  Part="1" 
+AR Path="/5E5E8038/5F95EB8F" Ref="R?"  Part="1" 
+F 0 "R22" H 4170 5496 50  0000 L CNN
+F 1 "10k" H 4170 5405 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" V 4030 5450 50  0001 C CNN
+F 3 "~" H 4100 5450 50  0001 C CNN
+F 4 "C17414" H 4100 5450 50  0001 C CNN "LCSC"
+	1    4100 5450
+	1    0    0    -1  
+$EndComp
+Text GLabel 4350 5850 2    50   Input ~ 0
+STATE_EXEC
+Text GLabel 3800 6200 0    50   Input ~ 0
+~STATE_EXEC
+$Comp
+L Transistor_FET:2N7002 Q?
+U 1 1 5F95EB98
+P 4000 6200
+AR Path="/5E49A150/5F95EB98" Ref="Q?"  Part="1" 
+AR Path="/5E56259C/5F95EB98" Ref="Q58"  Part="1" 
+AR Path="/5E5E8038/5F95EB98" Ref="Q?"  Part="1" 
+F 0 "Q58" H 4206 6246 50  0000 L CNN
+F 1 "2N7002" H 4206 6155 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23_Handsoldering" H 4200 6125 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 4000 6200 50  0001 L CNN
+F 4 "C8545" H 4000 6200 50  0001 C CNN "LCSC"
+	1    4000 6200
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC
