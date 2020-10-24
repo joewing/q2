@@ -254,10 +254,10 @@ AR Path="/5E49A150/5F57E385" Ref="R?"  Part="1"
 AR Path="/5E56259C/5F57E385" Ref="R?"  Part="1" 
 AR Path="/5E5E8038/5F57E385" Ref="R13"  Part="1" 
 F 0 "R13" H 1670 3346 50  0000 L CNN
-F 1 "10k" H 1670 3255 50  0000 L CNN
+F 1 "1k" H 1670 3255 50  0000 L CNN
 F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" V 1530 3300 50  0001 C CNN
 F 3 "~" H 1600 3300 50  0001 C CNN
-F 4 "C17414" H 1600 3300 50  0001 C CNN "LCSC"
+F 4 "" H 1600 3300 50  0001 C CNN "LCSC"
 	1    1600 3300
 	1    0    0    -1  
 $EndComp
@@ -1769,4 +1769,6 @@ F 3 "" H 11400 2750 50  0001 C CNN
 	1    11400 2750
 	1    0    0    -1  
 $EndComp
+Text Notes 1950 3200 0    50   ~ 0
+1k Resistor here for fast pullup
 $EndSCHEMATC
