@@ -1,0 +1,1708 @@
+EESchema Schematic File Version 4
+EELAYER 30 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 114 127
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+Text GLabel 6850 4050 2    50   Input ~ 0
+DBUS6
+$Comp
+L power:GND #PWR?
+U 1 1 61696598
+P 7600 4550
+AR Path="/61678EBC/61690A95/61696598" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/61696598" Ref="#PWR0926"  Part="1" 
+F 0 "#PWR0926" H 7600 4300 50  0001 C CNN
+F 1 "GND" H 7605 4377 50  0000 C CNN
+F 2 "" H 7600 4550 50  0001 C CNN
+F 3 "" H 7600 4550 50  0001 C CNN
+	1    7600 4550
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Device:R R?
+U 1 1 6169659E
+P 7450 4550
+AR Path="/61678EBC/61690A95/6169659E" Ref="R?"  Part="1" 
+AR Path="/61678EBC/6169659E" Ref="R469"  Part="1" 
+F 0 "R469" H 7520 4596 50  0000 L CNN
+F 1 "10k" H 7520 4505 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 7380 4550 50  0001 C CNN
+F 3 "~" H 7450 4550 50  0001 C CNN
+F 4 "C17414" H 7450 4550 50  0001 C CNN "LCSC"
+	1    7450 4550
+	0    -1   -1   0   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 616965A4
+P 7600 4800
+AR Path="/61678EBC/61690A95/616965A4" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/616965A4" Ref="#PWR0927"  Part="1" 
+F 0 "#PWR0927" H 7600 4550 50  0001 C CNN
+F 1 "GND" H 7605 4627 50  0000 C CNN
+F 2 "" H 7600 4800 50  0001 C CNN
+F 3 "" H 7600 4800 50  0001 C CNN
+	1    7600 4800
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Device:R R?
+U 1 1 616965AA
+P 7450 4800
+AR Path="/61678EBC/61690A95/616965AA" Ref="R?"  Part="1" 
+AR Path="/61678EBC/616965AA" Ref="R467"  Part="1" 
+F 0 "R467" H 7520 4846 50  0000 L CNN
+F 1 "10k" H 7520 4755 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 7380 4800 50  0001 C CNN
+F 3 "~" H 7450 4800 50  0001 C CNN
+F 4 "C17414" H 7450 4800 50  0001 C CNN "LCSC"
+	1    7450 4800
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	7300 4800 7300 4750
+Wire Wire Line
+	7300 4550 7300 4650
+Text GLabel 6050 5650 0    50   Input ~ 0
+~WRM
+Text GLabel 5700 5750 0    50   Input ~ 0
+~RDM
+Text GLabel 5650 3000 0    50   Input ~ 0
+~RDM
+Text GLabel 6050 2900 0    50   Input ~ 0
+~WRM
+Wire Wire Line
+	7250 1900 6850 1900
+Wire Wire Line
+	7250 1800 7250 1900
+Wire Wire Line
+	7250 2000 6850 2000
+Wire Wire Line
+	7250 2050 7250 2000
+$Comp
+L Device:R R?
+U 1 1 616965C6
+P 7400 2050
+AR Path="/61678EBC/61690A95/616965C6" Ref="R?"  Part="1" 
+AR Path="/61678EBC/616965C6" Ref="R1"  Part="1" 
+F 0 "R1" H 7470 2096 50  0000 L CNN
+F 1 "10k" H 7470 2005 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 7330 2050 50  0001 C CNN
+F 3 "~" H 7400 2050 50  0001 C CNN
+F 4 "C17414" H 7400 2050 50  0001 C CNN "LCSC"
+	1    7400 2050
+	0    -1   -1   0   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 616965C0
+P 7550 2050
+AR Path="/61678EBC/61690A95/616965C0" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/616965C0" Ref="#PWR0930"  Part="1" 
+F 0 "#PWR0930" H 7550 1800 50  0001 C CNN
+F 1 "GND" H 7555 1877 50  0000 C CNN
+F 2 "" H 7550 2050 50  0001 C CNN
+F 3 "" H 7550 2050 50  0001 C CNN
+	1    7550 2050
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Device:R R?
+U 1 1 616965BA
+P 7400 1800
+AR Path="/61678EBC/61690A95/616965BA" Ref="R?"  Part="1" 
+AR Path="/61678EBC/616965BA" Ref="R464"  Part="1" 
+F 0 "R464" H 7470 1846 50  0000 L CNN
+F 1 "10k" H 7470 1755 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 7330 1800 50  0001 C CNN
+F 3 "~" H 7400 1800 50  0001 C CNN
+F 4 "C17414" H 7400 1800 50  0001 C CNN "LCSC"
+	1    7400 1800
+	0    -1   -1   0   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 616965B4
+P 7550 1800
+AR Path="/61678EBC/61690A95/616965B4" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/616965B4" Ref="#PWR0931"  Part="1" 
+F 0 "#PWR0931" H 7550 1550 50  0001 C CNN
+F 1 "GND" H 7555 1627 50  0000 C CNN
+F 2 "" H 7550 1800 50  0001 C CNN
+F 3 "" H 7550 1800 50  0001 C CNN
+	1    7550 1800
+	0    -1   -1   0   
+$EndComp
+Text GLabel 6850 1300 2    50   Input ~ 0
+DBUS0
+Text GLabel 6850 1800 2    50   Input ~ 0
+DBUS5
+Text GLabel 6850 1700 2    50   Input ~ 0
+DBUS4
+Text GLabel 6850 1600 2    50   Input ~ 0
+DBUS3
+Text GLabel 6850 1500 2    50   Input ~ 0
+DBUS2
+Text GLabel 6850 1400 2    50   Input ~ 0
+DBUS1
+Text GLabel 6050 3100 0    50   Input ~ 0
+ABUS11
+Text GLabel 6050 2100 0    50   Input ~ 0
+ABUS8
+Text GLabel 6050 2200 0    50   Input ~ 0
+ABUS9
+Text GLabel 6050 2300 0    50   Input ~ 0
+ABUS10
+Text GLabel 6050 1300 0    50   Input ~ 0
+ABUS0
+Text GLabel 6050 1500 0    50   Input ~ 0
+ABUS2
+Text GLabel 6050 1600 0    50   Input ~ 0
+ABUS3
+Text GLabel 6050 1700 0    50   Input ~ 0
+ABUS4
+Text GLabel 6050 1800 0    50   Input ~ 0
+ABUS5
+Text GLabel 6050 1900 0    50   Input ~ 0
+ABUS6
+Text GLabel 6050 2000 0    50   Input ~ 0
+ABUS7
+Text GLabel 6050 1400 0    50   Input ~ 0
+ABUS1
+Text GLabel 8200 2950 0    50   Input ~ 0
+~RDM
+Text GLabel 8600 5800 0    50   Input ~ 0
+~ROM_CE
+Text GLabel 8250 5700 0    50   Input ~ 0
+~RDM
+$Comp
+L power:VCC #PWR?
+U 1 1 616AF344
+P 8600 2850
+AR Path="/61678EBC/61690A95/616AF344" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/616AF344" Ref="#PWR0941"  Part="1" 
+F 0 "#PWR0941" H 8600 2700 50  0001 C CNN
+F 1 "VCC" V 8615 2977 50  0000 L CNN
+F 2 "" H 8600 2850 50  0001 C CNN
+F 3 "" H 8600 2850 50  0001 C CNN
+	1    8600 2850
+	0    -1   -1   0   
+$EndComp
+Text GLabel 8600 3050 0    50   Input ~ 0
+~ROM_CE
+$Comp
+L power:GND #PWR?
+U 1 1 616E1137
+P 1450 7300
+AR Path="/5E49A150/616E1137" Ref="#PWR?"  Part="1" 
+AR Path="/5E56259C/616E1137" Ref="#PWR?"  Part="1" 
+AR Path="/5E5E8038/616E1137" Ref="#PWR?"  Part="1" 
+AR Path="/603475E0/616E1137" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/616E1137" Ref="#PWR0944"  Part="1" 
+F 0 "#PWR0944" H 1450 7050 50  0001 C CNN
+F 1 "GND" H 1455 7127 50  0000 C CNN
+F 2 "" H 1450 7300 50  0001 C CNN
+F 3 "" H 1450 7300 50  0001 C CNN
+	1    1450 7300
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VCC #PWR?
+U 1 1 616E1141
+P 1450 950
+AR Path="/5E49A150/616E1141" Ref="#PWR?"  Part="1" 
+AR Path="/5E56259C/616E1141" Ref="#PWR?"  Part="1" 
+AR Path="/5E5E8038/616E1141" Ref="#PWR?"  Part="1" 
+AR Path="/603475E0/616E1141" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/616E1141" Ref="#PWR03"  Part="1" 
+F 0 "#PWR03" H 1450 800 50  0001 C CNN
+F 1 "VCC" H 1467 1123 50  0000 C CNN
+F 2 "" H 1450 950 50  0001 C CNN
+F 3 "" H 1450 950 50  0001 C CNN
+	1    1450 950 
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R?
+U 1 1 616E1148
+P 1450 1100
+AR Path="/5E49A150/616E1148" Ref="R?"  Part="1" 
+AR Path="/5E56259C/616E1148" Ref="R?"  Part="1" 
+AR Path="/5E5E8038/616E1148" Ref="R?"  Part="1" 
+AR Path="/603475E0/616E1148" Ref="R?"  Part="1" 
+AR Path="/61678EBC/616E1148" Ref="R470"  Part="1" 
+F 0 "R470" H 1520 1146 50  0000 L CNN
+F 1 "10k" H 1520 1055 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 1380 1100 50  0001 C CNN
+F 3 "~" H 1450 1100 50  0001 C CNN
+F 4 "C17414" H 1450 1100 50  0001 C CNN "LCSC"
+	1    1450 1100
+	1    0    0    -1  
+$EndComp
+$Comp
+L Transistor_FET:2N7002 Q?
+U 1 1 616E1151
+P 1350 7100
+AR Path="/5E49A150/616E1151" Ref="Q?"  Part="1" 
+AR Path="/5E56259C/616E1151" Ref="Q?"  Part="1" 
+AR Path="/5E5E8038/616E1151" Ref="Q?"  Part="1" 
+AR Path="/603475E0/616E1151" Ref="Q?"  Part="1" 
+AR Path="/61678EBC/616E1151" Ref="Q1099"  Part="1" 
+F 0 "Q1099" H 1556 7146 50  0000 L CNN
+F 1 "2N7002" H 1556 7055 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 1550 7025 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 1350 7100 50  0001 L CNN
+F 4 "C8545" H 1350 7100 50  0001 C CNN "LCSC"
+	1    1350 7100
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1450 1250 1450 1400
+Text GLabel 1600 1400 2    50   Input ~ 0
+~IO
+Wire Wire Line
+	1600 1400 1450 1400
+Connection ~ 1450 1400
+$Comp
+L Transistor_FET:2N7002 Q?
+U 1 1 616E4821
+P 1350 6700
+AR Path="/5E49A150/616E4821" Ref="Q?"  Part="1" 
+AR Path="/5E56259C/616E4821" Ref="Q?"  Part="1" 
+AR Path="/5E5E8038/616E4821" Ref="Q?"  Part="1" 
+AR Path="/603475E0/616E4821" Ref="Q?"  Part="1" 
+AR Path="/61678EBC/616E4821" Ref="Q1016"  Part="1" 
+F 0 "Q1016" H 1556 6746 50  0000 L CNN
+F 1 "2N7002" H 1556 6655 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 1550 6625 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 1350 6700 50  0001 L CNN
+F 4 "C8545" H 1350 6700 50  0001 C CNN "LCSC"
+	1    1350 6700
+	1    0    0    -1  
+$EndComp
+$Comp
+L Transistor_FET:2N7002 Q?
+U 1 1 616F057C
+P 1350 6300
+AR Path="/5E49A150/616F057C" Ref="Q?"  Part="1" 
+AR Path="/5E56259C/616F057C" Ref="Q?"  Part="1" 
+AR Path="/5E5E8038/616F057C" Ref="Q?"  Part="1" 
+AR Path="/603475E0/616F057C" Ref="Q?"  Part="1" 
+AR Path="/61678EBC/616F057C" Ref="Q1015"  Part="1" 
+F 0 "Q1015" H 1556 6346 50  0000 L CNN
+F 1 "2N7002" H 1556 6255 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 1550 6225 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 1350 6300 50  0001 L CNN
+F 4 "C8545" H 1350 6300 50  0001 C CNN "LCSC"
+	1    1350 6300
+	1    0    0    -1  
+$EndComp
+$Comp
+L Transistor_FET:2N7002 Q?
+U 1 1 616F2CB7
+P 1350 5900
+AR Path="/5E49A150/616F2CB7" Ref="Q?"  Part="1" 
+AR Path="/5E56259C/616F2CB7" Ref="Q?"  Part="1" 
+AR Path="/5E5E8038/616F2CB7" Ref="Q?"  Part="1" 
+AR Path="/603475E0/616F2CB7" Ref="Q?"  Part="1" 
+AR Path="/61678EBC/616F2CB7" Ref="Q933"  Part="1" 
+F 0 "Q933" H 1556 5946 50  0000 L CNN
+F 1 "2N7002" H 1556 5855 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 1550 5825 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 1350 5900 50  0001 L CNN
+F 4 "C8545" H 1350 5900 50  0001 C CNN "LCSC"
+	1    1350 5900
+	1    0    0    -1  
+$EndComp
+$Comp
+L Transistor_FET:2N7002 Q?
+U 1 1 616F53F2
+P 1350 5500
+AR Path="/5E49A150/616F53F2" Ref="Q?"  Part="1" 
+AR Path="/5E56259C/616F53F2" Ref="Q?"  Part="1" 
+AR Path="/5E5E8038/616F53F2" Ref="Q?"  Part="1" 
+AR Path="/603475E0/616F53F2" Ref="Q?"  Part="1" 
+AR Path="/61678EBC/616F53F2" Ref="Q932"  Part="1" 
+F 0 "Q932" H 1556 5546 50  0000 L CNN
+F 1 "2N7002" H 1556 5455 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 1550 5425 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 1350 5500 50  0001 L CNN
+F 4 "C8545" H 1350 5500 50  0001 C CNN "LCSC"
+	1    1350 5500
+	1    0    0    -1  
+$EndComp
+$Comp
+L Transistor_FET:2N7002 Q?
+U 1 1 616F7A00
+P 1350 5100
+AR Path="/5E49A150/616F7A00" Ref="Q?"  Part="1" 
+AR Path="/5E56259C/616F7A00" Ref="Q?"  Part="1" 
+AR Path="/5E5E8038/616F7A00" Ref="Q?"  Part="1" 
+AR Path="/603475E0/616F7A00" Ref="Q?"  Part="1" 
+AR Path="/61678EBC/616F7A00" Ref="Q850"  Part="1" 
+F 0 "Q850" H 1556 5146 50  0000 L CNN
+F 1 "2N7002" H 1556 5055 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 1550 5025 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 1350 5100 50  0001 L CNN
+F 4 "C8545" H 1350 5100 50  0001 C CNN "LCSC"
+	1    1350 5100
+	1    0    0    -1  
+$EndComp
+$Comp
+L Transistor_FET:2N7002 Q?
+U 1 1 616F8DBD
+P 1350 4700
+AR Path="/5E49A150/616F8DBD" Ref="Q?"  Part="1" 
+AR Path="/5E56259C/616F8DBD" Ref="Q?"  Part="1" 
+AR Path="/5E5E8038/616F8DBD" Ref="Q?"  Part="1" 
+AR Path="/603475E0/616F8DBD" Ref="Q?"  Part="1" 
+AR Path="/61678EBC/616F8DBD" Ref="Q849"  Part="1" 
+F 0 "Q849" H 1556 4746 50  0000 L CNN
+F 1 "2N7002" H 1556 4655 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 1550 4625 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 1350 4700 50  0001 L CNN
+F 4 "C8545" H 1350 4700 50  0001 C CNN "LCSC"
+	1    1350 4700
+	1    0    0    -1  
+$EndComp
+$Comp
+L Transistor_FET:2N7002 Q?
+U 1 1 616FBA4B
+P 1350 4300
+AR Path="/5E49A150/616FBA4B" Ref="Q?"  Part="1" 
+AR Path="/5E56259C/616FBA4B" Ref="Q?"  Part="1" 
+AR Path="/5E5E8038/616FBA4B" Ref="Q?"  Part="1" 
+AR Path="/603475E0/616FBA4B" Ref="Q?"  Part="1" 
+AR Path="/61678EBC/616FBA4B" Ref="Q767"  Part="1" 
+F 0 "Q767" H 1556 4346 50  0000 L CNN
+F 1 "2N7002" H 1556 4255 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 1550 4225 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 1350 4300 50  0001 L CNN
+F 4 "C8545" H 1350 4300 50  0001 C CNN "LCSC"
+	1    1350 4300
+	1    0    0    -1  
+$EndComp
+$Comp
+L Transistor_FET:2N7002 Q?
+U 1 1 616FE060
+P 1350 3900
+AR Path="/5E49A150/616FE060" Ref="Q?"  Part="1" 
+AR Path="/5E56259C/616FE060" Ref="Q?"  Part="1" 
+AR Path="/5E5E8038/616FE060" Ref="Q?"  Part="1" 
+AR Path="/603475E0/616FE060" Ref="Q?"  Part="1" 
+AR Path="/61678EBC/616FE060" Ref="Q766"  Part="1" 
+F 0 "Q766" H 1556 3946 50  0000 L CNN
+F 1 "2N7002" H 1556 3855 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 1550 3825 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 1350 3900 50  0001 L CNN
+F 4 "C8545" H 1350 3900 50  0001 C CNN "LCSC"
+	1    1350 3900
+	1    0    0    -1  
+$EndComp
+$Comp
+L Transistor_FET:2N7002 Q?
+U 1 1 61700683
+P 1350 3500
+AR Path="/5E49A150/61700683" Ref="Q?"  Part="1" 
+AR Path="/5E56259C/61700683" Ref="Q?"  Part="1" 
+AR Path="/5E5E8038/61700683" Ref="Q?"  Part="1" 
+AR Path="/603475E0/61700683" Ref="Q?"  Part="1" 
+AR Path="/61678EBC/61700683" Ref="Q684"  Part="1" 
+F 0 "Q684" H 1556 3546 50  0000 L CNN
+F 1 "2N7002" H 1556 3455 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 1550 3425 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 1350 3500 50  0001 L CNN
+F 4 "C8545" H 1350 3500 50  0001 C CNN "LCSC"
+	1    1350 3500
+	1    0    0    -1  
+$EndComp
+$Comp
+L Transistor_FET:2N7002 Q?
+U 1 1 617030AD
+P 1350 3100
+AR Path="/5E49A150/617030AD" Ref="Q?"  Part="1" 
+AR Path="/5E56259C/617030AD" Ref="Q?"  Part="1" 
+AR Path="/5E5E8038/617030AD" Ref="Q?"  Part="1" 
+AR Path="/603475E0/617030AD" Ref="Q?"  Part="1" 
+AR Path="/61678EBC/617030AD" Ref="Q683"  Part="1" 
+F 0 "Q683" H 1556 3146 50  0000 L CNN
+F 1 "2N7002" H 1556 3055 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 1550 3025 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 1350 3100 50  0001 L CNN
+F 4 "C8545" H 1350 3100 50  0001 C CNN "LCSC"
+	1    1350 3100
+	1    0    0    -1  
+$EndComp
+$Comp
+L Transistor_FET:2N7002 Q?
+U 1 1 61705098
+P 1350 2700
+AR Path="/5E49A150/61705098" Ref="Q?"  Part="1" 
+AR Path="/5E56259C/61705098" Ref="Q?"  Part="1" 
+AR Path="/5E5E8038/61705098" Ref="Q?"  Part="1" 
+AR Path="/603475E0/61705098" Ref="Q?"  Part="1" 
+AR Path="/61678EBC/61705098" Ref="Q601"  Part="1" 
+F 0 "Q601" H 1556 2746 50  0000 L CNN
+F 1 "2N7002" H 1556 2655 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 1550 2625 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 1350 2700 50  0001 L CNN
+F 4 "C8545" H 1350 2700 50  0001 C CNN "LCSC"
+	1    1350 2700
+	1    0    0    -1  
+$EndComp
+$Comp
+L Transistor_FET:2N7002 Q?
+U 1 1 61728C4E
+P 3050 4300
+AR Path="/5E49A150/61728C4E" Ref="Q?"  Part="1" 
+AR Path="/5E56259C/61728C4E" Ref="Q?"  Part="1" 
+AR Path="/5E5E8038/61728C4E" Ref="Q?"  Part="1" 
+AR Path="/603475E0/61728C4E" Ref="Q?"  Part="1" 
+AR Path="/61678EBC/61728C4E" Ref="Q1114"  Part="1" 
+F 0 "Q1114" H 3256 4346 50  0000 L CNN
+F 1 "2N7002" H 3256 4255 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 3250 4225 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 3050 4300 50  0001 L CNN
+F 4 "C8545" H 3050 4300 50  0001 C CNN "LCSC"
+	1    3050 4300
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 6172B040
+P 3150 4500
+AR Path="/5E49A150/6172B040" Ref="#PWR?"  Part="1" 
+AR Path="/5E56259C/6172B040" Ref="#PWR?"  Part="1" 
+AR Path="/5E5E8038/6172B040" Ref="#PWR?"  Part="1" 
+AR Path="/603475E0/6172B040" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/6172B040" Ref="#PWR0945"  Part="1" 
+F 0 "#PWR0945" H 3150 4250 50  0001 C CNN
+F 1 "GND" H 3155 4327 50  0000 C CNN
+F 2 "" H 3150 4500 50  0001 C CNN
+F 3 "" H 3150 4500 50  0001 C CNN
+	1    3150 4500
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VCC #PWR?
+U 1 1 6172BE39
+P 3150 3250
+AR Path="/5E49A150/6172BE39" Ref="#PWR?"  Part="1" 
+AR Path="/5E56259C/6172BE39" Ref="#PWR?"  Part="1" 
+AR Path="/5E5E8038/6172BE39" Ref="#PWR?"  Part="1" 
+AR Path="/603475E0/6172BE39" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/6172BE39" Ref="#PWR04"  Part="1" 
+F 0 "#PWR04" H 3150 3100 50  0001 C CNN
+F 1 "VCC" H 3167 3423 50  0000 C CNN
+F 2 "" H 3150 3250 50  0001 C CNN
+F 3 "" H 3150 3250 50  0001 C CNN
+	1    3150 3250
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R?
+U 1 1 6172BE40
+P 3150 3400
+AR Path="/5E49A150/6172BE40" Ref="R?"  Part="1" 
+AR Path="/5E56259C/6172BE40" Ref="R?"  Part="1" 
+AR Path="/5E5E8038/6172BE40" Ref="R?"  Part="1" 
+AR Path="/603475E0/6172BE40" Ref="R?"  Part="1" 
+AR Path="/61678EBC/6172BE40" Ref="R471"  Part="1" 
+F 0 "R471" H 3220 3446 50  0000 L CNN
+F 1 "10k" H 3220 3355 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 3080 3400 50  0001 C CNN
+F 3 "~" H 3150 3400 50  0001 C CNN
+F 4 "C17414" H 3150 3400 50  0001 C CNN "LCSC"
+	1    3150 3400
+	1    0    0    -1  
+$EndComp
+Text GLabel 2850 4300 0    50   Input ~ 0
+~IO
+$Comp
+L Transistor_FET:2N7002 Q?
+U 1 1 6172C277
+P 3050 3900
+AR Path="/5E49A150/6172C277" Ref="Q?"  Part="1" 
+AR Path="/5E56259C/6172C277" Ref="Q?"  Part="1" 
+AR Path="/5E5E8038/6172C277" Ref="Q?"  Part="1" 
+AR Path="/603475E0/6172C277" Ref="Q?"  Part="1" 
+AR Path="/61678EBC/6172C277" Ref="Q1098"  Part="1" 
+F 0 "Q1098" H 3256 3946 50  0000 L CNN
+F 1 "2N7002" H 3256 3855 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 3250 3825 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 3050 3900 50  0001 L CNN
+F 4 "C8545" H 3050 3900 50  0001 C CNN "LCSC"
+	1    3050 3900
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3150 3550 3150 3650
+Text GLabel 3400 3650 2    50   Input ~ 0
+~ROM_CE
+Wire Wire Line
+	3400 3650 3150 3650
+Connection ~ 3150 3650
+Wire Wire Line
+	3150 3650 3150 3700
+$Comp
+L Transistor_FET:2N7002 Q?
+U 1 1 6174F530
+P 3050 6300
+AR Path="/5E49A150/6174F530" Ref="Q?"  Part="1" 
+AR Path="/5E56259C/6174F530" Ref="Q?"  Part="1" 
+AR Path="/5E5E8038/6174F530" Ref="Q?"  Part="1" 
+AR Path="/603475E0/6174F530" Ref="Q?"  Part="1" 
+AR Path="/61678EBC/6174F530" Ref="Q1115"  Part="1" 
+F 0 "Q1115" H 3256 6346 50  0000 L CNN
+F 1 "2N7002" H 3256 6255 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 3250 6225 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 3050 6300 50  0001 L CNN
+F 4 "C8545" H 3050 6300 50  0001 C CNN "LCSC"
+	1    3050 6300
+	1    0    0    -1  
+$EndComp
+Text GLabel 2850 6300 0    50   Input ~ 0
+WRM
+$Comp
+L power:GND #PWR?
+U 1 1 61754A7A
+P 3150 6500
+AR Path="/5E49A150/61754A7A" Ref="#PWR?"  Part="1" 
+AR Path="/5E56259C/61754A7A" Ref="#PWR?"  Part="1" 
+AR Path="/5E5E8038/61754A7A" Ref="#PWR?"  Part="1" 
+AR Path="/603475E0/61754A7A" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/61754A7A" Ref="#PWR0946"  Part="1" 
+F 0 "#PWR0946" H 3150 6250 50  0001 C CNN
+F 1 "GND" H 3155 6327 50  0000 C CNN
+F 2 "" H 3150 6500 50  0001 C CNN
+F 3 "" H 3150 6500 50  0001 C CNN
+	1    3150 6500
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VCC #PWR?
+U 1 1 617557F7
+P 3150 5500
+AR Path="/5E49A150/617557F7" Ref="#PWR?"  Part="1" 
+AR Path="/5E56259C/617557F7" Ref="#PWR?"  Part="1" 
+AR Path="/5E5E8038/617557F7" Ref="#PWR?"  Part="1" 
+AR Path="/603475E0/617557F7" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/617557F7" Ref="#PWR061"  Part="1" 
+F 0 "#PWR061" H 3150 5350 50  0001 C CNN
+F 1 "VCC" H 3167 5673 50  0000 C CNN
+F 2 "" H 3150 5500 50  0001 C CNN
+F 3 "" H 3150 5500 50  0001 C CNN
+	1    3150 5500
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R?
+U 1 1 617557FE
+P 3150 5650
+AR Path="/5E49A150/617557FE" Ref="R?"  Part="1" 
+AR Path="/5E56259C/617557FE" Ref="R?"  Part="1" 
+AR Path="/5E5E8038/617557FE" Ref="R?"  Part="1" 
+AR Path="/603475E0/617557FE" Ref="R?"  Part="1" 
+AR Path="/61678EBC/617557FE" Ref="R472"  Part="1" 
+F 0 "R472" H 3220 5696 50  0000 L CNN
+F 1 "10k" H 3220 5605 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 3080 5650 50  0001 C CNN
+F 3 "~" H 3150 5650 50  0001 C CNN
+F 4 "C17414" H 3150 5650 50  0001 C CNN "LCSC"
+	1    3150 5650
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3150 5800 3150 5950
+Text GLabel 3350 5950 2    50   Input ~ 0
+~WRM
+Wire Wire Line
+	3350 5950 3150 5950
+Connection ~ 3150 5950
+Wire Wire Line
+	3150 5950 3150 6100
+$Comp
+L Transistor_FET:2N7002 Q?
+U 1 1 61759FF1
+P 4200 6350
+AR Path="/5E49A150/61759FF1" Ref="Q?"  Part="1" 
+AR Path="/5E56259C/61759FF1" Ref="Q?"  Part="1" 
+AR Path="/5E5E8038/61759FF1" Ref="Q?"  Part="1" 
+AR Path="/603475E0/61759FF1" Ref="Q?"  Part="1" 
+AR Path="/61678EBC/61759FF1" Ref="Q1116"  Part="1" 
+F 0 "Q1116" H 4406 6396 50  0000 L CNN
+F 1 "2N7002" H 4406 6305 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 4400 6275 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 4200 6350 50  0001 L CNN
+F 4 "C8545" H 4200 6350 50  0001 C CNN "LCSC"
+	1    4200 6350
+	1    0    0    -1  
+$EndComp
+Text GLabel 4000 6350 0    50   Input ~ 0
+RDM
+$Comp
+L power:GND #PWR?
+U 1 1 61759FF8
+P 4300 6550
+AR Path="/5E49A150/61759FF8" Ref="#PWR?"  Part="1" 
+AR Path="/5E56259C/61759FF8" Ref="#PWR?"  Part="1" 
+AR Path="/5E5E8038/61759FF8" Ref="#PWR?"  Part="1" 
+AR Path="/603475E0/61759FF8" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/61759FF8" Ref="#PWR0947"  Part="1" 
+F 0 "#PWR0947" H 4300 6300 50  0001 C CNN
+F 1 "GND" H 4305 6377 50  0000 C CNN
+F 2 "" H 4300 6550 50  0001 C CNN
+F 3 "" H 4300 6550 50  0001 C CNN
+	1    4300 6550
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VCC #PWR?
+U 1 1 61759FFE
+P 4300 5550
+AR Path="/5E49A150/61759FFE" Ref="#PWR?"  Part="1" 
+AR Path="/5E56259C/61759FFE" Ref="#PWR?"  Part="1" 
+AR Path="/5E5E8038/61759FFE" Ref="#PWR?"  Part="1" 
+AR Path="/603475E0/61759FFE" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/61759FFE" Ref="#PWR0943"  Part="1" 
+F 0 "#PWR0943" H 4300 5400 50  0001 C CNN
+F 1 "VCC" H 4317 5723 50  0000 C CNN
+F 2 "" H 4300 5550 50  0001 C CNN
+F 3 "" H 4300 5550 50  0001 C CNN
+	1    4300 5550
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R?
+U 1 1 6175A005
+P 4300 5700
+AR Path="/5E49A150/6175A005" Ref="R?"  Part="1" 
+AR Path="/5E56259C/6175A005" Ref="R?"  Part="1" 
+AR Path="/5E5E8038/6175A005" Ref="R?"  Part="1" 
+AR Path="/603475E0/6175A005" Ref="R?"  Part="1" 
+AR Path="/61678EBC/6175A005" Ref="R473"  Part="1" 
+F 0 "R473" H 4370 5746 50  0000 L CNN
+F 1 "10k" H 4370 5655 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 4230 5700 50  0001 C CNN
+F 3 "~" H 4300 5700 50  0001 C CNN
+F 4 "C17414" H 4300 5700 50  0001 C CNN "LCSC"
+	1    4300 5700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4300 5850 4300 6000
+Text GLabel 4500 6000 2    50   Input ~ 0
+~RDM
+Wire Wire Line
+	4500 6000 4300 6000
+Connection ~ 4300 6000
+Wire Wire Line
+	4300 6000 4300 6150
+Text GLabel 3150 1350 2    50   Input ~ 0
+IO_RD
+Wire Wire Line
+	1450 1400 1450 2350
+Connection ~ 1450 2350
+Wire Wire Line
+	1450 2350 1450 2500
+$Comp
+L Transistor_FET:2N7002 Q?
+U 1 1 617FFEAB
+P 3900 1950
+AR Path="/5E49A150/617FFEAB" Ref="Q?"  Part="1" 
+AR Path="/5E56259C/617FFEAB" Ref="Q?"  Part="1" 
+AR Path="/5E5E8038/617FFEAB" Ref="Q?"  Part="1" 
+AR Path="/603475E0/617FFEAB" Ref="Q?"  Part="1" 
+AR Path="/61678EBC/617FFEAB" Ref="Q1118"  Part="1" 
+F 0 "Q1118" H 4106 1996 50  0000 L CNN
+F 1 "2N7002" H 4106 1905 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 4100 1875 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 3900 1950 50  0001 L CNN
+F 4 "C8545" H 3900 1950 50  0001 C CNN "LCSC"
+	1    3900 1950
+	1    0    0    -1  
+$EndComp
+Text GLabel 3700 1950 0    50   Input ~ 0
+WRM
+Wire Wire Line
+	4000 2350 4000 2150
+Text GLabel 4900 1300 2    50   Input ~ 0
+IO_WR
+$Comp
+L power:VCC #PWR?
+U 1 1 61804FB7
+P 4000 950
+AR Path="/5E49A150/61804FB7" Ref="#PWR?"  Part="1" 
+AR Path="/5E56259C/61804FB7" Ref="#PWR?"  Part="1" 
+AR Path="/5E5E8038/61804FB7" Ref="#PWR?"  Part="1" 
+AR Path="/603475E0/61804FB7" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/61804FB7" Ref="#PWR0935"  Part="1" 
+F 0 "#PWR0935" H 4000 800 50  0001 C CNN
+F 1 "VCC" H 4017 1123 50  0000 C CNN
+F 2 "" H 4000 950 50  0001 C CNN
+F 3 "" H 4000 950 50  0001 C CNN
+	1    4000 950 
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R?
+U 1 1 61804FBE
+P 4000 1100
+AR Path="/5E49A150/61804FBE" Ref="R?"  Part="1" 
+AR Path="/5E56259C/61804FBE" Ref="R?"  Part="1" 
+AR Path="/5E5E8038/61804FBE" Ref="R?"  Part="1" 
+AR Path="/603475E0/61804FBE" Ref="R?"  Part="1" 
+AR Path="/61678EBC/61804FBE" Ref="R465"  Part="1" 
+F 0 "R465" H 4070 1146 50  0000 L CNN
+F 1 "10k" H 4070 1055 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 3930 1100 50  0001 C CNN
+F 3 "~" H 4000 1100 50  0001 C CNN
+F 4 "C17414" H 4000 1100 50  0001 C CNN "LCSC"
+	1    4000 1100
+	1    0    0    -1  
+$EndComp
+Text GLabel 6850 4550 2    50   Input ~ 0
+DBUS11
+Text GLabel 6850 4450 2    50   Input ~ 0
+DBUS10
+Text GLabel 6850 4350 2    50   Input ~ 0
+DBUS9
+Text GLabel 6850 4250 2    50   Input ~ 0
+DBUS8
+Text GLabel 6850 4150 2    50   Input ~ 0
+DBUS7
+Text GLabel 1150 7100 0    50   Input ~ 0
+ABUS11
+Text GLabel 1150 6700 0    50   Input ~ 0
+ABUS10
+Text GLabel 1150 6300 0    50   Input ~ 0
+ABUS9
+Text GLabel 1150 5900 0    50   Input ~ 0
+ABUS8
+Text GLabel 1150 5500 0    50   Input ~ 0
+ABUS7
+Text GLabel 1150 5100 0    50   Input ~ 0
+ABUS6
+Text GLabel 1150 4700 0    50   Input ~ 0
+ABUS5
+Text GLabel 1150 4300 0    50   Input ~ 0
+ABUS4
+Text GLabel 1150 3900 0    50   Input ~ 0
+ABUS3
+Text GLabel 1150 3500 0    50   Input ~ 0
+ABUS2
+Text GLabel 1150 3100 0    50   Input ~ 0
+ABUS1
+Text GLabel 1150 2700 0    50   Input ~ 0
+ABUS0
+Text GLabel 2850 3900 0    50   Input ~ 0
+ABUS11
+$Comp
+L Transistor_FET:2N7002 Q?
+U 1 1 618F8E9B
+P 4650 1550
+AR Path="/5E49A150/618F8E9B" Ref="Q?"  Part="1" 
+AR Path="/5E56259C/618F8E9B" Ref="Q?"  Part="1" 
+AR Path="/5E5E8038/618F8E9B" Ref="Q?"  Part="1" 
+AR Path="/603475E0/618F8E9B" Ref="Q?"  Part="1" 
+AR Path="/61678EBC/618F8E9B" Ref="Q1126"  Part="1" 
+F 0 "Q1126" H 4856 1596 50  0000 L CNN
+F 1 "2N7002" H 4856 1505 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 4850 1475 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 4650 1550 50  0001 L CNN
+F 4 "C8545" H 4650 1550 50  0001 C CNN "LCSC"
+	1    4650 1550
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 618FBA07
+P 4750 1750
+AR Path="/5E49A150/618FBA07" Ref="#PWR?"  Part="1" 
+AR Path="/5E56259C/618FBA07" Ref="#PWR?"  Part="1" 
+AR Path="/5E5E8038/618FBA07" Ref="#PWR?"  Part="1" 
+AR Path="/603475E0/618FBA07" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/618FBA07" Ref="#PWR0934"  Part="1" 
+F 0 "#PWR0934" H 4750 1500 50  0001 C CNN
+F 1 "GND" H 4755 1577 50  0000 C CNN
+F 2 "" H 4750 1750 50  0001 C CNN
+F 3 "" H 4750 1750 50  0001 C CNN
+	1    4750 1750
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4000 1250 4000 1550
+$Comp
+L power:VCC #PWR?
+U 1 1 618FF422
+P 4750 950
+AR Path="/5E49A150/618FF422" Ref="#PWR?"  Part="1" 
+AR Path="/5E56259C/618FF422" Ref="#PWR?"  Part="1" 
+AR Path="/5E5E8038/618FF422" Ref="#PWR?"  Part="1" 
+AR Path="/603475E0/618FF422" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/618FF422" Ref="#PWR0970"  Part="1" 
+F 0 "#PWR0970" H 4750 800 50  0001 C CNN
+F 1 "VCC" H 4767 1123 50  0000 C CNN
+F 2 "" H 4750 950 50  0001 C CNN
+F 3 "" H 4750 950 50  0001 C CNN
+	1    4750 950 
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R?
+U 1 1 618FF429
+P 4750 1100
+AR Path="/5E49A150/618FF429" Ref="R?"  Part="1" 
+AR Path="/5E56259C/618FF429" Ref="R?"  Part="1" 
+AR Path="/5E5E8038/618FF429" Ref="R?"  Part="1" 
+AR Path="/603475E0/618FF429" Ref="R?"  Part="1" 
+AR Path="/61678EBC/618FF429" Ref="R463"  Part="1" 
+F 0 "R463" H 4820 1146 50  0000 L CNN
+F 1 "10k" H 4820 1055 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 4680 1100 50  0001 C CNN
+F 3 "~" H 4750 1100 50  0001 C CNN
+F 4 "C17414" H 4750 1100 50  0001 C CNN "LCSC"
+	1    4750 1100
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4450 1550 4000 1550
+Connection ~ 4000 1550
+Wire Wire Line
+	4000 1550 4000 1750
+Wire Wire Line
+	4750 1250 4750 1300
+Wire Wire Line
+	4750 1300 4900 1300
+Connection ~ 4750 1300
+Wire Wire Line
+	4750 1300 4750 1350
+$Comp
+L Memory_EEPROM:28C256 U1
+U 1 1 600DBE78
+P 9000 2150
+F 0 "U1" H 9250 3350 50  0000 C CNN
+F 1 "28C256" H 9300 3250 50  0000 C CNN
+F 2 "Package_DIP:DIP-28_W15.24mm_Socket" H 9000 2150 50  0001 C CNN
+F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/doc0006.pdf" H 9000 2150 50  0001 C CNN
+	1    9000 2150
+	1    0    0    -1  
+$EndComp
+$Comp
+L Memory_EEPROM:28C256 U2
+U 1 1 60075858
+P 6450 2200
+F 0 "U2" H 6700 3400 50  0000 C CNN
+F 1 "62C256" H 6800 3300 50  0000 C CNN
+F 2 "Package_DIP:DIP-28_W15.24mm_Socket" H 6450 2200 50  0001 C CNN
+F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/doc0006.pdf" H 6450 2200 50  0001 C CNN
+F 4 "C14323" H 6450 2200 50  0001 C CNN "LCSC"
+	1    6450 2200
+	1    0    0    -1  
+$EndComp
+$Comp
+L Memory_EEPROM:28C256 U3
+U 1 1 6007FDBC
+P 6450 4950
+F 0 "U3" H 6700 6150 50  0000 C CNN
+F 1 "62C256" H 6800 6050 50  0000 C CNN
+F 2 "Package_DIP:DIP-28_W15.24mm_Socket" H 6450 4950 50  0001 C CNN
+F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/doc0006.pdf" H 6450 4950 50  0001 C CNN
+F 4 "C14323" H 6450 4950 50  0001 C CNN "LCSC"
+	1    6450 4950
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VCC #PWR?
+U 1 1 60080D8E
+P 6450 1100
+AR Path="/61678EBC/61690A95/60080D8E" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/60080D8E" Ref="#PWR0256"  Part="1" 
+F 0 "#PWR0256" H 6450 950 50  0001 C CNN
+F 1 "VCC" V 6465 1227 50  0000 L CNN
+F 2 "" H 6450 1100 50  0001 C CNN
+F 3 "" H 6450 1100 50  0001 C CNN
+	1    6450 1100
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VCC #PWR?
+U 1 1 60081459
+P 6450 3850
+AR Path="/61678EBC/61690A95/60081459" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/60081459" Ref="#PWR0257"  Part="1" 
+F 0 "#PWR0257" H 6450 3700 50  0001 C CNN
+F 1 "VCC" V 6465 3977 50  0000 L CNN
+F 2 "" H 6450 3850 50  0001 C CNN
+F 3 "" H 6450 3850 50  0001 C CNN
+	1    6450 3850
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 60081C9B
+P 6450 3300
+AR Path="/61678EBC/61690A95/60081C9B" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/60081C9B" Ref="#PWR0258"  Part="1" 
+F 0 "#PWR0258" H 6450 3050 50  0001 C CNN
+F 1 "GND" H 6455 3127 50  0000 C CNN
+F 2 "" H 6450 3300 50  0001 C CNN
+F 3 "" H 6450 3300 50  0001 C CNN
+	1    6450 3300
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 600821D5
+P 6450 6050
+AR Path="/61678EBC/61690A95/600821D5" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/600821D5" Ref="#PWR0259"  Part="1" 
+F 0 "#PWR0259" H 6450 5800 50  0001 C CNN
+F 1 "GND" H 6455 5877 50  0000 C CNN
+F 2 "" H 6450 6050 50  0001 C CNN
+F 3 "" H 6450 6050 50  0001 C CNN
+	1    6450 6050
+	1    0    0    -1  
+$EndComp
+Text GLabel 6050 4850 0    50   Input ~ 0
+ABUS8
+Text GLabel 6050 4950 0    50   Input ~ 0
+ABUS9
+Text GLabel 6050 5050 0    50   Input ~ 0
+ABUS10
+Text GLabel 6050 4050 0    50   Input ~ 0
+ABUS0
+Text GLabel 6050 4250 0    50   Input ~ 0
+ABUS2
+Text GLabel 6050 4350 0    50   Input ~ 0
+ABUS3
+Text GLabel 6050 4450 0    50   Input ~ 0
+ABUS4
+Text GLabel 6050 4550 0    50   Input ~ 0
+ABUS5
+Text GLabel 6050 4650 0    50   Input ~ 0
+ABUS6
+Text GLabel 6050 4750 0    50   Input ~ 0
+ABUS7
+Text GLabel 6050 4150 0    50   Input ~ 0
+ABUS1
+Text GLabel 6050 5850 0    50   Input ~ 0
+ABUS11
+Wire Wire Line
+	5650 3000 6050 3000
+Wire Wire Line
+	6050 5750 5700 5750
+Wire Wire Line
+	6850 4650 7300 4650
+Wire Wire Line
+	6850 4750 7300 4750
+$Comp
+L power:GND #PWR?
+U 1 1 600CD0A0
+P 6050 2700
+AR Path="/61678EBC/61690A95/600CD0A0" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/600CD0A0" Ref="#PWR0925"  Part="1" 
+F 0 "#PWR0925" H 6050 2450 50  0001 C CNN
+F 1 "GND" H 6055 2527 50  0000 C CNN
+F 2 "" H 6050 2700 50  0001 C CNN
+F 3 "" H 6050 2700 50  0001 C CNN
+	1    6050 2700
+	0    1    1    0   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 600CD524
+P 6050 2600
+AR Path="/61678EBC/61690A95/600CD524" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/600CD524" Ref="#PWR0928"  Part="1" 
+F 0 "#PWR0928" H 6050 2350 50  0001 C CNN
+F 1 "GND" H 6055 2427 50  0000 C CNN
+F 2 "" H 6050 2600 50  0001 C CNN
+F 3 "" H 6050 2600 50  0001 C CNN
+	1    6050 2600
+	0    1    1    0   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 600CD73F
+P 6050 2500
+AR Path="/61678EBC/61690A95/600CD73F" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/600CD73F" Ref="#PWR0929"  Part="1" 
+F 0 "#PWR0929" H 6050 2250 50  0001 C CNN
+F 1 "GND" H 6055 2327 50  0000 C CNN
+F 2 "" H 6050 2500 50  0001 C CNN
+F 3 "" H 6050 2500 50  0001 C CNN
+	1    6050 2500
+	0    1    1    0   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 600CD85B
+P 6050 2400
+AR Path="/61678EBC/61690A95/600CD85B" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/600CD85B" Ref="#PWR0932"  Part="1" 
+F 0 "#PWR0932" H 6050 2150 50  0001 C CNN
+F 1 "GND" H 6055 2227 50  0000 C CNN
+F 2 "" H 6050 2400 50  0001 C CNN
+F 3 "" H 6050 2400 50  0001 C CNN
+	1    6050 2400
+	0    1    1    0   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 600CDA54
+P 6050 5150
+AR Path="/61678EBC/61690A95/600CDA54" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/600CDA54" Ref="#PWR01032"  Part="1" 
+F 0 "#PWR01032" H 6050 4900 50  0001 C CNN
+F 1 "GND" H 6055 4977 50  0000 C CNN
+F 2 "" H 6050 5150 50  0001 C CNN
+F 3 "" H 6050 5150 50  0001 C CNN
+	1    6050 5150
+	0    1    1    0   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 600CE01A
+P 6050 5250
+AR Path="/61678EBC/61690A95/600CE01A" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/600CE01A" Ref="#PWR01033"  Part="1" 
+F 0 "#PWR01033" H 6050 5000 50  0001 C CNN
+F 1 "GND" H 6055 5077 50  0000 C CNN
+F 2 "" H 6050 5250 50  0001 C CNN
+F 3 "" H 6050 5250 50  0001 C CNN
+	1    6050 5250
+	0    1    1    0   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 600CE28A
+P 6050 5350
+AR Path="/61678EBC/61690A95/600CE28A" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/600CE28A" Ref="#PWR01034"  Part="1" 
+F 0 "#PWR01034" H 6050 5100 50  0001 C CNN
+F 1 "GND" H 6055 5177 50  0000 C CNN
+F 2 "" H 6050 5350 50  0001 C CNN
+F 3 "" H 6050 5350 50  0001 C CNN
+	1    6050 5350
+	0    1    1    0   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 600CE4B6
+P 6050 5450
+AR Path="/61678EBC/61690A95/600CE4B6" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/600CE4B6" Ref="#PWR01035"  Part="1" 
+F 0 "#PWR01035" H 6050 5200 50  0001 C CNN
+F 1 "GND" H 6055 5277 50  0000 C CNN
+F 2 "" H 6050 5450 50  0001 C CNN
+F 3 "" H 6050 5450 50  0001 C CNN
+	1    6050 5450
+	0    1    1    0   
+$EndComp
+$Comp
+L power:VCC #PWR?
+U 1 1 600D8204
+P 9000 1050
+AR Path="/61678EBC/61690A95/600D8204" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/600D8204" Ref="#PWR01036"  Part="1" 
+F 0 "#PWR01036" H 9000 900 50  0001 C CNN
+F 1 "VCC" V 9015 1177 50  0000 L CNN
+F 2 "" H 9000 1050 50  0001 C CNN
+F 3 "" H 9000 1050 50  0001 C CNN
+	1    9000 1050
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 600D87D3
+P 9000 3250
+AR Path="/61678EBC/61690A95/600D87D3" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/600D87D3" Ref="#PWR01037"  Part="1" 
+F 0 "#PWR01037" H 9000 3000 50  0001 C CNN
+F 1 "GND" H 9005 3077 50  0000 C CNN
+F 2 "" H 9000 3250 50  0001 C CNN
+F 3 "" H 9000 3250 50  0001 C CNN
+	1    9000 3250
+	1    0    0    -1  
+$EndComp
+Text GLabel 8600 2050 0    50   Input ~ 0
+ABUS8
+Text GLabel 8600 2150 0    50   Input ~ 0
+ABUS9
+Text GLabel 8600 2250 0    50   Input ~ 0
+ABUS10
+Text GLabel 8600 1250 0    50   Input ~ 0
+ABUS0
+Text GLabel 8600 1450 0    50   Input ~ 0
+ABUS2
+Text GLabel 8600 1550 0    50   Input ~ 0
+ABUS3
+Text GLabel 8600 1650 0    50   Input ~ 0
+ABUS4
+Text GLabel 8600 1750 0    50   Input ~ 0
+ABUS5
+Text GLabel 8600 1850 0    50   Input ~ 0
+ABUS6
+Text GLabel 8600 1950 0    50   Input ~ 0
+ABUS7
+Text GLabel 8600 1350 0    50   Input ~ 0
+ABUS1
+Text GLabel 9400 1250 2    50   Input ~ 0
+DBUS0
+Text GLabel 9400 1750 2    50   Input ~ 0
+DBUS5
+Text GLabel 9400 1650 2    50   Input ~ 0
+DBUS4
+Text GLabel 9400 1550 2    50   Input ~ 0
+DBUS3
+Text GLabel 9400 1450 2    50   Input ~ 0
+DBUS2
+Text GLabel 9400 1350 2    50   Input ~ 0
+DBUS1
+Text GLabel 9400 4000 2    50   Input ~ 0
+DBUS6
+Text GLabel 9400 4500 2    50   Input ~ 0
+DBUS11
+Text GLabel 9400 4400 2    50   Input ~ 0
+DBUS10
+Text GLabel 9400 4300 2    50   Input ~ 0
+DBUS9
+Text GLabel 9400 4200 2    50   Input ~ 0
+DBUS8
+Text GLabel 9400 4100 2    50   Input ~ 0
+DBUS7
+$Comp
+L Memory_EEPROM:28C256 U4
+U 1 1 600EC754
+P 9000 4900
+F 0 "U4" H 9250 6100 50  0000 C CNN
+F 1 "28C256" H 9300 6000 50  0000 C CNN
+F 2 "Package_DIP:DIP-28_W15.24mm_Socket" H 9000 4900 50  0001 C CNN
+F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/doc0006.pdf" H 9000 4900 50  0001 C CNN
+	1    9000 4900
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VCC #PWR?
+U 1 1 600EDFB7
+P 9000 3800
+AR Path="/61678EBC/61690A95/600EDFB7" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/600EDFB7" Ref="#PWR0933"  Part="1" 
+F 0 "#PWR0933" H 9000 3650 50  0001 C CNN
+F 1 "VCC" V 9015 3927 50  0000 L CNN
+F 2 "" H 9000 3800 50  0001 C CNN
+F 3 "" H 9000 3800 50  0001 C CNN
+	1    9000 3800
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 600EE538
+P 9000 6000
+AR Path="/61678EBC/61690A95/600EE538" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/600EE538" Ref="#PWR0936"  Part="1" 
+F 0 "#PWR0936" H 9000 5750 50  0001 C CNN
+F 1 "GND" H 9005 5827 50  0000 C CNN
+F 2 "" H 9000 6000 50  0001 C CNN
+F 3 "" H 9000 6000 50  0001 C CNN
+	1    9000 6000
+	1    0    0    -1  
+$EndComp
+NoConn ~ 9400 4700
+NoConn ~ 9400 4600
+NoConn ~ 9400 1850
+NoConn ~ 9400 1950
+Wire Wire Line
+	8600 2950 8200 2950
+$Comp
+L power:VCC #PWR?
+U 1 1 600F67DA
+P 8600 5600
+AR Path="/61678EBC/61690A95/600F67DA" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/600F67DA" Ref="#PWR0937"  Part="1" 
+F 0 "#PWR0937" H 8600 5450 50  0001 C CNN
+F 1 "VCC" V 8615 5727 50  0000 L CNN
+F 2 "" H 8600 5600 50  0001 C CNN
+F 3 "" H 8600 5600 50  0001 C CNN
+	1    8600 5600
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	8600 5700 8250 5700
+Text GLabel 8600 4800 0    50   Input ~ 0
+ABUS8
+Text GLabel 8600 4900 0    50   Input ~ 0
+ABUS9
+Text GLabel 8600 5000 0    50   Input ~ 0
+ABUS10
+Text GLabel 8600 4000 0    50   Input ~ 0
+ABUS0
+Text GLabel 8600 4200 0    50   Input ~ 0
+ABUS2
+Text GLabel 8600 4300 0    50   Input ~ 0
+ABUS3
+Text GLabel 8600 4400 0    50   Input ~ 0
+ABUS4
+Text GLabel 8600 4500 0    50   Input ~ 0
+ABUS5
+Text GLabel 8600 4600 0    50   Input ~ 0
+ABUS6
+Text GLabel 8600 4700 0    50   Input ~ 0
+ABUS7
+Text GLabel 8600 4100 0    50   Input ~ 0
+ABUS1
+$Comp
+L power:GND #PWR?
+U 1 1 601069B1
+P 8600 5100
+AR Path="/61678EBC/61690A95/601069B1" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/601069B1" Ref="#PWR01039"  Part="1" 
+F 0 "#PWR01039" H 8600 4850 50  0001 C CNN
+F 1 "GND" H 8605 4927 50  0000 C CNN
+F 2 "" H 8600 5100 50  0001 C CNN
+F 3 "" H 8600 5100 50  0001 C CNN
+	1    8600 5100
+	0    1    1    0   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 60106FA0
+P 8600 5200
+AR Path="/61678EBC/61690A95/60106FA0" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/60106FA0" Ref="#PWR01040"  Part="1" 
+F 0 "#PWR01040" H 8600 4950 50  0001 C CNN
+F 1 "GND" H 8605 5027 50  0000 C CNN
+F 2 "" H 8600 5200 50  0001 C CNN
+F 3 "" H 8600 5200 50  0001 C CNN
+	1    8600 5200
+	0    1    1    0   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 601071FF
+P 8600 5300
+AR Path="/61678EBC/61690A95/601071FF" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/601071FF" Ref="#PWR01041"  Part="1" 
+F 0 "#PWR01041" H 8600 5050 50  0001 C CNN
+F 1 "GND" H 8605 5127 50  0000 C CNN
+F 2 "" H 8600 5300 50  0001 C CNN
+F 3 "" H 8600 5300 50  0001 C CNN
+	1    8600 5300
+	0    1    1    0   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 6010735F
+P 8600 5400
+AR Path="/61678EBC/61690A95/6010735F" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/6010735F" Ref="#PWR01042"  Part="1" 
+F 0 "#PWR01042" H 8600 5150 50  0001 C CNN
+F 1 "GND" H 8605 5227 50  0000 C CNN
+F 2 "" H 8600 5400 50  0001 C CNN
+F 3 "" H 8600 5400 50  0001 C CNN
+	1    8600 5400
+	0    1    1    0   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 6010759C
+P 8600 2350
+AR Path="/61678EBC/61690A95/6010759C" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/6010759C" Ref="#PWR083"  Part="1" 
+F 0 "#PWR083" H 8600 2100 50  0001 C CNN
+F 1 "GND" H 8605 2177 50  0000 C CNN
+F 2 "" H 8600 2350 50  0001 C CNN
+F 3 "" H 8600 2350 50  0001 C CNN
+	1    8600 2350
+	0    1    1    0   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 60107FC1
+P 8600 2450
+AR Path="/61678EBC/61690A95/60107FC1" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/60107FC1" Ref="#PWR0940"  Part="1" 
+F 0 "#PWR0940" H 8600 2200 50  0001 C CNN
+F 1 "GND" H 8605 2277 50  0000 C CNN
+F 2 "" H 8600 2450 50  0001 C CNN
+F 3 "" H 8600 2450 50  0001 C CNN
+	1    8600 2450
+	0    1    1    0   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 601081BA
+P 8600 2550
+AR Path="/61678EBC/61690A95/601081BA" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/601081BA" Ref="#PWR0942"  Part="1" 
+F 0 "#PWR0942" H 8600 2300 50  0001 C CNN
+F 1 "GND" H 8605 2377 50  0000 C CNN
+F 2 "" H 8600 2550 50  0001 C CNN
+F 3 "" H 8600 2550 50  0001 C CNN
+	1    8600 2550
+	0    1    1    0   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 60108391
+P 8600 2650
+AR Path="/61678EBC/61690A95/60108391" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/60108391" Ref="#PWR01038"  Part="1" 
+F 0 "#PWR01038" H 8600 2400 50  0001 C CNN
+F 1 "GND" H 8605 2477 50  0000 C CNN
+F 2 "" H 8600 2650 50  0001 C CNN
+F 3 "" H 8600 2650 50  0001 C CNN
+	1    8600 2650
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	1450 2350 2250 2350
+$Comp
+L Transistor_FET:2N7002 Q?
+U 1 1 60166A79
+P 2150 1950
+AR Path="/5E49A150/60166A79" Ref="Q?"  Part="1" 
+AR Path="/5E56259C/60166A79" Ref="Q?"  Part="1" 
+AR Path="/5E5E8038/60166A79" Ref="Q?"  Part="1" 
+AR Path="/603475E0/60166A79" Ref="Q?"  Part="1" 
+AR Path="/61678EBC/60166A79" Ref="Q250"  Part="1" 
+F 0 "Q250" H 2356 1996 50  0000 L CNN
+F 1 "2N7002" H 2356 1905 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 2350 1875 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 2150 1950 50  0001 L CNN
+F 4 "C8545" H 2150 1950 50  0001 C CNN "LCSC"
+	1    2150 1950
+	1    0    0    -1  
+$EndComp
+Text GLabel 1950 1950 0    50   Input ~ 0
+RDM
+Wire Wire Line
+	2250 2150 2250 2350
+Connection ~ 2250 2350
+$Comp
+L power:VCC #PWR?
+U 1 1 6016C917
+P 2250 1150
+AR Path="/5E49A150/6016C917" Ref="#PWR?"  Part="1" 
+AR Path="/5E56259C/6016C917" Ref="#PWR?"  Part="1" 
+AR Path="/5E5E8038/6016C917" Ref="#PWR?"  Part="1" 
+AR Path="/603475E0/6016C917" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/6016C917" Ref="#PWR01044"  Part="1" 
+F 0 "#PWR01044" H 2250 1000 50  0001 C CNN
+F 1 "VCC" H 2267 1323 50  0000 C CNN
+F 2 "" H 2250 1150 50  0001 C CNN
+F 3 "" H 2250 1150 50  0001 C CNN
+	1    2250 1150
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R?
+U 1 1 6016C91E
+P 2250 1300
+AR Path="/5E49A150/6016C91E" Ref="R?"  Part="1" 
+AR Path="/5E56259C/6016C91E" Ref="R?"  Part="1" 
+AR Path="/5E5E8038/6016C91E" Ref="R?"  Part="1" 
+AR Path="/603475E0/6016C91E" Ref="R?"  Part="1" 
+AR Path="/61678EBC/6016C91E" Ref="R105"  Part="1" 
+F 0 "R105" H 2320 1346 50  0000 L CNN
+F 1 "10k" H 2320 1255 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 2180 1300 50  0001 C CNN
+F 3 "~" H 2250 1300 50  0001 C CNN
+F 4 "C17414" H 2250 1300 50  0001 C CNN "LCSC"
+	1    2250 1300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2250 1450 2250 1600
+$Comp
+L Transistor_FET:2N7002 Q?
+U 1 1 60174179
+P 2900 1600
+AR Path="/5E49A150/60174179" Ref="Q?"  Part="1" 
+AR Path="/5E56259C/60174179" Ref="Q?"  Part="1" 
+AR Path="/5E5E8038/60174179" Ref="Q?"  Part="1" 
+AR Path="/603475E0/60174179" Ref="Q?"  Part="1" 
+AR Path="/61678EBC/60174179" Ref="Q249"  Part="1" 
+F 0 "Q249" H 3106 1646 50  0000 L CNN
+F 1 "2N7002" H 3106 1555 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 3100 1525 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 2900 1600 50  0001 L CNN
+F 4 "C8545" H 2900 1600 50  0001 C CNN "LCSC"
+	1    2900 1600
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 6017417F
+P 3000 1800
+AR Path="/5E49A150/6017417F" Ref="#PWR?"  Part="1" 
+AR Path="/5E56259C/6017417F" Ref="#PWR?"  Part="1" 
+AR Path="/5E5E8038/6017417F" Ref="#PWR?"  Part="1" 
+AR Path="/603475E0/6017417F" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/6017417F" Ref="#PWR01045"  Part="1" 
+F 0 "#PWR01045" H 3000 1550 50  0001 C CNN
+F 1 "GND" H 3005 1627 50  0000 C CNN
+F 2 "" H 3000 1800 50  0001 C CNN
+F 3 "" H 3000 1800 50  0001 C CNN
+	1    3000 1800
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VCC #PWR?
+U 1 1 60174185
+P 3000 1000
+AR Path="/5E49A150/60174185" Ref="#PWR?"  Part="1" 
+AR Path="/5E56259C/60174185" Ref="#PWR?"  Part="1" 
+AR Path="/5E5E8038/60174185" Ref="#PWR?"  Part="1" 
+AR Path="/603475E0/60174185" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/60174185" Ref="#PWR01043"  Part="1" 
+F 0 "#PWR01043" H 3000 850 50  0001 C CNN
+F 1 "VCC" H 3017 1173 50  0000 C CNN
+F 2 "" H 3000 1000 50  0001 C CNN
+F 3 "" H 3000 1000 50  0001 C CNN
+	1    3000 1000
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R?
+U 1 1 6017418C
+P 3000 1150
+AR Path="/5E49A150/6017418C" Ref="R?"  Part="1" 
+AR Path="/5E56259C/6017418C" Ref="R?"  Part="1" 
+AR Path="/5E5E8038/6017418C" Ref="R?"  Part="1" 
+AR Path="/603475E0/6017418C" Ref="R?"  Part="1" 
+AR Path="/61678EBC/6017418C" Ref="R94"  Part="1" 
+F 0 "R94" H 3070 1196 50  0000 L CNN
+F 1 "10k" H 3070 1105 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 2930 1150 50  0001 C CNN
+F 3 "~" H 3000 1150 50  0001 C CNN
+F 4 "C17414" H 3000 1150 50  0001 C CNN "LCSC"
+	1    3000 1150
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3000 1300 3000 1350
+Wire Wire Line
+	3000 1350 3150 1350
+Connection ~ 3000 1350
+Wire Wire Line
+	3000 1350 3000 1400
+Wire Wire Line
+	2250 2350 4000 2350
+Wire Wire Line
+	2700 1600 2250 1600
+Connection ~ 2250 1600
+Wire Wire Line
+	2250 1600 2250 1750
+$Comp
+L Device:C C?
+U 1 1 601F5440
+P 10200 2600
+AR Path="/5EE0CB27/601F5440" Ref="C?"  Part="1" 
+AR Path="/5EE1C63A/601F5440" Ref="C?"  Part="1" 
+AR Path="/5FA415E1/601F5440" Ref="C?"  Part="1" 
+AR Path="/601F5440" Ref="C?"  Part="1" 
+AR Path="/60C69043/601F5440" Ref="C?"  Part="1" 
+AR Path="/61678EBC/601F5440" Ref="C19"  Part="1" 
+F 0 "C19" V 9948 2600 50  0000 C CNN
+F 1 "0.1u" V 10039 2600 50  0000 C CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 10238 2450 50  0001 C CNN
+F 3 "~" H 10200 2600 50  0001 C CNN
+F 4 "C49678" H 10200 2600 50  0001 C CNN "LCSC"
+	1    10200 2600
+	-1   0    0    1   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 601F5446
+P 10200 2750
+AR Path="/5E49A150/601F5446" Ref="#PWR?"  Part="1" 
+AR Path="/5E56259C/601F5446" Ref="#PWR?"  Part="1" 
+AR Path="/5E5E8038/601F5446" Ref="#PWR?"  Part="1" 
+AR Path="/5EE1C63A/601F5446" Ref="#PWR?"  Part="1" 
+AR Path="/5FA415E1/601F5446" Ref="#PWR?"  Part="1" 
+AR Path="/601F5446" Ref="#PWR?"  Part="1" 
+AR Path="/60C69043/601F5446" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/601F5446" Ref="#PWR01064"  Part="1" 
+F 0 "#PWR01064" H 10200 2500 50  0001 C CNN
+F 1 "GND" H 10205 2577 50  0000 C CNN
+F 2 "" H 10200 2750 50  0001 C CNN
+F 3 "" H 10200 2750 50  0001 C CNN
+	1    10200 2750
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VCC #PWR?
+U 1 1 601F5C20
+P 10200 2450
+AR Path="/61678EBC/61690A95/601F5C20" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/601F5C20" Ref="#PWR01065"  Part="1" 
+F 0 "#PWR01065" H 10200 2300 50  0001 C CNN
+F 1 "VCC" V 10215 2577 50  0000 L CNN
+F 2 "" H 10200 2450 50  0001 C CNN
+F 3 "" H 10200 2450 50  0001 C CNN
+	1    10200 2450
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C?
+U 1 1 601F67C5
+P 10650 2600
+AR Path="/5EE0CB27/601F67C5" Ref="C?"  Part="1" 
+AR Path="/5EE1C63A/601F67C5" Ref="C?"  Part="1" 
+AR Path="/5FA415E1/601F67C5" Ref="C?"  Part="1" 
+AR Path="/601F67C5" Ref="C?"  Part="1" 
+AR Path="/60C69043/601F67C5" Ref="C?"  Part="1" 
+AR Path="/61678EBC/601F67C5" Ref="C20"  Part="1" 
+F 0 "C20" V 10398 2600 50  0000 C CNN
+F 1 "0.1u" V 10489 2600 50  0000 C CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 10688 2450 50  0001 C CNN
+F 3 "~" H 10650 2600 50  0001 C CNN
+F 4 "C49678" H 10650 2600 50  0001 C CNN "LCSC"
+	1    10650 2600
+	-1   0    0    1   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 601F67CB
+P 10650 2750
+AR Path="/5E49A150/601F67CB" Ref="#PWR?"  Part="1" 
+AR Path="/5E56259C/601F67CB" Ref="#PWR?"  Part="1" 
+AR Path="/5E5E8038/601F67CB" Ref="#PWR?"  Part="1" 
+AR Path="/5EE1C63A/601F67CB" Ref="#PWR?"  Part="1" 
+AR Path="/5FA415E1/601F67CB" Ref="#PWR?"  Part="1" 
+AR Path="/601F67CB" Ref="#PWR?"  Part="1" 
+AR Path="/60C69043/601F67CB" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/601F67CB" Ref="#PWR01066"  Part="1" 
+F 0 "#PWR01066" H 10650 2500 50  0001 C CNN
+F 1 "GND" H 10655 2577 50  0000 C CNN
+F 2 "" H 10650 2750 50  0001 C CNN
+F 3 "" H 10650 2750 50  0001 C CNN
+	1    10650 2750
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VCC #PWR?
+U 1 1 601F67D1
+P 10650 2450
+AR Path="/61678EBC/61690A95/601F67D1" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/601F67D1" Ref="#PWR01067"  Part="1" 
+F 0 "#PWR01067" H 10650 2300 50  0001 C CNN
+F 1 "VCC" V 10665 2577 50  0000 L CNN
+F 2 "" H 10650 2450 50  0001 C CNN
+F 3 "" H 10650 2450 50  0001 C CNN
+	1    10650 2450
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C?
+U 1 1 601F844A
+P 10200 3450
+AR Path="/5EE0CB27/601F844A" Ref="C?"  Part="1" 
+AR Path="/5EE1C63A/601F844A" Ref="C?"  Part="1" 
+AR Path="/5FA415E1/601F844A" Ref="C?"  Part="1" 
+AR Path="/601F844A" Ref="C?"  Part="1" 
+AR Path="/60C69043/601F844A" Ref="C?"  Part="1" 
+AR Path="/61678EBC/601F844A" Ref="C21"  Part="1" 
+F 0 "C21" V 9948 3450 50  0000 C CNN
+F 1 "0.1u" V 10039 3450 50  0000 C CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 10238 3300 50  0001 C CNN
+F 3 "~" H 10200 3450 50  0001 C CNN
+F 4 "C49678" H 10200 3450 50  0001 C CNN "LCSC"
+	1    10200 3450
+	-1   0    0    1   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 601F8450
+P 10200 3600
+AR Path="/5E49A150/601F8450" Ref="#PWR?"  Part="1" 
+AR Path="/5E56259C/601F8450" Ref="#PWR?"  Part="1" 
+AR Path="/5E5E8038/601F8450" Ref="#PWR?"  Part="1" 
+AR Path="/5EE1C63A/601F8450" Ref="#PWR?"  Part="1" 
+AR Path="/5FA415E1/601F8450" Ref="#PWR?"  Part="1" 
+AR Path="/601F8450" Ref="#PWR?"  Part="1" 
+AR Path="/60C69043/601F8450" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/601F8450" Ref="#PWR01068"  Part="1" 
+F 0 "#PWR01068" H 10200 3350 50  0001 C CNN
+F 1 "GND" H 10205 3427 50  0000 C CNN
+F 2 "" H 10200 3600 50  0001 C CNN
+F 3 "" H 10200 3600 50  0001 C CNN
+	1    10200 3600
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VCC #PWR?
+U 1 1 601F8456
+P 10200 3300
+AR Path="/61678EBC/61690A95/601F8456" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/601F8456" Ref="#PWR01069"  Part="1" 
+F 0 "#PWR01069" H 10200 3150 50  0001 C CNN
+F 1 "VCC" V 10215 3427 50  0000 L CNN
+F 2 "" H 10200 3300 50  0001 C CNN
+F 3 "" H 10200 3300 50  0001 C CNN
+	1    10200 3300
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C?
+U 1 1 601F845D
+P 10650 3450
+AR Path="/5EE0CB27/601F845D" Ref="C?"  Part="1" 
+AR Path="/5EE1C63A/601F845D" Ref="C?"  Part="1" 
+AR Path="/5FA415E1/601F845D" Ref="C?"  Part="1" 
+AR Path="/601F845D" Ref="C?"  Part="1" 
+AR Path="/60C69043/601F845D" Ref="C?"  Part="1" 
+AR Path="/61678EBC/601F845D" Ref="C22"  Part="1" 
+F 0 "C22" V 10398 3450 50  0000 C CNN
+F 1 "0.1u" V 10489 3450 50  0000 C CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 10688 3300 50  0001 C CNN
+F 3 "~" H 10650 3450 50  0001 C CNN
+F 4 "C49678" H 10650 3450 50  0001 C CNN "LCSC"
+	1    10650 3450
+	-1   0    0    1   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 601F8463
+P 10650 3600
+AR Path="/5E49A150/601F8463" Ref="#PWR?"  Part="1" 
+AR Path="/5E56259C/601F8463" Ref="#PWR?"  Part="1" 
+AR Path="/5E5E8038/601F8463" Ref="#PWR?"  Part="1" 
+AR Path="/5EE1C63A/601F8463" Ref="#PWR?"  Part="1" 
+AR Path="/5FA415E1/601F8463" Ref="#PWR?"  Part="1" 
+AR Path="/601F8463" Ref="#PWR?"  Part="1" 
+AR Path="/60C69043/601F8463" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/601F8463" Ref="#PWR01070"  Part="1" 
+F 0 "#PWR01070" H 10650 3350 50  0001 C CNN
+F 1 "GND" H 10655 3427 50  0000 C CNN
+F 2 "" H 10650 3600 50  0001 C CNN
+F 3 "" H 10650 3600 50  0001 C CNN
+	1    10650 3600
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VCC #PWR?
+U 1 1 601F8469
+P 10650 3300
+AR Path="/61678EBC/61690A95/601F8469" Ref="#PWR?"  Part="1" 
+AR Path="/61678EBC/601F8469" Ref="#PWR01071"  Part="1" 
+F 0 "#PWR01071" H 10650 3150 50  0001 C CNN
+F 1 "VCC" V 10665 3427 50  0000 L CNN
+F 2 "" H 10650 3300 50  0001 C CNN
+F 3 "" H 10650 3300 50  0001 C CNN
+	1    10650 3300
+	1    0    0    -1  
+$EndComp
+$EndSCHEMATC
