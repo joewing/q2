@@ -1,0 +1,309 @@
+
+.def  x0      8
+.def  x1      9
+.def  x2      10
+.def  x3      11
+.def  x4      12
+.def  x5      13
+.def  x6      14
+.def  x7      15
+.def  x8      16
+.def  x9      17
+.def  x10     18
+
+.def  zero    19
+.def  one     20
+.def  minus1  21
+.def  buf     22
+
+  .org  0x000
+
+  jmp   @$+1
+  .dw   0x800
+
+  .org  0x800
+
+  lea   $+2
+  jmp   lcd_init
+  lea   $+3
+  jmp   @$+1
+  .dw   fib
+  jmp   $
+
+; Initialize the LCD
+; Destroys x0, x1
+lcd_init:
+  sta   =x1
+  lea   =0
+  sta   =zero
+  nor   =zero
+  sta   =minus1
+  lea   =1
+  sta   =one
+  lea   lcd_init_cmds
+  sta   =x0
+  lda   =x1
+  jmp   lcd_puts
+lcd_init_cmds:
+  .dw   0x138   ; Function set (8-bits, 2-lines, 5x8)
+  .dw   0x10E   ; Display on, cursor on, blink off
+  .dw   0x106   ; Entry mode, increment, no shift
+  .dw   0x000
+
+; Clear the LCD and move to 0, 0.
+; Destroys x0
+lcd_clear:
+  sta   =x0
+  lda   lcd_clear_cmd
+  sta   @=minus1
+  jmp   @=x0
+lcd_clear_cmd:
+  .dw   0x101
+
+; Move the cursor to column x0 (0-15), row x1 (0-1)
+; Destroys x0, x1, x2
+lcd_move:
+  sta   =x2
+  lda   =x1
+  lea   =0
+  jfc   $+2
+  lea   =0x40
+  add   =x0
+  add   lcd_move_cmd
+  sta   @=minus1
+  jmp   @=x2
+lcd_move_cmd:
+  .dw   0x180
+
+; Write the string at x0
+; Uses x0, x1
+lcd_puts:
+  sta   =x1
+lcd_puts_loop:
+  lda   @=x0
+  jfc   $+2
+  jmp   @=x1
+  sta   @=minus1
+  lea   =1
+  add   =x0
+  sta   =x0
+  jmp   lcd_puts_loop
+
+; Write int in x0
+; Writes 5 chars
+; Uses x0, x1, x2, x3, x4, x5, x6, x7
+putint:
+  sta   =x7
+  lea   =buf
+  add   putint_chars
+  sta   =x6   ; Pointer to end of buffer
+  lea   =0
+  sta   @=x6
+putint_loop1:
+  lda   =x6
+  add   =minus1
+  sta   =x6
+  lea   =10
+  sta   =x1
+  lea   $+3
+  jmp   @$+1
+  .dw   div
+  lda   =x2
+  sta   =x0
+  lea   =48
+  add   =x3
+  sta   @=x6
+  lea   =buf
+  nor   =zero
+  add   =x6
+  nor   =zero
+  jfc   putint_loop1
+  lea   =buf
+  sta   =x0
+  lda   =x7
+  jmp   lcd_puts
+putint_chars:
+  .dw   5
+
+  .align 128
+
+; Wait for a key press and return it in x0
+; Destroys x0, x1
+waitkey:
+  sta   =x1
+waitkey_loop:
+  lda   @=minus1
+  sta   =x0
+  jfc   @=x1
+  jmp   waitkey_loop
+
+; Delay
+; Destroys x0
+delay:
+    sta   =x0
+;    lea   =0
+    lda   =minus1
+delay_loop:
+    add   =one
+    jfc   delay_loop
+    jmp   @=x0
+
+  .align 128
+
+; Divide x2 = x0 / x1, remainder in x3
+; Uses x0, x1, x2, x3, x4, x5
+div:
+  sta   =x5
+  lea   =0
+  sta   =x2   ; quotient
+  sta   =x3   ; remainder
+  lea   =11
+div_loop:
+  sta   =x4
+
+  ; x3 <<= 1
+  lda   =x3
+  add   =x3
+  sta   =x3
+
+  ; x2 <<= 1
+  lda   =x2
+  add   =x2
+  sta   =x2
+
+  ; x3 = x3 | x0[x4]
+  lda   =x0
+  add   =x0
+  sta   =x0
+  jfc   div_not_set
+  lda   =x3
+  nor   =one
+  nor   =zero
+  sta   =x3
+div_not_set:
+
+  ; if x3 < x1 goto div_skip
+  lda   =x1
+  nor   =zero
+  add   =one
+  add   =x3
+  jfc   div_skip
+
+  ; x3 -= x1
+  sta   =x3
+
+  ; x2 |= 1
+  lda   =x2
+  nor   =one
+  nor   =zero
+  sta   =x2
+
+div_skip:
+  lda   =x4
+  add   =minus1
+  jfc   @=x5
+  jmp   div_loop
+
+
+; Multiply x2 = x0 * x1
+; Destroys x0, x1, x2, x3
+mult:
+  sta   =x3
+  lea   =0
+  sta   =x2
+mult_loop:
+  lda   =x0
+  jfc   mult_cont
+
+  ; done when =x0 is 0.
+  jmp  @=x3
+
+mult_cont:
+  nor   mult_minus2   ; zero if bit 1 is set
+  jfc   mult_next
+
+  ; bit is set, update =x2
+  lda   =x1
+  add   =x2
+  sta   =x2
+
+mult_next:
+
+  ; shift =x0 right and =x1 left
+  shr   =x0
+  sta   =x0
+  lda   =x1
+  add   =x1
+  sta   =x1
+  jmp   mult_loop
+
+mult_minus2:
+  .dw   -2
+
+; Compute the integer square root of =x0
+; Returns the result in =x0.
+; Destroys =x0, =x1, =x2, =x3
+isqrt:
+  sta   =x3
+  lea   =1
+  sta   =x1       ; x1 = 1
+  lea   =3
+  sta   =x2       ; x2 = 3
+isqrt_loop:
+  lda   =x0
+  nor   =zero
+  add   =x1
+  jfc   isqrt_cont  ; if x0 >= x1 continue
+  shr   =x2     ; return x0 = (x2 / 2) - 1
+  add   =minus1
+  sta   =x0
+  jmp   @=x3
+isqrt_cont:
+  lda   =x1
+  add   =x2
+  sta   =x1   ; x1 += x2
+  lda   =x2
+  add   isqrt_two
+  sta   =x2   ; x2 += 2
+  jmp   isqrt_loop
+isqrt_two:
+  .dw   2
+
+
+  .align 128
+
+; Compute the largest Fibonacci number that fits in 12 bits.
+fib:
+    lea   =1
+    sta   =x8
+    sta   =x9
+fib_loop:
+    lda   =x9
+    sta   =x0
+
+    lea   $+3
+    jmp   @$+1
+    .dw   lcd_clear
+
+    lda   =x9
+    sta   =x0
+    lea   $+3
+    jmp   @$+1
+    .dw   putint
+
+    lea   $+3
+    jmp   @$+1
+    .dw   delay
+
+    lda   =x8
+    add   =x9
+    jfc   fib_cont
+    jmp   $
+fib_cont:
+    sta   =x10
+    lda   =x9
+    sta   =x8
+    lda   =x10
+    sta   =x9
+    jmp   fib_loop
+
