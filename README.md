@@ -35,28 +35,10 @@ The frontpanel provides the main interface to the computer.
     - Start
     - Stop
 
-## Boards
-
-The computer is comprised of several PCBs that plug into
-the backplane.
-
-  Name      | Quantity  | Transistors | mA    | Description
-  --------- | --------- | ----------- | ----- | -----------------------
-  Slice     | 12        | 82          |  27.5 | 1-bit A/P/X/S slice
-  Clock     | 1         | 17          |   7.5 | Clock generator
-  ALU       | 1         | 41          |   7.5 | Bit-serial ALU
-  Control   | 1         | 53          |  10.5 | Control signal decoder
-  RAM       | 1         | 2           |  44.0 | 12-bit RAM
-  I/O       | 1         | 25          |   4.5 | I/O interface
-  Backplane | 1         | 26          |  78.5 | Backplane
+## Power estimation
 
 Total transistor count: ~1148
 Total current draw: 482.5 mA (2.4 Watts)
-
-The tops of the boards face right, with slice boards ordered
-from bit 11 at the left side to bit 0 on the right.
-
-### Power estimation
 
 LEDs are driven through a 1k resistor. Assuming a 5v power
 supply and 2v voltage drop through an LED, we can assume ~3mA
@@ -70,16 +52,17 @@ We assume the MCU used on the terminal board uses ~1mA.
 We assume the LCD draws ~200mA.
 The total combined worst-case current draw is ~683.55mA.
 
-### Control Board
+## Sections
 
-The control board drives the control lines.
+### Slice
 
-### Slice Board
+The registers are divided into 12 slices each consisting of
+4 flip-flops. Each slice contains one bit of the A register
+(accumulator), one bit of X register (operand), one bit of
+the P register (program counter), and one bit of the state
+register.
 
-Each slice board has 4 positive edge-triggerd flip-flops: A, X, P, and S.
-Note that 12 bits are needed for state, which is divided among the slices.
-
-### ALU Board
+### ALU
 
 The ALU is bit-serial, supporting the following operations:
 
@@ -88,11 +71,14 @@ The ALU is bit-serial, supporting the following operations:
   - 10 - Add
   - 11 - Shift right
 
-### Clock Board
+All writes to the A register happen through the ALU, shifting
+into the most significant bit.
+
+### Clock
 
 A two phase, non-overlapping clock is generated using
 a relaxation oscillator (CLK signal) tied to a positive
-edge-triggered flip-flop.  Two NOR gates are used to
+edge-triggered flip-flop. Two NOR gates are used to
 generate the phases.
 The output of the flip-flop is Q:
 
@@ -129,12 +115,15 @@ the starting sequence looks like this:
 
 ## Instructions
 
-All instructions are 1 word with the following format:
+All instructions are 1 word with the following format
 
-  FFF DZ XXXXXXX
-
-where FFF is the opcode, D is the dereference flag,
-Z is the zero-page flag, and XXXXXXX is the operand.
+```
+  FFF D Z XXXXXXXX
+   \  \ \    \____ Operand
+    \  \ \________ Zero-Page    
+     \  \_________ Dereference 
+      \___________ Opcode
+```
 
 Instruction summary:
 
@@ -237,6 +226,19 @@ func:
 ```
 
 ```
+; Long jump
+  jmp   @$+1
+  .dw   addr
+```
+
+```
+; Long call
+  lea   $+3
+  jmp   @$+1
+  .dw   addr
+```
+
+```
 ; Rotate right function
 ; x0 >>> 1
 ror:
@@ -273,7 +275,17 @@ pop:
   jmp   @=ra
 ```
 
-### Zero-Page Layout
+## Memory Map
+
+The address space is 4096 12-bit words.
+
+  Address   | Description
+  --------- | --------------
+  000 - 7FF | RAM
+  800 - FFE | ROM
+  FFF       | I/O
+
+## Zero-Page Layout
 
 The zero page is the first 128 words, which can be accessed directly by
 any instruction from anywhere.
