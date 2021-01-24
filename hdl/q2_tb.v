@@ -4,7 +4,7 @@
 module q2_tb;
 
   reg clk = 1;
-  reg [11:0] sw = 0;
+  reg [11:0] sw = 12'h800;
   wire [11:0] dbus;
   wire [11:0] abus;
   reg incp_sw = 0;
@@ -18,31 +18,40 @@ module q2_tb;
 
   reg [11:0] ram[0:4095];
   always @(posedge wrm) begin
-    if (abus[11]) begin
+    if (abus == 12'hFFF) begin
       $display("OUTPUT %03x: %03x (%d)", abus, dbus, dbus);
     end
     ram[abus] <= dbus;
   end
-  assign dbus = rdm ? ram[abus] : 12'bz;
+  assign dbus = rdm ? (abus == 12'hFFF ? 12'hFFE : ram[abus]) : 12'bz;
 
   integer i;
   initial begin
 
     $readmemh("test.hex", ram);
-    $dumpvars;
+    //$dumpvars;
 
     #10 rst = 0; stop_sw = 1;
-    #10 rst = 1; stop_sw = 1;
+    #10 rst = 0; stop_sw = 0;
+    #10 rst = 1; stop_sw = 0;
     #10 rst = 0; stop_sw = 0;
     #10 start_sw = 1;
     #10 start_sw = 0;
-    for (i = 0; i < 1000000; i = i + 1) begin
+    for (i = 0; i < 5000000; i = i + 1) begin
       #10 clk <= 1;
       #10 clk <= 0;
       if (!run) begin
         $display("halted after ", i, " clocks");
-        $display(i / 30000, " seconds at 30kHz, ", i / 100, " seconds at 100Hz");
+        $display(
+          "%d seconds at 30kHz, %d seconds at 100Hz",
+          i / 30000, i / 100
+        );
         $stop;
+      end else if (i % 100000 == 0) begin
+        $display(
+          "%d clocks, %d seconds at 30kHz, %d seconds at 100Hz",
+          i, i / 30000, i / 100
+        );
       end
     end
     $stop;

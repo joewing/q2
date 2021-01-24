@@ -1,6 +1,4 @@
 
-  jmp   @$+1
-  .dw   init
 zero:
   .dw   0
 one:

@@ -1,4 +1,15 @@
 
+.def  x0  2
+.def  x1  3
+.def  x2  4
+.def  x3  5
+.def  x4  6
+.def  x5  7
+.def  x6  8
+.def  x7  9
+
+  .org  0x800
+
   lea   $+2
   jmp   output
 
@@ -10,48 +21,32 @@
   jmp   @sort_ptr
 
   lea   =0
-  sta   @=output_ptr
+  sta   @minus1
 
   lea   $+2
   jmp   output
   jmp   $
 
 output:
-  sta   =ra
+  sta   =x7
   lea   =to_sort_end - to_sort
   sta   =x0
   lda   data_ptr
   sta   =x1
 output_loop:
   lda   @=x1
-  sta   @=output_ptr
+  sta   @minus1
   lda   =x1
-  add   =one
+  add   one
   sta   =x1
   lda   =x0
-  nor   =zero
-  add   =one
-  nor   =zero
+  nor   zero
+  add   one
+  nor   zero
   sta   =x0
   jfc   output_loop
-  jmp   @=ra
+  jmp   @=x7
 
-ra:
-  .dw   0
-x0:
-  .dw   0
-x1:
-  .dw   0
-x2:
-  .dw   0
-x3:
-  .dw   0
-x4:
-  .dw   0
-x5:
-  .dw   0
-x6:
-  .dw   0
 one:
   .dw   1
 zero:
@@ -63,8 +58,6 @@ data_ptr:
   .dw   to_sort
 sort_ptr:
   .dw   sort
-output_ptr:
-  .dw   -1
 
   .align 128
 
@@ -83,18 +76,18 @@ to_sort_end:
 
 ; Sort x0 words starting at x1
 sort:
-  sta   =ra
+  sta   =x7
   lea   =0
   sta   =x2   ; x2 = 0 .. x0
 sort_loop1:
-  nor   =zero
+  nor   sort_zero
   add   =x0
-  jfc   @=ra  ; x2 >= x0 - return
-  lda   =x2
-  add   =one
+  jfc   @=x7  ; x2 >= x0 - return
+  lea   =1
+  add   =x2
   sta   =x3   ; x3 = x2 + 1 .. x0
 sort_loop2:
-  nor   =zero
+  nor   sort_zero
   add   =x0
   jfc   sort_cont1  ; x3 >= x0
   lda   =x1
@@ -104,7 +97,7 @@ sort_loop2:
   add   =x3
   sta   =x5   ; @=x5 = x1[x3]
   lda   @=x5
-  nor   =zero
+  nor   sort_zero
   add   @=x4
   jfc   sort_cont2
   lda   @=x5
@@ -114,13 +107,15 @@ sort_loop2:
   lda   =x6
   sta   @=x4
 sort_cont2:
-  lda   =x3
-  add   =one
+  lea   =1
+  add   =x3
   sta   =x3
   jmp   sort_loop2
 sort_cont1:
-  lda   =x2
-  add   =one
+  lea   =1
+  add   =x2
   sta   =x2
   jmp   sort_loop1
+sort_zero:
+  .dw   0
 
