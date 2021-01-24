@@ -36,8 +36,8 @@ module q2_control(
 );
 
   wire state_fetch  = ~s0 & ~s1 & ~s2 & ~s3;
-  wire state_load   = ~op5 & s0 & ~s1 & ~s2 & ~s3;
-  wire state_deref  = op2 & ~s0 & s1 & ~s2 & ~s3;
+  wire state_deref  = op2 & s0 & ~s1 & ~s2 & ~s3;
+  wire state_load   = ~op5 & ~s0 & s1 & ~s2 & ~s3;
   wire state_exec   = s0 & s1 & ~s2 & ~s3;
   wire state_alu    = ~(~s2 & ~s3) & ((~op3 & ~op4) | ~op5);
 

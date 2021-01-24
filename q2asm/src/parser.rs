@@ -13,8 +13,7 @@ use nom::multi::{many0, many0_count};
 use nom::InputTake;
 use nom::error::ErrorKind;
 use std::fs::read_to_string;
-use self::nom::Err::Failure;
-use self::nom::multi::{separated_list, separated_nonempty_list};
+use self::nom::multi::separated_nonempty_list;
 use self::nom::character::complete::char;
 
 pub trait Listing {

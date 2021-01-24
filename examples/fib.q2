@@ -1,29 +1,31 @@
 
+
+.def  fib1  1
+.def  fib2  2
+.def  fib3  3
+
+
+  .org  0x800
+
 ; Compute the largest Fibonacci number that fits in 12 bits.
 fib:
     lea   =1
-    sta   fib1
-    sta   fib2
+    sta   =fib1
+    sta   =fib2
 fib_loop:
-    lda   fib2
+    lda   =fib2
     sta   @output_ptr
-    lda   fib1
-    add   fib2
+    lda   =fib1
+    add   =fib2
     jfc   fib_cont
-    lda   fib2
+    lda   =fib2
     jmp   $
 fib_cont:
-    sta   fib3
-    lda   fib2
-    sta   fib1
-    lda   fib3
-    sta   fib2
+    sta   =fib3
+    lda   =fib2
+    sta   =fib1
+    lda   =fib3
+    sta   =fib2
     jmp   fib_loop
-fib1:
-    .dw   0
-fib2:
-    .dw   0
-fib3:
-    .dw   0
 output_ptr:
     .dw   -1

@@ -1,23 +1,33 @@
 
+.def  x0    0
+.def  x1    1
+.def  x2    2
+.def  x3    3
+.def  zero  4
+.def  one   5
+.def  neg1  6
+
+  .org    0x800
+
+  lea   =0
+  sta   =zero
+  nor   =zero
+  sta   =neg1
+  lea   =1
+  sta   =one
+
   lda   program_ptr
   sta   =x0
   lda   data_ptr
   sta   =x1
   lea   $+2
-  jmp   @=bfrun_ptr
+  jmp   @bfrun_ptr
   jmp   $
-
-ra:   .dw   0
-x0:   .dw   0
-x1:   .dw   0
-x2:   .dw   0
-zero: .dw   0
-one:  .dw   1
-neg1: .dw   -1
 
 program_ptr:  .dw   program
 data_ptr:     .dw   data
 bfrun_ptr:    .dw   bfrun
+
 
   .align 128
 program:
@@ -39,7 +49,7 @@ data:
   .align 128
 ; Run BF program at =x0 using data array at =x1
 bfrun:
-  sta   =ra
+  sta   =x3
 bf_loop:
   lda   @=x0
   lea   bf_tokens
@@ -183,5 +193,5 @@ bf_cont:
   jmp   bf_loop
 
 bf_exit:
-  jmp   @=ra
+  jmp   @=x3
 

@@ -1,60 +1,50 @@
 
-    lda   value         ; Load the value whose sqrt to compute.
-    sta   =x0           ; Store at =x1
-    lea   $+2           ; Load return address (P+2)
-    jmp   @isqrt_ptr    ; Call isqrt
-    lda   =x0
-    sta   @=minus1
-    jmp   $
+.def  x0    2
+.def  x1    3
+.def  x2    4
+.def  x3    5
 
-ra:
-    .dw   0
-x0:
-    .dw   0
-x1:
-    .dw   0
-x2:
-    .dw   0
-minus1:
-    .dw   -1
-zero:
-    .dw   0
-one:
-    .dw   1
-two:
-    .dw   2
+    .org    0x800
 
-isqrt_ptr:
-    .dw   isqrt
+  lda   value
+  sta   =x0
+  lea   $+2
+  jmp   isqrt
+  lda   =x0
+  sta   @minus1
+  jmp   $
+
 value:
     .dw   2047
 
-    .org  0x100
-
 ; Compute the integer square root of =x0
 ; Returns the result in =x0.
-; Destroys =x0, =x1, =x2, =ra
+; Destroys =x0, =x1, =x2, =x3
 isqrt:
-  sta   =ra
+  sta   =x3
   lea   =1
   sta   =x1       ; x1 = 1
   lea   =3
   sta   =x2       ; x2 = 3
 isqrt_loop:
   lda   =x0
-  nor   =zero
+  nor   zero
   add   =x1
   jfc   isqrt_cont  ; if x0 >= x1 continue
   shr   =x2     ; return x0 = (x2 / 2) - 1
-  add   =minus1
+  add   minus1
   sta   =x0
-  jmp   @=ra
+  jmp   @=x3
 isqrt_cont:
   lda   =x1
   add   =x2
   sta   =x1   ; x1 += x2
-  lda   =x2
-  add   =two
+  lea   =2
+  add   =x2
   sta   =x2   ; x2 += 2
   jmp   isqrt_loop
+minus1:
+  .dw   -1
+zero:
+  .dw   0
 

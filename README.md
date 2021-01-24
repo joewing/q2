@@ -35,22 +35,42 @@ The frontpanel provides the main interface to the computer.
     - Start
     - Stop
 
-## Power estimation
+## Power Estimation
 
-Total transistor count: ~1148
-Total current draw: 482.5 mA (2.4 Watts)
+LEDs are driven through a 4.7k resistor. Assuming a 5v power
+supply and 2v voltage drop through an LED, we can assume ~0.64mA
+for each 4.7k resistor.  Each gate uses either a 10k or a 1k
+(depending on fanout and required speed) resistor pull up,
+so we assume 0.5mA for each 10k resistor and 5mA for each 1k resistor.
+This provides an absolute worst case estimate since we don't expect all
+gates and LEDs to be on.
+We assume the RAM and ROM chips as well as the LCD use ~20mA each.
 
-LEDs are driven through a 1k resistor. Assuming a 5v power
-supply and 2v voltage drop through an LED, we can assume ~3mA
-for each 1k resistor.  Each gate uses a 10k resistor pull up,
-so we assume 0.5mA for each 10k resistor. This provides an
-absolute worst case estimate since we don't expect all gates
-and LEDs to be on.
+This gives the following:
+  - 75 4.7k resistors = 48mA
+  - 427 10k resistors = 213.5mA
+  - 7 1k resistors = 35mA
+  - 2 RAMs, 2 ROMs, 1 LCD = 100mA
 
-We assume each 6116 RAM chip uses ~20mA.
-We assume the MCU used on the terminal board uses ~1mA.
-We assume the LCD draws ~200mA.
-The total combined worst-case current draw is ~683.55mA.
+So we get a total draw of ~396.5mA or ~2 Watts.
+
+## Clock Frequency Estimation
+
+Each FET gate is ~50pF.
+Maximum propagation is 24 gates (for the ripple through the program
+counter). At each level, the fanout is to 2 gates with a 10k pullup.
+To be recognized as a 1, the pull up resistor needs to bring 0V to
+2.5V (Vth), for a fanout of 2 this gives us:
+
+  2.5 = 5 * exp(-10000 * 50 * 2 * 10^-12 / t)
+  t = 1.4us
+
+For 24 levels of propagation, we get 1.4 * 24 = 33.6us, which is ~29.8kHz.
+Fortunately, we do not need the result of the program counter to be valid
+at the next clock edge (only the one following it), so we can get away
+running faster than this, but no more than 2x this.
+So here we aim for 32kHz for the fast clock, which gives us 1k instructions
+per second since every instruction takes 32 cycles.
 
 ## Sections
 
