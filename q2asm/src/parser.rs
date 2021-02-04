@@ -136,6 +136,7 @@ pub enum Statement {
     Label(String),
     Origin(Expression),
     Align(Expression),
+    Bank(Expression),
     Word(Vec<Expression>),
     Reserve(Expression),
     Instruction(InstructionType, AddressMode, Expression),
@@ -144,14 +145,15 @@ pub enum Statement {
 impl Listing for Statement {
     fn emit_listing(self: &Self) -> String {
         match self {
-            Statement::Define(n, e)         => format!(".def\t{}\t{}", n, e.emit_listing()),
+            Statement::Define(n, e)         => format!(".def {}    {}", n, e.emit_listing()),
             Statement::Label(n)             => format!("{}:", n),
-            Statement::Origin(e)            => format!("\t.org\t{}", e.emit_listing()),
-            Statement::Align(e)             => format!("\t.align\t{}", e.emit_listing()),
-            Statement::Word(e)              => format!("\t.dw\t{}", e.emit_listing()),
-            Statement::Reserve(e)           => format!("\t.bss\t{}", e.emit_listing()),
+            Statement::Origin(e)            => format!("    .org   {}", e.emit_listing()),
+            Statement::Align(e)             => format!("    .align {}", e.emit_listing()),
+            Statement::Bank(e)              => format!("    .bank  {}", e.emit_listing()),
+            Statement::Word(e)              => format!("    .dw    {}", e.emit_listing()),
+            Statement::Reserve(e)           => format!("    .bss   {}", e.emit_listing()),
             Statement::Instruction(t, m, o) =>
-                format!("\t{}\t{}{}", t.emit_listing(), m.emit_listing(), o.emit_listing()),
+                format!("    {}    {}{}", t.emit_listing(), m.emit_listing(), o.emit_listing()),
         }
     }
 }
@@ -412,6 +414,13 @@ fn parse_align(input: &str) -> IResult<&str, Statement> {
     Ok((input, Statement::Align(expr)))
 }
 
+fn parse_bank(input: &str) -> IResult<&str, Statement> {
+    let (input, _) = tag(".bank")(input)?;
+    let (input, _) = eat_whitespace(input)?;
+    let (input, expr) = parse_expr(input)?;
+    Ok((input, Statement::Bank(expr)))
+}
+
 fn parse_string(input: &str) -> IResult<&str, Vec<Expression>> {
     let (input, _) = tag("\"")(input)?;
     let (input, s) = take_while(|c| c != '\"')(input)?;
@@ -462,6 +471,7 @@ fn parse_statement(input: &str) -> IResult<&str, Vec<Statement>> {
             parse_instruction,
             parse_origin,
             parse_align,
+            parse_bank,
             parse_word,
             parse_reserve,
             parse_define

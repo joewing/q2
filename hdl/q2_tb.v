@@ -43,14 +43,14 @@ module q2_tb;
       if (!run) begin
         $display("halted after ", i, " clocks");
         $display(
-          "%d seconds at 30kHz, %d seconds at 100Hz",
-          i / 30000, i / 100
+          "%d seconds at 32kHz, %d seconds at 320Hz",
+          i / 32000, i / 320
         );
         $stop;
       end else if (i % 100000 == 0) begin
         $display(
-          "%d clocks, %d seconds at 30kHz, %d seconds at 100Hz",
-          i, i / 30000, i / 100
+          "%d clocks, %d seconds at 32kHz, %d seconds at 320Hz",
+          i, i / 32000, i / 320
         );
       end
     end

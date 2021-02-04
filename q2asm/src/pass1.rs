@@ -45,6 +45,10 @@ pub fn pass1(statements: &Vec<Statement>) -> HashMap<String, Expression> {
                     )
                 );
             },
+            Statement::Bank(_)                  => {
+                addr = 0;
+                origin = Expression::Constant(0);
+            },
             Statement::Label(s)                 => {
                 // Current position in the file is the address plus the last origin.
                 let pos = Expression::Add(
