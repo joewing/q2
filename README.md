@@ -47,12 +47,12 @@ gates and LEDs to be on.
 We assume the RAM and ROM chips as well as the LCD use ~20mA each.
 
 This gives the following:
-  - 75 4.7k resistors = 48mA
-  - 427 10k resistors = 213.5mA
-  - 7 1k resistors = 35mA
+  - 73 LEDS (4.7k resistor) = 31mA
+  - 414 10k resistors = 207mA
+  - 8 1k resistors = 40mA
   - 2 RAMs, 2 ROMs, 1 LCD = 100mA
 
-So we get a total draw of ~396.5mA or ~2 Watts.
+So we get a worst-case draw of ~378mA or ~2 Watts.
 
 ## Clock Frequency Estimation
 
