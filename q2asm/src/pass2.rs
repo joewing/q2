@@ -3,6 +3,19 @@ use std::collections::HashMap;
 use crate::eval::eval;
 use crate::parser::Listing;
 
+pub struct CompiledStatement {
+    pub bank: i64,
+    pub addr: i64,
+    pub code: Option<u16>,
+    pub statement: Statement,
+}
+
+impl CompiledStatement {
+    pub fn full_addr(&self) -> i64 {
+        (self.bank << 12) | self.addr
+    }
+}
+
 fn mode_bits(mode: &AddressMode) -> u16 {
     match mode {
         AddressMode::Relative         => 0b00,
@@ -45,27 +58,44 @@ fn emit_instruction(
 pub fn pass2(
     statements: &Vec<Statement>,
     symbols: &HashMap<String, Expression>
-) -> Result<Vec<(i64, Statement, Option<u16>)>, String> {
+) -> Result<Vec<CompiledStatement>, String> {
 
-    let mut result: Vec<(i64, Statement, Option<u16>)> = Vec::new();
+    let mut result: Vec<CompiledStatement> = Vec::new();
     let mut addr: i64 = 0;
+    let mut bank: i64 = 0;
 
     for st in statements {
         match st {
-            Statement::Define(_, _)         => result.push((addr, st.clone(), None)),
-            Statement::Label(_)             => result.push((addr, st.clone(), None)),
+            Statement::Define(_, _)         => result.push(
+                CompiledStatement { bank, addr, statement: st.clone(), code: None }
+            ),
+            Statement::Label(_)             => result.push(
+                CompiledStatement { bank, addr, statement: st.clone(), code: None }
+            ),
             Statement::Origin(e)            => {
                 addr = eval(addr, e, symbols, 0)?;
-                result.push((addr, st.clone(), None));
+                result.push(
+                    CompiledStatement { bank, addr, statement: st.clone(), code: None }
+                );
             },
             Statement::Align(e)             => {
                 let alignment = eval(addr, e, symbols, 0)?;
                 addr = addr + alignment - addr % alignment;
-                result.push((addr, st.clone(), None));
+                result.push(
+                    CompiledStatement { bank, addr, statement: st.clone(), code: None }
+                );
+            },
+            Statement::Bank(e) => {
+                bank = eval(addr, e, symbols, 0)?;
+                result.push(
+                    CompiledStatement { bank, addr, statement: st.clone(), code: None }
+                );
             },
             Statement::Instruction(inst, mode, op) => {
                 let word = emit_instruction(addr, inst, mode, op, symbols, st)?;
-                result.push((addr, st.clone(), Some(word)));
+                result.push(
+                    CompiledStatement { bank, addr, statement: st.clone(), code: Some(word) }
+                );
                 addr += 1;
             },
             Statement::Word(es)              => {
@@ -75,14 +105,21 @@ pub fn pass2(
                         return Err(format!("word {} out of range", word));
                     }
                     result.push(
-                        (addr, Statement::Word(vec![e.clone()]), Some((word & 0xfff) as u16))
+                        CompiledStatement {
+                            bank,
+                            addr,
+                            statement: Statement::Word(vec![e.clone()]),
+                            code: Some((word & 0xfff) as u16)
+                        }
                     );
                     addr += 1;
                 }
             },
             Statement::Reserve(e)           => {
                 let count = eval(addr, e, symbols, 0)?;
-                result.push((addr, st.clone(), None));
+                result.push(
+                    CompiledStatement { bank, addr, statement: st.clone(), code: None }
+                );
                 addr += count;
             },
         }

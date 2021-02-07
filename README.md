@@ -138,7 +138,7 @@ the starting sequence looks like this:
 All instructions are 1 word with the following format
 
 ```
-  FFF D Z XXXXXXXX
+  FFF D Z XXXXXXX
    \  \ \    \____ Operand
     \  \ \________ Zero-Page    
      \  \_________ Dereference 

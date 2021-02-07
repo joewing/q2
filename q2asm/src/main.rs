@@ -11,21 +11,9 @@ mod eval;
 mod pass1;
 mod pass2;
 
-use parser::{Listing, Statement};
-use std::num::ParseIntError;
+use parser::Listing;
 use std::rc::Rc;
-
-fn read_addr(s: &str) -> Result<u16, ParseIntError> {
-    if s.starts_with("0x") {
-        u16::from_str_radix(&s[2..], 16)
-    } else if s.starts_with("0o") {
-        u16::from_str_radix(&s[2..], 8)
-    } else if s.starts_with("0b") {
-        u16::from_str_radix(&s[2..], 2)
-    } else {
-        u16::from_str_radix(s, 10)
-    }
-}
+use crate::pass2::CompiledStatement;
 
 fn write_str(vec: &mut Vec<u8>, s: &str) -> () {
     vec.extend(s.bytes());
@@ -61,9 +49,14 @@ fn write_intel_hex(vec: &mut Vec<u8>, word: u16, addr: i64) {
 }
 
 trait OutputFormat {
+
+    /** The name of the output format (used as a file extension). */
     fn name(&self) -> &str;
+
+    /** Skip to last_addr to addr (inclusive), generate padding if necessary. */
     fn pad(&self, _vec: &mut Vec<u8>, _last_addr: i64, _addr: i64) -> () {}
-    fn write(&self, vec: &mut Vec<u8>, base: u16, addr: i64, st: &Statement, word_opt: Option<u16>);
+
+    fn write(&self, vec: &mut Vec<u8>, base: u16, st: &CompiledStatement);
     fn write_end(&self, _vec: &mut Vec<u8>) -> () {}
 }
 
@@ -76,8 +69,8 @@ impl OutputFormat for HexOutputFormat {
             write_str(vec, "\n");
         }
     }
-    fn write(&self, vec: &mut Vec<u8>, _base: u16, _addr: i64, _st: &Statement, word_opt: Option<u16>) {
-        match word_opt {
+    fn write(&self, vec: &mut Vec<u8>, _base: u16, st: &CompiledStatement) {
+        match st.code {
             Some(word) => {
                 write_hex(vec, word);
                 write_str(vec, "\n");
@@ -90,22 +83,25 @@ impl OutputFormat for HexOutputFormat {
 struct ListOutputFormat;
 impl OutputFormat for ListOutputFormat {
     fn name(&self) -> &str { "lst" }
-    fn write(&self, vec: &mut Vec<u8>, _base: u16, addr: i64, st: &Statement, word_opt: Option<u16>) {
-        write_str(vec, format!("{:03X}  ", addr).as_ref());
-        match word_opt {
+    fn write(&self, vec: &mut Vec<u8>, _base: u16, st: &CompiledStatement) {
+        write_str(vec, format!("{:03X}  ", st.addr).as_ref());
+        match st.code {
             Some(word)  => write_hex(vec, word),
             None        => write_str(vec, "    ")
         }
-        write_str(vec, format!("    {}\n", st.emit_listing()).as_ref())
+        write_str(vec, format!("    {}\n", st.statement.emit_listing()).as_ref())
     }
 }
 
 struct HighRomOutputFormat;
 impl OutputFormat for HighRomOutputFormat {
     fn name(&self) -> &str { "high.hex" }
-    fn write(&self, vec: &mut Vec<u8>, base: u16, addr: i64, _st: &Statement, word_opt: Option<u16>) {
-       match word_opt {
-           Some(word) => write_intel_hex(vec, word >> 6, addr - (base as i64)),
+    fn write(&self, vec: &mut Vec<u8>, base: u16, st: &CompiledStatement) {
+       match st.code {
+           Some(word) => {
+               let addr = st.full_addr() - (base as i64);
+               write_intel_hex(vec, word >> 6, addr)
+           },
            None => ()
        }
     }
@@ -117,9 +113,12 @@ impl OutputFormat for HighRomOutputFormat {
 struct LowRomOutputFormat;
 impl OutputFormat for LowRomOutputFormat {
     fn name(&self) -> &str { "low.hex" }
-    fn write(&self, vec: &mut Vec<u8>, base: u16, addr: i64, _st: &Statement, word_opt: Option<u16>) {
-        match word_opt {
-            Some(word) => write_intel_hex(vec, word & 0x3F, addr - (base as i64)),
+    fn write(&self, vec: &mut Vec<u8>, base: u16, st: &CompiledStatement) {
+        match st.code {
+            Some(word) => {
+                let addr = st.full_addr() - (base as i64);
+                write_intel_hex(vec, word & 0x3F, addr)
+            },
             None => ()
         }
     }
@@ -161,19 +160,19 @@ fn assemble(
     let statements = parser::parse(&content)?;
     let symbols = pass1::pass1(&statements);
     let mut result = pass2::pass2(&statements, &symbols)?;
-    result.sort_by_key(|(a, _, _)| a.clone());
+    result.sort_by_key(|s| s.full_addr());
     let mut last_addr: i64 = -1;
     let mut base: u16 = 0;
-    for (addr, st, word_opt) in result {
+    for cs in result {
         if last_addr < 0 {
-            last_addr = addr;
-            base = addr as u16;
+            last_addr = cs.addr;
+            base = cs.addr as u16;
         }
         for writer in &mut writers {
-            writer.format.pad(&mut writer.output, last_addr, addr);
-            writer.format.write(&mut writer.output, base, addr, &st, word_opt);
+            writer.format.pad(&mut writer.output, last_addr, cs.addr);
+            writer.format.write(&mut writer.output, base, &cs);
         }
-        last_addr = addr + if word_opt.is_some() { 1 } else { 0 };
+        last_addr = cs.addr + if cs.code.is_some() { 1 } else { 0 };
     }
     for mut writer in writers {
         writer.format.write_end(&mut writer.output);

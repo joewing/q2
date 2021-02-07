@@ -34,9 +34,6 @@ lcd_init:
   nor   =zero
   sta   =minus1
 
-lea =1
-sta @=minus1
-
   lea   =1
   sta   =one
   lea   lcd_init_cmds
