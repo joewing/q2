@@ -9,15 +9,7 @@ This repo contains the following subdirectories:
   - scad - An OpenSCAD 3d model for the case.
   - q2asm - A Q2 assembler (in Rust).
   - examples - Q2 assembly language examples.
-  - pcb - Schematics and PCBs in KiCad
-    - slice - Register bit slice
-    - clock - Clock generator
-    - alu - ALU 
-    - control - Control signal driver
-    - ram - RAM board
-    - backplane - Backplane board
-    - io - Input/Output board (optional)
-    - terminal - Terminal board (optional)
+  - pcb - Schematics and PCB in KiCad
 
 ## Frontpanel
 
