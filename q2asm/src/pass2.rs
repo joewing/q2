@@ -1,7 +1,6 @@
-use crate::parser::{Statement, Expression, InstructionType, AddressMode};
+use crate::parser::{Statement, Expression, InstructionType, AddressMode, StatementWithContext};
 use std::collections::HashMap;
 use crate::eval::eval;
-use crate::parser::Listing;
 
 pub struct CompiledStatement {
     pub bank: i64,
@@ -25,9 +24,9 @@ fn mode_bits(mode: &AddressMode) -> u16 {
     }
 }
 
-fn check_addr_range(value: i64, st: &Statement) -> Result<u16, String> {
+fn check_addr_range(value: i64, st: &StatementWithContext) -> Result<u16, String> {
     if value < 0 || value > 127 {
-        Err(format!("{}: operand out of range: {}", st.emit_listing(), value))
+        st.error(format!("operand out of range: {}", value))
     } else {
         Ok(value as u16)
     }
@@ -39,7 +38,7 @@ fn emit_instruction(
     mode: &AddressMode,
     expr: &Expression,
     symbols: &HashMap<String, Expression>,
-    st: &Statement
+    st: &StatementWithContext
 ) -> Result<u16, String> {
     let opcode = ((*i as u16) << 9) | (mode_bits(mode) << 7);
     let operand = eval(addr, expr, symbols, 0)?;
@@ -56,7 +55,7 @@ fn emit_instruction(
 }
 
 pub fn pass2(
-    statements: &Vec<Statement>,
+    statements: &Vec<StatementWithContext>,
     symbols: &HashMap<String, Expression>
 ) -> Result<Vec<CompiledStatement>, String> {
 
@@ -65,44 +64,44 @@ pub fn pass2(
     let mut bank: i64 = 0;
 
     for st in statements {
-        match st {
+        match &st.statement {
             Statement::Define(_, _)         => result.push(
-                CompiledStatement { bank, addr, statement: st.clone(), code: None }
+                CompiledStatement { bank, addr, statement: st.statement.clone(), code: None }
             ),
             Statement::Label(_)             => result.push(
-                CompiledStatement { bank, addr, statement: st.clone(), code: None }
+                CompiledStatement { bank, addr, statement: st.statement.clone(), code: None }
             ),
             Statement::Origin(e)            => {
-                addr = eval(addr, e, symbols, 0)?;
+                addr = eval(addr, &e, symbols, 0)?;
                 result.push(
-                    CompiledStatement { bank, addr, statement: st.clone(), code: None }
+                    CompiledStatement { bank, addr, statement: st.statement.clone(), code: None }
                 );
             },
             Statement::Align(e)             => {
-                let alignment = eval(addr, e, symbols, 0)?;
+                let alignment = eval(addr, &e, symbols, 0)?;
                 addr = addr + alignment - addr % alignment;
                 result.push(
-                    CompiledStatement { bank, addr, statement: st.clone(), code: None }
+                    CompiledStatement { bank, addr, statement: st.statement.clone(), code: None }
                 );
             },
             Statement::Bank(e) => {
-                bank = eval(addr, e, symbols, 0)?;
+                bank = eval(addr, &e, symbols, 0)?;
                 result.push(
-                    CompiledStatement { bank, addr, statement: st.clone(), code: None }
+                    CompiledStatement { bank, addr, statement: st.statement.clone(), code: None }
                 );
             },
             Statement::Instruction(inst, mode, op) => {
-                let word = emit_instruction(addr, inst, mode, op, symbols, st)?;
+                let word = emit_instruction(addr, &inst, &mode, &op, symbols, &st)?;
                 result.push(
-                    CompiledStatement { bank, addr, statement: st.clone(), code: Some(word) }
+                    CompiledStatement { bank, addr, statement: st.statement.clone(), code: Some(word) }
                 );
                 addr += 1;
             },
             Statement::Word(es)              => {
                 for e in es {
-                    let word = eval(addr, e, symbols, 0)?;
+                    let word = eval(addr, &e, symbols, 0)?;
                     if word > 0xfff {
-                        return Err(format!("word {} out of range", word));
+                        return st.error(format!("word {} out of range", word));
                     }
                     result.push(
                         CompiledStatement {
@@ -116,12 +115,13 @@ pub fn pass2(
                 }
             },
             Statement::Reserve(e)           => {
-                let count = eval(addr, e, symbols, 0)?;
+                let count = eval(addr, &e, symbols, 0)?;
                 result.push(
-                    CompiledStatement { bank, addr, statement: st.clone(), code: None }
+                    CompiledStatement { bank, addr, statement: st.statement.clone(), code: None }
                 );
                 addr += count;
             },
+            Statement::Macro(_, _) => (),
         }
     }
 

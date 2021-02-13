@@ -1,31 +1,54 @@
+; Comments start with a ';' and continue to the end of the line.
 
+; Here we use ".def" to give symbolic names to some memory locations.
+; These will be used as zero-page addresses.
+.def  x0    0     
+.def  x1    1
+.def  x2    2
+.def  x3    3
 
-.def  fib1  1
-.def  fib2  2
-.def  fib3  3
+  .org  0x800     ; The entry point to our program will be 0x800.
 
+  ; The following two instructions perform a (page-local) call
+  ; to the fib function.
+  lea   $+2       ; '$' references the current address
+                  ; Here we load A with the current address plus 2,
+                  ; which is right after the jmp.
+  jmp   fib       ; Jump to the fib label
 
-  .org  0x800
+; The fib function will return here with the result in A.
 
-; Compute the largest Fibonacci number that fits in 12 bits.
+  sta   @output   ; Store the result to 0xFFF, which is the output device.
+                  ; Since 0xFFF is neither in the zero page nor the
+                  ; current page, we store it at "output" and reference
+                  ; it indirectly with "@".
+
+  jmp   $         ; Loop forever (this causes the simulator to halt).
+
+; Labels start at the beginnig of the line and end with a ":".
+; Note that a label is like a ".def" that gets set to the current address.
+; Here we set aside a word to point to the output device.
+output:
+  .dw   0xFFF     ; Address of the output device
+
+; The "fib" function
 fib:
-    lea   =1
-    sta   =fib1
-    sta   =fib2
+  sta   =x3       ; Store A to =x3. This is used as the return address.
+  lea   =1        ; Set A = 1 (the effective address of "=1" is simply "1")
+  sta   =x0       ; Store 1 at =x0
+  sta   =x1       ; Store 1 at =x1
 fib_loop:
-    lda   =fib2
-    sta   @output_ptr
-    lda   =fib1
-    add   =fib2
-    jfc   fib_cont
-    lda   =fib2
-    jmp   $
+  lda   =x0       ; Load A with the value at =x0
+  add   =x1       ; Now A = =x0 + =x1
+  jfc   fib_cont  ; If the add did not overflow (no carry), jump.
+                  ; If the add overflowed, we're done.
+  lda   =x1       ; Load A with =x1 (the result of the function)
+  jmp   @=x3      ; Return by jumping to the address at =x3
+
 fib_cont:
-    sta   =fib3
-    lda   =fib2
-    sta   =fib1
-    lda   =fib3
-    sta   =fib2
-    jmp   fib_loop
-output_ptr:
-    .dw   -1
+  sta   =x2       ; Store =x0 + =x1 to =x2
+  lda   =x1       ; Move x1 to x0 and then =x2 to =x1
+  sta   =x0
+  lda   =x2
+  sta   =x1
+  jmp   fib_loop  ; Loop back to determine the next number in the sequence.

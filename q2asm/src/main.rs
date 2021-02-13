@@ -127,6 +127,22 @@ impl OutputFormat for LowRomOutputFormat {
     }
 }
 
+struct Q2pOutputFormat;
+impl OutputFormat for Q2pOutputFormat {
+    fn name(&self) -> &str { "q2p" }
+    fn write(&self, vec: &mut Vec<u8>, _base: u16, st: &CompiledStatement) {
+        match st.code {
+            Some(word) => {
+                write_hex(vec, st.full_addr() as u16);
+                write_str(vec, ":");
+                write_hex(vec, word);
+                write_str(vec, "\n");
+            },
+            None => ()
+        }
+    }
+}
+
 fn get_output_name(name: &str, suffix: &str) -> String {
     match name.rfind(".") {
         Some(idx) => {
@@ -157,19 +173,22 @@ fn assemble(
         );
     }
     let content = fs::read_to_string(input_name)?;
-    let statements = parser::parse(&content)?;
+    let statements = parser::parse(input_name, &content)?;
     let symbols = pass1::pass1(&statements);
     let mut result = pass2::pass2(&statements, &symbols)?;
     result.sort_by_key(|s| s.full_addr());
-    let mut last_addr: i64 = -1;
-    let mut base: u16 = 0;
+    let mut last_addr: i64 = 0;
+    let mut base: u16 = 0xFFFF;
     for cs in result {
-        if last_addr < 0 {
-            last_addr = cs.addr;
+        if cs.code.is_some() && base == 0xFFFF {
+            // Set the base address to be the address of the first instruction.
             base = cs.addr as u16;
         }
         for writer in &mut writers {
-            writer.format.pad(&mut writer.output, last_addr, cs.addr);
+            if last_addr != cs.addr {
+                println!("Pad {:03X} to {:03X}", last_addr, cs.addr);
+                writer.format.pad(&mut writer.output, last_addr, cs.addr);
+            }
             writer.format.write(&mut writer.output, base, &cs);
         }
         last_addr = cs.addr + if cs.code.is_some() { 1 } else { 0 };
@@ -187,7 +206,8 @@ fn main() {
         Rc::new(HexOutputFormat),
         Rc::new(ListOutputFormat),
         Rc::new(HighRomOutputFormat),
-        Rc::new(LowRomOutputFormat)
+        Rc::new(LowRomOutputFormat),
+        Rc::new(Q2pOutputFormat),
     ];
     let input_key = "INPUT";
     let matches = App::new(crate_name!())

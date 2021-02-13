@@ -1,0 +1,598 @@
+
+.def  x0      0
+.def  x1      1
+.def  x2      2
+.def  x3      3
+.def  x4      4
+.def  x5      5
+.def  x6      6
+.def  x7      7
+.def  x8      8
+.def  x9      9
+.def  x10     10
+.def  x11     11
+.def  x12     12
+.def  x13     13
+.def  x14     14
+.def  x15     15
+
+.def  zero    16
+.def  one     17
+.def  neg1    18
+
+.def  rseed   19
+
+.def  buf     63  ; Last word of the first page.
+
+  .org  0x800
+
+menu:
+  lea   $+3
+  jmp   @$+1
+  .dw   lcd_init
+
+  lea   menu_str1
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   lcd_puts
+
+  lea   =0
+  sta   =x0
+  lea   =1
+  sta   =x1
+  lea   $+3
+  jmp   @$+1
+  .dw   lcd_move
+
+  lea   menu_str2
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   lcd_puts
+
+  lea   $+3
+  jmp   @$+1
+  .dw   waitkey
+
+  shr   =x0 ; check for 0
+  jfc   not_primes
+
+  lea   menu
+  jmp   @$+1
+  .dw   primes
+
+not_primes:
+  sta   =x0
+  shr   =x0
+  jfc   not_fib
+
+  lea   menu
+  jmp   @$+1
+  .dw   fib
+
+not_fib:
+  sta   =x0
+  shr   =x0
+  jfc   not_maze
+
+  lea   menu
+  jmp   @$+1
+  .dw   maze
+
+not_maze:
+
+; Invalid
+
+  jmp   menu
+
+menu_str1:
+  ;      0123456789ABCDEF
+  .dw   " -- Q2 Demo --"
+  .dw   0
+menu_str2:
+  ;      0123456789ABCDEF
+  .dw   " 0:Pr 1:Fb 2:Mz "
+  .dw   0
+
+  .align  128
+
+; Initialize the LCD
+; Destroys x0, x1
+lcd_init:
+  sta   =x1
+  lea   =0
+  sta   =zero
+  nor   =zero
+  sta   =neg1
+  lea   =1
+  sta   =one
+  lea   lcd_init_cmds
+  sta   =x0
+  lda   =x1
+  jmp   @$+1
+  .dw   lcd_puts
+lcd_init_cmds:
+  .dw   0x138   ; Function set (8-bits, 2-lines, 5x8)
+  .dw   0x10E   ; Display on, cursor on, blink off
+  .dw   0x106   ; Entry mode, increment, no shift
+lcd_clear_cmd:
+  .dw   0x101   ; Clear screen
+  .dw   0x000
+
+; Clear the LCD and move to 0, 0.
+; Destroys x0
+lcd_clear:
+  sta   =x0
+  lda   lcd_clear_cmd
+  sta   @=neg1
+  jmp   @=x0
+
+; Move the cursor to column x0 (0-15), row x1 (0-1)
+; Destroys x0, x1, x2
+lcd_move:
+  sta   =x2
+  lda   =x1
+  lea   =0x40
+  jfc   $+2
+  lea   =0
+  add   =x0
+  add   lcd_move_cmd
+  sta   @=neg1
+  jmp   @=x2
+lcd_move_cmd:
+  .dw   0x180
+
+  .align  128
+
+; Render the raster image at x0 on the LCD.
+; Raster is a 20x16 pixel image.
+; Input is left-to-right, top-to-bottom 320 words.
+; Zero is off, one is on. 
+; This uses the 8 custom LCD characters to
+; render the image in the left 4 characters.
+; Organization is:
+;   0 2 4 6
+;   1 3 5 7
+; Destroys x0, x1, x2, x3, x4, x5, x6, x7
+lcd_raster:
+  sta   =x7
+  lda   lcd_raster_addr_cmd
+  sta   @=neg1          ; First character to update.
+  lea   =4              ; 4 characters per row
+lcd_raster_outer_loop:
+  add   =neg1
+  sta   =x6
+  lda   =x0
+  sta   =x3
+  lea   =2              ; 2 characters per column.
+lcd_raster_col_loop:
+  add   =neg1
+  sta   =x5
+
+  lea   =8              ; 8 bytes per character
+lcd_raster_char_loop:
+  add   =neg1
+  sta   =x4
+  lea   =0
+  sta   =x2
+  lea   =5              ; 5 bits per character.
+lcd_raster_row_loop:
+  add   =neg1
+  sta   =x1
+  lda   =x2
+  add   =x2
+  add   @=x3
+  sta   =x2
+  lea   =1             ; Next bit
+  add   =x3
+  sta   =x3
+  lda   =x1
+  jfc   lcd_raster_row_loop
+
+  lea   =20-5 ; Next row
+  add   =x3
+  sta   =x3
+
+  lda   =x2
+  sta   @=neg1
+  lda   =x4
+  jfc   lcd_raster_char_loop
+
+  lda   =x5
+  jfc   lcd_raster_col_loop
+  lea   =5              ; 5 columns per character
+  add   =x0
+  sta   =x0
+  lda   =x6
+  jfc   lcd_raster_outer_loop
+  lea   lcd_raster_char_cmds
+  sta   =x0
+  lda   =x7
+  jmp   @$+1
+  .dw   lcd_puts
+lcd_raster_addr_cmd:
+  .dw   0x140                   ; CGRAM address 0
+lcd_raster_char_cmds:
+  .dw   0x180                               ; DDRAM address 0 (first line)
+  .dw   0x20, 0x20, 0x20, 0x20, 0x20, 0x20
+  .dw   0x08, 0x0A, 0x0C, 0x0E
+  .dw   0x20, 0x20, 0x20, 0x20, 0x20, 0x20
+  .dw   0x1C0                               ; DDRAM address 40 (second line)
+  .dw   0x20, 0x20, 0x20, 0x20, 0x20, 0x20
+  .dw   0x09, 0x0B, 0x0D, 0x0F
+  .dw   0x20, 0x20, 0x20, 0x20, 0x20, 0x20
+  .dw   0
+
+  .align  128
+
+; Write the string at x0
+; Uses x0, x1
+lcd_puts:
+  sta   =x1
+lcd_puts_loop:
+  lda   @=x0
+  jfc   $+2
+  jmp   @=x1
+  sta   @=neg1
+  lea   =1
+  add   =x0
+  sta   =x0
+  jmp   lcd_puts_loop
+
+; Write int in x0
+; Writes 4 chars
+; Uses x0, x1, x2, x3, x4, x5, x6, x7
+putint:
+  sta   =x7
+  lea   =buf
+  add   putint_chars
+  sta   =x6   ; Pointer to end of buffer
+  lea   =0
+  sta   @=x6
+putint_loop1:
+  lda   =x6
+  add   =neg1
+  sta   =x6
+  lea   =10
+  sta   =x1
+  lea   $+3
+  jmp   @$+1
+  .dw   div
+  lda   =x2
+  sta   =x0
+  lea   =48
+  add   =x3
+  sta   @=x6
+  lea   =buf
+  nor   =zero
+  add   =x6
+  nor   =zero
+  jfc   putint_loop1
+  lea   =buf
+  sta   =x0
+  lda   =x7
+  jmp   lcd_puts
+putint_chars:
+  .dw   4
+
+  .align 128
+
+; Wait for a key press and return it in x0
+; Destroys x0, x1
+waitkey:
+  sta   =x1
+waitkey_loop:
+  lda   @=neg1
+  nor   =zero
+  sta   =x0
+  jfc   @=x1
+  jmp   waitkey_loop
+
+; Delay
+; Destroys x0
+delay:
+    sta   =x0
+;    lea   =0
+    lda   =neg1
+delay_loop:
+    add   =one
+    jfc   delay_loop
+    jmp   @=x0
+
+  .align 128
+
+; Divide x2 = x0 / x1, remainder in x3
+; Uses x0, x1, x2, x3, x4, x5
+div:
+  sta   =x5
+  lea   =0
+  sta   =x2   ; quotient
+  sta   =x3   ; remainder
+  lea   =11
+div_loop:
+  sta   =x4
+
+  ; x3 <<= 1
+  lda   =x3
+  add   =x3
+  sta   =x3
+
+  ; x2 <<= 1
+  lda   =x2
+  add   =x2
+  sta   =x2
+
+  ; x3 = x3 | x0[x4]
+  lda   =x0
+  add   =x0
+  sta   =x0
+  jfc   div_not_set
+  lda   =x3
+  nor   =one
+  nor   =zero
+  sta   =x3
+div_not_set:
+
+  ; if x3 < x1 goto div_skip
+  lda   =x1
+  nor   =zero
+  add   =one
+  add   =x3
+  jfc   div_skip
+
+  ; x3 -= x1
+  sta   =x3
+
+  ; x2 |= 1
+  lda   =x2
+  nor   =one
+  nor   =zero
+  sta   =x2
+
+div_skip:
+  lda   =x4
+  add   =neg1
+  jfc   @=x5
+  jmp   div_loop
+
+
+; Multiply x2 = x0 * x1
+; Destroys x0, x1, x2, x3
+mult:
+  sta   =x3
+  lea   =0
+  sta   =x2
+mult_loop:
+  lda   =x0
+  jfc   mult_cont
+
+  ; done when =x0 is 0.
+  jmp  @=x3
+
+mult_cont:
+  nor   mult_minus2   ; zero if bit 1 is set
+  jfc   mult_next
+
+  ; bit is set, update =x2
+  lda   =x1
+  add   =x2
+  sta   =x2
+
+mult_next:
+
+  ; shift =x0 right and =x1 left
+  shr   =x0
+  sta   =x0
+  lda   =x1
+  add   =x1
+  sta   =x1
+  jmp   mult_loop
+
+mult_minus2:
+  .dw   -2
+
+; Compute the integer square root of =x0
+; Returns the result in =x0.
+; Destroys =x0, =x1, =x2, =x3
+isqrt:
+  sta   =x3
+  lea   =1
+  sta   =x1       ; x1 = 1
+  lea   =3
+  sta   =x2       ; x2 = 3
+isqrt_loop:
+  lda   =x0
+  nor   =zero
+  add   =x1
+  jfc   isqrt_cont  ; if x0 >= x1 continue
+  shr   =x2     ; return x0 = (x2 / 2) - 1
+  add   =neg1
+  sta   =x0
+  jmp   @=x3
+isqrt_cont:
+  lda   =x1
+  add   =x2
+  sta   =x1   ; x1 += x2
+  lda   =x2
+  add   isqrt_two
+  sta   =x2   ; x2 += 2
+  jmp   isqrt_loop
+isqrt_two:
+  .dw   2
+
+; Return a random number in A.
+; Destroys x0, x1, x2, x3, x4
+rand:
+  sta   =x4
+  lda   =rseed
+  sta   =x0
+  lda   rand_mult
+  sta   =x1
+  lea   $+2
+  jmp   mult
+  lda   =x2
+  add   rand_add
+  sta   =rseed
+  jmp   @=x4
+rand_mult:
+  .dw   2917
+rand_add:
+  .dw   353
+
+  .align 128
+
+; Compute the largest Fibonacci number that fits in 12 bits.
+fib:
+    sta   =x11
+
+    lea   =0
+    sta   =x0
+    lea   =1
+    sta   =x1
+    lea   $+3
+    jmp   @$+1
+    .dw   lcd_move
+
+    lea   fib_str
+    sta   =x0
+    lea   $+3
+    jmp   @$+1
+    .dw   lcd_puts
+
+    lea   =1
+    sta   =x8
+    sta   =x9
+fib_loop:
+    lda   =x9
+    sta   =x0
+
+    lea   =6
+    sta   =x0
+    lea   =1
+    sta   =x1
+    lea   $+3
+    jmp   @$+1
+    .dw   lcd_move
+
+    lda   =x9
+    sta   =x0
+    lea   $+3
+    jmp   @$+1
+    .dw   putint
+
+    lea   $+3
+    jmp   @$+1
+    .dw   delay
+
+    lda   =x8
+    add   =x9
+    jfc   fib_cont
+    jmp   @=x11
+fib_cont:
+    sta   =x10
+    lda   =x9
+    sta   =x8
+    lda   =x10
+    sta   =x9
+    jmp   fib_loop
+
+fib_str:
+    .dw   " Fib:           "
+    .dw   0
+
+  .align  128
+
+; Display primes
+; Uses [x0, x1, x2, x3, x4, x5, x6, x7], x8, x9, x10, x11
+primes:
+  sta   =x11
+
+  lea   =0
+  sta   =x0
+  lea   =1
+  sta   =x1
+  lea   $+3
+  jmp   @$+1
+  .dw   lcd_move
+
+  lea   primes_str
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   lcd_puts
+
+  ; Clear the primes array.
+  lda   prime_array_size
+primes_init_loop:
+  sta   =x8
+  add   prime_array_ptr
+  sta   =x9
+  lea   =0
+  sta   @=x9
+  lda   =x8
+  add   =neg1
+  jfc   $+2
+  jmp   primes_init_loop
+
+  lea   =2
+  sta   =x8
+prime_loop:
+  lda   =x8
+  sta   =x10
+
+  lea   =9
+  sta   =x0
+  lea   =1
+  sta   =x1
+  lea   $+3
+  jmp   @$+1
+  .dw   lcd_move
+
+  lda   =x10
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   putint
+
+prime_fill_loop:
+  lda   =x8
+  add   prime_array_ptr
+  sta   =x9
+  lea   =1
+  sta   @=x9
+  lda   =x8
+  add   =x10
+  sta   =x8
+  nor   =zero
+  add   prime_array_size
+  jfc   $+2
+  jmp   prime_fill_loop
+
+  lda   =x10
+  sta   =x8
+prime_next_loop:
+  lda   =x8
+  add   prime_array_ptr
+  sta   =x9
+  lda   @=x9
+  jfc   $+2
+  jmp   prime_loop
+  lea   =1
+  add   =x8
+  sta   =x8
+  nor   =zero
+  add   prime_array_size
+  jfc   @=x11
+  jmp   prime_next_loop
+
+prime_array_ptr:
+  .dw   0x100   ; Prime status array
+prime_array_size:
+  .dw   0x200   ; Find primes up to this size
+primes_str:
+  .dw   " Primes:        "
+  .dw   0
+
+.include  examples/maze.q2
+

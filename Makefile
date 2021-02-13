@@ -1,6 +1,7 @@
 
 ASM = ./q2asm/target/debug/q2asm
-PROG = minipro
+PROG1 = minipro
+PROG2 = ./q2prog/target/debug/q2prog
 DEVICE = AT28C256
 
 all:
@@ -20,6 +21,9 @@ examples/%.lst: examples/%.q2
 examples/%.hex: examples/%.q2
 	$(ASM) $<
 
+examples/%.q2p: examples/%.q2
+	$(ASM) $<
+
 examples/%.low.hex: examples/%.q2
 	$(ASM) $<
 
@@ -27,10 +31,13 @@ examples/%.high.hex: examples/%.q2
 	$(ASM) $<
 
 prog-low-%: examples/%.low.hex
-	$(PROG) -p $(DEVICE) -w $<
+	$(PROG1) -p $(DEVICE) -w $<
 
 prog-high-%: examples/%.high.hex
-	$(PROG) -p $(DEVICE) -w $<
+	$(PROG1) -p $(DEVICE) -w $<
+
+prog-%: examples/%.q2p
+	$(PROG2) write -f $<
 
 clean:
 	rm -f examples/*.raw examples/*.lst examples/*.hex

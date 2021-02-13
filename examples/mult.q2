@@ -1,14 +1,18 @@
 
   jmp   @=1
   .dw   init
-ra:
-  .dw   0
 x0:
   .dw   0
 x1:
   .dw   0
 x2:
   .dw   0
+x3:
+  .dw   0
+neg1:
+  .dw   -1
+
+  .org 0x800
 
 init:
   lda   value1
@@ -18,39 +22,37 @@ init:
   lea   $+2
   jmp   mult
   lda   =x2
-  sta   @=minus1
+  sta   @=neg1
   jmp   $
 
 value1:
   .dw   35
 value2:
   .dw   15
-minus1:
-  .dw   -1
 
 ; Multiply x2 = x0 * x1
-; Destroys x0, x1, and x2
+; Destroys x0, x1, x2, x3
 mult:
-  sta   =ra
+  sta   =x3
   lea   =0
   sta   =x2
-multLoop:
+mult_loop:
   lda   =x0
-  jfc   multCont
+  jfc   mult_cont
 
   ; done when =x0 is 0.
-  jmp  @=ra
+  jmp  @=x3
 
-multCont:
-  nor   minus2    ; zero if bit 1 is set
-  jfc   multNext
+mult_cont:
+  nor   neg2    ; zero if bit 1 is set
+  jfc   mult_next
 
   ; bit is set, update =x2
   lda   =x1
   add   =x2
   sta   =x2
 
-multNext:
+mult_next:
 
   ; shift =x0 right and =x1 left
   shr   =x0
@@ -59,7 +61,7 @@ multNext:
   add   =x1
   sta   =x1
 
-  jmp   multLoop
-minus2:
+  jmp   mult_loop
+neg2:
   .dw   -2
 

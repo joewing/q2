@@ -41,8 +41,8 @@ module q2_control(
   wire state_exec   = s0 & s1 & ~s2 & ~s3;
   wire state_alu    = ~(~s2 & ~s3) & ((~op3 & ~op4) | ~op5);
 
-  assign rdp = state_fetch;
-  assign rdx = ~state_fetch;
+  assign rdp = ~(~state_fetch & ~state_alu);
+  assign rdx = ~rdp;
   assign rda = state_exec;
   assign rdm = ~state_exec;
 

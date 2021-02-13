@@ -53,8 +53,8 @@ bfrun:
 bf_loop:
   lda   @=x0
   lea   bf_tokens
-  sta   =x2
 bf_dispatch_loop:
+  sta   =x2
   lda   @=x0
   nor   =zero
   add   @=x2
@@ -69,7 +69,6 @@ bf_dispatch_loop:
 bf_not_found:
   lea   =2
   add   =x2
-  sta   =x2
   jmp   bf_dispatch_loop
 
 bf_tokens:

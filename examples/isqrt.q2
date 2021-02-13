@@ -11,7 +11,7 @@
   lea   $+2
   jmp   isqrt
   lda   =x0
-  sta   @minus1
+  sta   @neg1
   jmp   $
 
 value:
@@ -31,8 +31,8 @@ isqrt_loop:
   nor   zero
   add   =x1
   jfc   isqrt_cont  ; if x0 >= x1 continue
-  shr   =x2     ; return x0 = (x2 / 2) - 1
-  add   minus1
+  shr   =x2         ; return x0 = (x2 / 2) - 1
+  add   neg1
   sta   =x0
   jmp   @=x3
 isqrt_cont:
@@ -43,7 +43,7 @@ isqrt_cont:
   add   =x2
   sta   =x2   ; x2 += 2
   jmp   isqrt_loop
-minus1:
+neg1:
   .dw   -1
 zero:
   .dw   0
