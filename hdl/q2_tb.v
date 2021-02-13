@@ -16,16 +16,45 @@ module q2_tb;
   wire wrm;
   wire rdm;
 
+  reg [6:0] disp_addr = 0;
+  reg [7:0] disp [0:127];
+  integer i, j;
+
   reg [11:0] ram[0:4095];
   always @(posedge wrm) begin
     if (abus == 12'hFFF) begin
-      $display("OUTPUT %03x: %03x (%d)", abus, dbus, dbus);
+      if (dbus[8]) begin
+        if (dbus[7]) begin
+          // Set address
+          disp_addr <= dbus[6:0];
+        end else if (dbus[0]) begin
+          // Clear screen.
+          for (j = 0; j < 128; j = j + 1) begin
+            disp[j] <= 8'h20;
+          end
+          disp_addr <= 0;
+        end else begin
+          $display("OUTPUT %03x: %03x (%d)", abus, dbus, dbus);
+        end
+      end else begin
+        disp[disp_addr] = dbus[7:0];
+        disp_addr <= disp_addr + 1;
+        $write("+----------------+\n|");
+        for (j = 0; j < 16; j = j + 1) begin
+          $write("%c", disp[j]);
+        end
+        $write("|\n|");
+        for (j = 0; j < 16; j = j + 1) begin
+          $write("%c", disp[j + 64]);
+        end
+        $write("|\n+----------------+\n");
+        $fflush();
+      end
     end
     ram[abus] <= dbus;
   end
   assign dbus = rdm ? (abus == 12'hFFF ? 12'hFFE : ram[abus]) : 12'bz;
 
-  integer i;
   initial begin
 
     $readmemh("test.hex", ram);

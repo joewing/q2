@@ -127,6 +127,22 @@ impl OutputFormat for LowRomOutputFormat {
     }
 }
 
+struct Q2pOutputFormat;
+impl OutputFormat for Q2pOutputFormat {
+    fn name(&self) -> &str { "q2p" }
+    fn write(&self, vec: &mut Vec<u8>, _base: u16, st: &CompiledStatement) {
+        match st.code {
+            Some(word) => {
+                write_hex(vec, st.full_addr() as u16);
+                write_str(vec, ":");
+                write_hex(vec, word);
+                write_str(vec, "\n");
+            },
+            None => ()
+        }
+    }
+}
+
 fn get_output_name(name: &str, suffix: &str) -> String {
     match name.rfind(".") {
         Some(idx) => {
@@ -157,7 +173,7 @@ fn assemble(
         );
     }
     let content = fs::read_to_string(input_name)?;
-    let statements = parser::parse(&content)?;
+    let statements = parser::parse(input_name, &content)?;
     let symbols = pass1::pass1(&statements);
     let mut result = pass2::pass2(&statements, &symbols)?;
     result.sort_by_key(|s| s.full_addr());
@@ -187,7 +203,8 @@ fn main() {
         Rc::new(HexOutputFormat),
         Rc::new(ListOutputFormat),
         Rc::new(HighRomOutputFormat),
-        Rc::new(LowRomOutputFormat)
+        Rc::new(LowRomOutputFormat),
+        Rc::new(Q2pOutputFormat),
     ];
     let input_key = "INPUT";
     let matches = App::new(crate_name!())

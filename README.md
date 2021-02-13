@@ -4,10 +4,10 @@
 A 12-bit discrete transistor computer.
 
 This repo contains the following subdirectories:
-  - hdl - A Verilog model of the computer and test bench
-    for simulating Q2 programs.
+  - hdl - A Verilog model and test bench for simulating Q2 programs.
   - scad - An OpenSCAD 3d model for the case.
   - q2asm - A Q2 assembler (in Rust).
+  - q2prog - A Q2 programmer (in Rust) for a Raspberry Pi.
   - examples - Q2 assembly language examples.
   - pcb - Schematics and PCB in KiCad
 
@@ -18,8 +18,6 @@ The frontpanel provides the main interface to the computer.
   - 12 address LEDs
   - 12 data LEDs
   - 12 toggle switches for input
-  - 1 toggle switch for clock speed
-  - 1 power switch
   - Buttons:
     - Reset/Set Address
     - Increment Address
@@ -27,24 +25,31 @@ The frontpanel provides the main interface to the computer.
     - Start
     - Stop
 
+## Programmer Interface
+
+A 40-pin connector provides an interface to the front-panel switches,
+deposit switch, reset switch, and data output. The pinout is designed
+to align with the GPIO pins of a Raspberry Pi so that the Pi can be
+used to both program and backup the Q2.
+
 ## Power Estimation
 
-LEDs are driven through a 4.7k resistor. Assuming a 5v power
+Each LED is driven through a 4.7k resistor. Assuming a 5v power
 supply and 2v voltage drop through an LED, we can assume ~0.64mA
 for each 4.7k resistor.  Each gate uses either a 10k or a 1k
 (depending on fanout and required speed) resistor pull up,
 so we assume 0.5mA for each 10k resistor and 5mA for each 1k resistor.
 This provides an absolute worst case estimate since we don't expect all
-gates and LEDs to be on.
-We assume the RAM and ROM chips as well as the LCD use ~20mA each.
+gates and LEDs to be active.
+We assume the RAM chips and the LCD use ~20mA each.
 
 This gives the following:
   - 73 LEDS (4.7k resistor) = 31mA
-  - 414 10k resistors = 207mA
-  - 8 1k resistors = 40mA
-  - 2 RAMs, 2 ROMs, 1 LCD = 100mA
+  - 405 10k resistors = 203mA
+  - 7 1k resistors = 35mA
+  - 2 RAMs, 1 LCD = 60mA
 
-So we get a worst-case draw of ~378mA or ~2 Watts.
+So we get a worst-case draw of ~329mA or ~2 Watts.
 
 ## Clock Frequency Estimation
 
@@ -72,7 +77,11 @@ The registers are divided into 12 slices each consisting of
 4 flip-flops. Each slice contains one bit of the A register
 (accumulator), one bit of X register (operand), one bit of
 the P register (program counter), and one bit of the state
-register.
+register. Note that only 10 bits are used for state:
+one for the flag register, four for the state machine,
+one for the clock divider, and four for the opcode. We don't
+need to save the zero-page bit because it is only used during
+the fetch state.
 
 ### ALU
 
@@ -120,7 +129,7 @@ the starting sequence looks like this:
   A     | 12    | Accumulator
   P     | 12    | Program counter
   X     | 12    | Operand
-  O     | 6     | Opcode
+  O     | 4     | Opcode
   F     | 1     | Flag
   S     | 4     | State
   C     | 1     | Clock divider
@@ -141,14 +150,14 @@ Instruction summary:
 
   Opcode  | Name  | F | Description
   ------- | ----- | - | ----------------
-  000     | lda x | Z | A = X
-  001     | nor x | Z | A = A NOR X
-  010     | add x | C | A = A + X
-  011     | shr x | C | A = X >> 1
-  100     | lea x | - | A = &X
-  101     | sta x | - | [X] = A
-  110     | jmp x | - | Jump
-  111     | jfc x | - | Jump if F clear
+  000     | LDA   | Z | A = [X]
+  001     | NOR   | Z | A = A NOR [X]
+  010     | ADD   | C | A = A + [X]
+  011     | SHR   | C | A = [X] >> 1
+  100     | LEA   | - | A = X
+  101     | STA   | - | [X] = A
+  110     | JMP   | - | P = X
+  111     | JFC   | - | if !F, P = X
 
 The flag is set if carry ('C'), zero ('Z'), or left unchanged ('-').
 
@@ -264,27 +273,19 @@ rortopbit:
 ```
 
 ```
-; Push x0 on to the stack
-push:
-  sta   =ra
+; Push A on to the stack
+  sta   @=sp
   lda   =sp
   add   =neg1
   sta   =sp
-  lda   =x0
-  sta   @=sp
-  jmp   @=ra
 ```
 
 ```
-; Pop x0 off the stack
-pop:
-  sta   =ra
-  lda   @=sp
-  sta   =x0
-  lda   =sp
-  add   =one
+; Pop A off the stack
+  lea   =1
+  add   =sp
   sta   =sp
-  jmp   @=ra
+  lda   @=sp
 ```
 
 ## Memory Map
@@ -305,26 +306,24 @@ Here is a possible layout:
 
   Addr  | Name  | Description
   ----- | ----- | ------------------------------
-  000   | -     | Jump to the entry point (jmp @=init)
-  001   | =init | Address of the entry point
-  002   | =t0   | Temporary 0
-  003   | =t1   | Temporary 1
-  004   | =t2   | Temporary 2
-  005   | =t3   | Temporary 3
-  006   | =sp   | Stack pointer
-  007   | =ra   | Return address for function calls
-  008   | =x0   | Argument 0 for function calls
-  009   | =x1   | Argument 1 for function calls
-  00A   | =x2   | Argument 2 for function calls
-  00B   | =x3   | Argument 3 for function calls
-  00C   | =x4   | Argument 4 for function calls
-  00D   | =x5   | Argument 5 for function calls
-  00E   | =x6   | Argument 6 for function calls
-  00F   | =x7   | Argument 7 for function calls
+  000   | =x0   | Temporary
+  001   | =x1   | Temporary
+  002   | =x2   | Temporary
+  003   | =x3   | Temporary
+  004   | =x4   | Temporary
+  005   | =x5   | Temporary
+  006   | =x6   | Temporary
+  007   | =x7   | Tempoarary
+  008   | =x8   | Tempoarary
+  009   | =x9   | Tempoarary
+  00A   | =x10  | Tempoarary
+  00B   | =x11  | Tempoarary
+  00C   | =x12  | Tempoarary
+  00D   | =x13  | Tempoarary
+  00E   | =x14  | Tempoarary
+  00F   | =x15  | Tempoarary
   010   | =zero | 0
   011   | =one  | 1
   012   | =two  | 2
   013   | =neg1 | -1
-  014   | =push | Pointer to push
-  015   | =pop  | Pointer to pop
 
