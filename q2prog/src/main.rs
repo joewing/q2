@@ -23,7 +23,7 @@ const DELAY: Duration = Duration::from_millis(50);
 
 pub struct FrontPanel {
     output_lines: MultiLineHandle,
-    input_lines: MultiLineHandle,
+    input_lines: Option<MultiLineHandle>,
     set_line: LineHandle,
     deposit_line: LineHandle
 }
@@ -58,7 +58,7 @@ impl FrontPanel {
 
     fn get_value(&self) -> Result<u16, Error> {
         let mut result = 0u16;
-        let temp = self.input_lines.get_values()?;
+        let temp = self.input_lines.as_ref().unwrap().get_values()?;
         for i in 0..12 {
             if temp[i] != 0 {
                 result |= 1 << i;
@@ -81,7 +81,7 @@ impl FrontPanel {
     }
 }
 
-pub fn create_frontpanel(device_path: &str) -> Result<FrontPanel, Error> {
+pub fn create_frontpanel(device_path: &str, read_enable: bool) -> Result<FrontPanel, Error> {
     let process_name = "q2prog";
     let mut chip = Chip::new(device_path)?;
     let output_lines = chip.get_lines(&OUTPUT_PINS)?.request(
@@ -89,11 +89,17 @@ pub fn create_frontpanel(device_path: &str) -> Result<FrontPanel, Error> {
         &[0u8; 12],
         process_name
     )?;
-    let input_lines = chip.get_lines(&INPUT_PINS)?.request(
-        LineRequestFlags::INPUT | LineRequestFlags::ACTIVE_LOW,
-        &[0u8, 12],
-        process_name
-    )?;
+    let input_lines = if read_enable {
+        Some(
+            chip.get_lines(&INPUT_PINS)?.request(
+                LineRequestFlags::INPUT | LineRequestFlags::ACTIVE_LOW,
+                &[0u8, 12],
+                process_name
+            )?
+        )
+    } else {
+        None
+    };
     let set_line = chip.get_line(SET_PIN)?.request(
         LineRequestFlags::OUTPUT | LineRequestFlags::OPEN_DRAIN | LineRequestFlags::ACTIVE_LOW,
         0u8,
@@ -113,7 +119,7 @@ fn parse_word(word: &str) -> u16 {
 
 fn do_write(device_path: &str, filename: &str) {
     let data = fs::read_to_string(filename).unwrap();
-    let panel = create_frontpanel(device_path).unwrap();
+    let panel = create_frontpanel(device_path, false).unwrap();
     let mut count = 0;
     for line in data.split('\n') {
         let parts: Vec<&str> = line.split(':').collect();
@@ -130,7 +136,7 @@ fn do_write(device_path: &str, filename: &str) {
 }
 
 fn do_read(device_path: &str, filename: &str, start: u16, end: u16) {
-    let panel = create_frontpanel(device_path).unwrap();
+    let panel = create_frontpanel(device_path, true).unwrap();
     let mut data = String::new();
     for addr in start..=end {
         let word = panel.read_word(addr).unwrap();
