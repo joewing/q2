@@ -167,6 +167,7 @@ pub enum Statement {
     Word(Vec<Expression>),
     Reserve(Expression),
     Instruction(InstructionType, AddressMode, Expression),
+    Macro(String, Vec<Statement>),
 }
 
 impl Listing for Statement {
@@ -181,6 +182,15 @@ impl Listing for Statement {
             Statement::Reserve(e)           => format!("    .bss   {}", e.emit_listing()),
             Statement::Instruction(t, m, o) =>
                 format!("    {}    {}{}", t.emit_listing(), m.emit_listing(), o.emit_listing()),
+            Statement::Macro(n, ss)         => {
+                let mut result = String::new();
+                result.extend(format!(".macro {}\n", n).chars());
+                for s in ss.iter() {
+                    result.extend(s.emit_listing().chars());
+                }
+                result += ".end\n";
+                result
+            },
         }
     }
 }

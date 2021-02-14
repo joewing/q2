@@ -121,6 +121,7 @@ pub fn pass2(
                 );
                 addr += count;
             },
+            Statement::Macro(_, _) => (),
         }
     }
 

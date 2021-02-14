@@ -8,14 +8,16 @@ use clap::{App, crate_version, crate_authors, crate_name, Arg};
 
 const DEFAULT_DEVICE_PATH: &str = "/dev/gpiochip0";
 
+// Least significant bits first.
 const OUTPUT_PINS: [u32; 12] = [
-    2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
+    2, 3, 4, 7, 8, 9, 10, 11, 14, 15, 17, 18
 ];
 const INPUT_PINS: [u32; 12] = [
-    14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25
+    // Input available with 40-pin connector only.
+    5, 6, 12, 13, 16, 19, 20, 21, 24, 25, 26, 27
 ];
-const SET_PIN: u32 = 26;
-const DEPOSIT_PIN: u32 = 27;
+const SET_PIN: u32 = 22;
+const DEPOSIT_PIN: u32 = 23;
 
 const DELAY: Duration = Duration::from_millis(50);
 

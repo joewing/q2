@@ -57,6 +57,7 @@ pub fn pass1(statements: &Vec<StatementWithContext>) -> HashMap<String, Expressi
                 );
                 result.insert(s.clone(), pos);
             },
+            Statement::Macro(_, _) => (),
         }
     }
 
