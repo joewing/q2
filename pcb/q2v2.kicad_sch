@@ -8895,6 +8895,9 @@
     (path "/00000000-0000-0000-0000-000060e26e71/00000000-0000-0000-0000-0000600f0173/00000000-0000-0000-0000-00005ed32497/00000000-0000-0000-0000-00005ec0720d"
       (reference "R286") (unit 1) (value "10k") (footprint "Resistor_SMD:R_0805_2012Metric")
     )
+    (path "/00000000-0000-0000-0000-000061678ebc/b8a1cd09-bc55-4df1-928a-4f0d91edd71e"
+      (reference "#FLG?") (unit 1) (value "PWR_FLAG") (footprint "")
+    )
     (path "/00000000-0000-0000-0000-000061678ebc/00000000-0000-0000-0000-0000616e1141"
       (reference "#PWR0592") (unit 1) (value "VCC") (footprint "")
     )
