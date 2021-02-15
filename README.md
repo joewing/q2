@@ -32,6 +32,10 @@ deposit switch, reset switch, and data output. The pinout is designed
 to align with the GPIO pins of a Raspberry Pi so that the Pi can be
 used to both program and backup the Q2.
 
+The pins are configured such that the original Raspberry Pi with a
+26-pin connector can be used for programming the Q2 (though it will
+not be able to read from the Q2).
+
 ## Power Estimation
 
 Each LED is driven through a 4.7k resistor. Assuming a 5v power

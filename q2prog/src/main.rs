@@ -10,11 +10,11 @@ const DEFAULT_DEVICE_PATH: &str = "/dev/gpiochip0";
 
 // Least significant bits first.
 const OUTPUT_PINS: [u32; 12] = [
-    2, 3, 4, 7, 8, 9, 10, 11, 14, 15, 17, 18
+    24, 25, 4, 27, 8, 9, 10, 11, 14, 15, 17, 18
 ];
 const INPUT_PINS: [u32; 12] = [
     // Input available with 40-pin connector only.
-    5, 6, 12, 13, 16, 19, 20, 21, 24, 25, 26, 27
+    5, 6, 12, 13, 16, 19, 20, 21, 7, 2, 26, 3
 ];
 const SET_PIN: u32 = 22;
 const DEPOSIT_PIN: u32 = 23;
