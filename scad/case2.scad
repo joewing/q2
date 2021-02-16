@@ -1,14 +1,14 @@
 
 board_width = 210;
 board_height = 314;
-wall_width = 1;
+wall_width = 2;
 board_overlap = 2;
 tol = 0.2;
 screw_radius = 1.7;
 screw_head_radius = 2.8;
 screw_head_height = 3;
 screw_offset = 3.5;
-standoff_height = 8;
+standoff_height = 10;
 standoff_radius = screw_head_radius * 1.6;
 
 interlock_width = 10;
@@ -153,5 +153,5 @@ module back_half() {
     }
 }
 
-//front_half();
+front_half();
 back_half();

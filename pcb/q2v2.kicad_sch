@@ -10485,9 +10485,6 @@
     (path "/00000000-0000-0000-0000-0000617646a4/00000000-0000-0000-0000-000061af5c0c/00000000-0000-0000-0000-0000617c0f18"
       (reference "R376") (unit 1) (value "4.7k") (footprint "Resistor_SMD:R_0805_2012Metric")
     )
-    (path "/00000000-0000-0000-0000-0000617646a4/00000000-0000-0000-0000-000061af5c0c/3177792d-8ab3-4774-b53a-85928c85f8d4"
-      (reference "R377") (unit 1) (value "4.7k") (footprint "Resistor_SMD:R_0805_2012Metric")
-    )
     (path "/00000000-0000-0000-0000-0000617646a4/00000000-0000-0000-0000-000061af5c0c/00000000-0000-0000-0000-0000617b9e4f"
       (reference "SW19") (unit 1) (value "SW") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical")
     )
@@ -10523,9 +10520,6 @@
     )
     (path "/00000000-0000-0000-0000-0000617646a4/00000000-0000-0000-0000-0000617b63e7/00000000-0000-0000-0000-0000617c0f18"
       (reference "R379") (unit 1) (value "4.7k") (footprint "Resistor_SMD:R_0805_2012Metric")
-    )
-    (path "/00000000-0000-0000-0000-0000617646a4/00000000-0000-0000-0000-0000617b63e7/3177792d-8ab3-4774-b53a-85928c85f8d4"
-      (reference "R380") (unit 1) (value "4.7k") (footprint "Resistor_SMD:R_0805_2012Metric")
     )
     (path "/00000000-0000-0000-0000-0000617646a4/00000000-0000-0000-0000-0000617b63e7/00000000-0000-0000-0000-0000617b9e4f"
       (reference "SW20") (unit 1) (value "SW") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical")
@@ -10563,9 +10557,6 @@
     (path "/00000000-0000-0000-0000-0000617646a4/00000000-0000-0000-0000-000061af5c17/00000000-0000-0000-0000-0000617c0f18"
       (reference "R382") (unit 1) (value "4.7k") (footprint "Resistor_SMD:R_0805_2012Metric")
     )
-    (path "/00000000-0000-0000-0000-0000617646a4/00000000-0000-0000-0000-000061af5c17/3177792d-8ab3-4774-b53a-85928c85f8d4"
-      (reference "R383") (unit 1) (value "4.7k") (footprint "Resistor_SMD:R_0805_2012Metric")
-    )
     (path "/00000000-0000-0000-0000-0000617646a4/00000000-0000-0000-0000-000061af5c17/00000000-0000-0000-0000-0000617b9e4f"
       (reference "SW21") (unit 1) (value "SW") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical")
     )
@@ -10601,9 +10592,6 @@
     )
     (path "/00000000-0000-0000-0000-0000617646a4/00000000-0000-0000-0000-00006184c0bf/00000000-0000-0000-0000-0000617c0f18"
       (reference "R385") (unit 1) (value "4.7k") (footprint "Resistor_SMD:R_0805_2012Metric")
-    )
-    (path "/00000000-0000-0000-0000-0000617646a4/00000000-0000-0000-0000-00006184c0bf/3177792d-8ab3-4774-b53a-85928c85f8d4"
-      (reference "R386") (unit 1) (value "4.7k") (footprint "Resistor_SMD:R_0805_2012Metric")
     )
     (path "/00000000-0000-0000-0000-0000617646a4/00000000-0000-0000-0000-00006184c0bf/00000000-0000-0000-0000-0000617b9e4f"
       (reference "SW22") (unit 1) (value "SW") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical")
@@ -10641,9 +10629,6 @@
     (path "/00000000-0000-0000-0000-0000617646a4/00000000-0000-0000-0000-000061af5c22/00000000-0000-0000-0000-0000617c0f18"
       (reference "R388") (unit 1) (value "4.7k") (footprint "Resistor_SMD:R_0805_2012Metric")
     )
-    (path "/00000000-0000-0000-0000-0000617646a4/00000000-0000-0000-0000-000061af5c22/3177792d-8ab3-4774-b53a-85928c85f8d4"
-      (reference "R389") (unit 1) (value "4.7k") (footprint "Resistor_SMD:R_0805_2012Metric")
-    )
     (path "/00000000-0000-0000-0000-0000617646a4/00000000-0000-0000-0000-000061af5c22/00000000-0000-0000-0000-0000617b9e4f"
       (reference "SW23") (unit 1) (value "SW") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical")
     )
@@ -10679,9 +10664,6 @@
     )
     (path "/00000000-0000-0000-0000-0000617646a4/00000000-0000-0000-0000-0000618dc834/00000000-0000-0000-0000-0000617c0f18"
       (reference "R391") (unit 1) (value "4.7k") (footprint "Resistor_SMD:R_0805_2012Metric")
-    )
-    (path "/00000000-0000-0000-0000-0000617646a4/00000000-0000-0000-0000-0000618dc834/3177792d-8ab3-4774-b53a-85928c85f8d4"
-      (reference "R392") (unit 1) (value "4.7k") (footprint "Resistor_SMD:R_0805_2012Metric")
     )
     (path "/00000000-0000-0000-0000-0000617646a4/00000000-0000-0000-0000-0000618dc834/00000000-0000-0000-0000-0000617b9e4f"
       (reference "SW24") (unit 1) (value "SW") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical")
@@ -10719,9 +10701,6 @@
     (path "/00000000-0000-0000-0000-0000617646a4/00000000-0000-0000-0000-000061af5c2d/00000000-0000-0000-0000-0000617c0f18"
       (reference "R394") (unit 1) (value "4.7k") (footprint "Resistor_SMD:R_0805_2012Metric")
     )
-    (path "/00000000-0000-0000-0000-0000617646a4/00000000-0000-0000-0000-000061af5c2d/3177792d-8ab3-4774-b53a-85928c85f8d4"
-      (reference "R395") (unit 1) (value "4.7k") (footprint "Resistor_SMD:R_0805_2012Metric")
-    )
     (path "/00000000-0000-0000-0000-0000617646a4/00000000-0000-0000-0000-000061af5c2d/00000000-0000-0000-0000-0000617b9e4f"
       (reference "SW25") (unit 1) (value "SW") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical")
     )
@@ -10757,9 +10736,6 @@
     )
     (path "/00000000-0000-0000-0000-0000617646a4/00000000-0000-0000-0000-00006196982b/00000000-0000-0000-0000-0000617c0f18"
       (reference "R397") (unit 1) (value "4.7k") (footprint "Resistor_SMD:R_0805_2012Metric")
-    )
-    (path "/00000000-0000-0000-0000-0000617646a4/00000000-0000-0000-0000-00006196982b/3177792d-8ab3-4774-b53a-85928c85f8d4"
-      (reference "R398") (unit 1) (value "4.7k") (footprint "Resistor_SMD:R_0805_2012Metric")
     )
     (path "/00000000-0000-0000-0000-0000617646a4/00000000-0000-0000-0000-00006196982b/00000000-0000-0000-0000-0000617b9e4f"
       (reference "SW26") (unit 1) (value "SW") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical")
@@ -10797,9 +10773,6 @@
     (path "/00000000-0000-0000-0000-0000617646a4/00000000-0000-0000-0000-000061af5c38/00000000-0000-0000-0000-0000617c0f18"
       (reference "R400") (unit 1) (value "4.7k") (footprint "Resistor_SMD:R_0805_2012Metric")
     )
-    (path "/00000000-0000-0000-0000-0000617646a4/00000000-0000-0000-0000-000061af5c38/3177792d-8ab3-4774-b53a-85928c85f8d4"
-      (reference "R401") (unit 1) (value "4.7k") (footprint "Resistor_SMD:R_0805_2012Metric")
-    )
     (path "/00000000-0000-0000-0000-0000617646a4/00000000-0000-0000-0000-000061af5c38/00000000-0000-0000-0000-0000617b9e4f"
       (reference "SW27") (unit 1) (value "SW") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical")
     )
@@ -10835,9 +10808,6 @@
     )
     (path "/00000000-0000-0000-0000-0000617646a4/00000000-0000-0000-0000-000061aef286/00000000-0000-0000-0000-0000617c0f18"
       (reference "R403") (unit 1) (value "4.7k") (footprint "Resistor_SMD:R_0805_2012Metric")
-    )
-    (path "/00000000-0000-0000-0000-0000617646a4/00000000-0000-0000-0000-000061aef286/3177792d-8ab3-4774-b53a-85928c85f8d4"
-      (reference "R404") (unit 1) (value "4.7k") (footprint "Resistor_SMD:R_0805_2012Metric")
     )
     (path "/00000000-0000-0000-0000-0000617646a4/00000000-0000-0000-0000-000061aef286/00000000-0000-0000-0000-0000617b9e4f"
       (reference "SW28") (unit 1) (value "SW") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical")
@@ -10875,9 +10845,6 @@
     (path "/00000000-0000-0000-0000-0000617646a4/00000000-0000-0000-0000-000061af5c43/00000000-0000-0000-0000-0000617c0f18"
       (reference "R406") (unit 1) (value "4.7k") (footprint "Resistor_SMD:R_0805_2012Metric")
     )
-    (path "/00000000-0000-0000-0000-0000617646a4/00000000-0000-0000-0000-000061af5c43/3177792d-8ab3-4774-b53a-85928c85f8d4"
-      (reference "R407") (unit 1) (value "4.7k") (footprint "Resistor_SMD:R_0805_2012Metric")
-    )
     (path "/00000000-0000-0000-0000-0000617646a4/00000000-0000-0000-0000-000061af5c43/00000000-0000-0000-0000-0000617b9e4f"
       (reference "SW29") (unit 1) (value "SW") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical")
     )
@@ -10913,9 +10880,6 @@
     )
     (path "/00000000-0000-0000-0000-0000617646a4/00000000-0000-0000-0000-000061aefca4/00000000-0000-0000-0000-0000617c0f18"
       (reference "R409") (unit 1) (value "4.7k") (footprint "Resistor_SMD:R_0805_2012Metric")
-    )
-    (path "/00000000-0000-0000-0000-0000617646a4/00000000-0000-0000-0000-000061aefca4/3177792d-8ab3-4774-b53a-85928c85f8d4"
-      (reference "R410") (unit 1) (value "4.7k") (footprint "Resistor_SMD:R_0805_2012Metric")
     )
     (path "/00000000-0000-0000-0000-0000617646a4/00000000-0000-0000-0000-000061aefca4/00000000-0000-0000-0000-0000617b9e4f"
       (reference "SW30") (unit 1) (value "SW") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical")

@@ -5,21 +5,50 @@ use std::time::Duration;
 use std::u16;
 use std::fs;
 use clap::{App, crate_version, crate_authors, crate_name, Arg};
+use std::num::ParseIntError;
 
 const DEFAULT_DEVICE_PATH: &str = "/dev/gpiochip0";
 
 // Least significant bits first.
 const OUTPUT_PINS: [u32; 12] = [
-    24, 25, 4, 27, 8, 9, 10, 11, 14, 15, 17, 18
+    24, 25, 4, 7, 8, 9, 10, 11, 14, 15, 17, 18
 ];
 const INPUT_PINS: [u32; 12] = [
     // Input available with 40-pin connector only.
-    5, 6, 12, 13, 16, 19, 20, 21, 7, 2, 26, 3
+    5, 6, 12, 13, 16, 19, 20, 21, 27, 2, 26, 3
 ];
 const SET_PIN: u32 = 22;
 const DEPOSIT_PIN: u32 = 23;
 
 const DELAY: Duration = Duration::from_millis(50);
+
+pub struct ProgError {
+    message: String
+}
+
+impl From<std::io::Error> for ProgError {
+    fn from(e: std::io::Error) -> ProgError {
+        ProgError {
+            message: e.to_string()
+        }
+    }
+}
+
+impl From<Error> for ProgError {
+    fn from(e: Error) -> ProgError {
+        ProgError {
+            message: e.to_string()
+        }
+    }
+}
+
+impl From<ParseIntError> for ProgError {
+    fn from(e: ParseIntError) -> ProgError {
+        ProgError {
+            message: e.to_string()
+        }
+    }
+}
 
 pub struct FrontPanel {
     output_lines: MultiLineHandle,
@@ -113,36 +142,44 @@ pub fn create_frontpanel(device_path: &str, read_enable: bool) -> Result<FrontPa
     Ok(FrontPanel{ output_lines, input_lines, set_line, deposit_line })
 }
 
-fn parse_word(word: &str) -> u16 {
-    u16::from_str_radix(word, 16).unwrap()
+fn parse_word(word: &str) -> Result<u16, ProgError> {
+    let result = u16::from_str_radix(word, 16)?;
+    Ok(result)
 }
 
-fn do_write(device_path: &str, filename: &str) {
-    let data = fs::read_to_string(filename).unwrap();
-    let panel = create_frontpanel(device_path, false).unwrap();
+fn do_write(device_path: &str, filename: &str) -> Result<usize, ProgError> {
+    let data = fs::read_to_string(filename)?;
+    let panel = create_frontpanel(device_path, false)?;
     let mut count = 0;
     for line in data.split('\n') {
         let parts: Vec<&str> = line.split(':').collect();
         if parts.len() == 2 {
-            let addr = parse_word(parts[0]);
-            let word = parse_word(parts[1]);
-            panel.write_word(addr, word).unwrap();
+            let addr = parse_word(parts[0])?;
+            let word = parse_word(parts[1])?;
+            panel.write_word(addr, word)?;
             count += 1;
         } else if line.len() > 0 {
-            println!("ERROR: invalid line: {}", line);
+            return Err(ProgError { message: format!("ERROR: invalid line: {}", line) })
         }
     }
-    println!("wrote {} words", count);
+    Ok(count)
 }
 
-fn do_read(device_path: &str, filename: &str, start: u16, end: u16) {
+fn do_read(device_path: &str, filename: &str, start: u16, end: u16) -> Result<usize, ProgError> {
     let panel = create_frontpanel(device_path, true).unwrap();
     let mut data = String::new();
+    let mut count = 0;
     for addr in start..=end {
         let word = panel.read_word(addr).unwrap();
         data += format!("{:03X}:{:03X}\n", addr, word).as_str();
+        count += 1;
     }
-    fs::write(filename, data).unwrap();
+    if filename == "-" {
+        println!("{}", data);
+    } else {
+        fs::write(filename, data)?;
+    }
+    Ok(count)
 }
 
 fn main() {
@@ -196,11 +233,31 @@ fn main() {
     let filename = matches.value_of(file_key).unwrap();
     let device_path = matches.value_of(device_key).unwrap();
     if matches.value_of(action_key).unwrap() == write_action {
-        do_write(device_path, filename);
+        match do_write(device_path, filename) {
+            Ok(count) => println!("wrote {} words", count),
+            Err(e) => println!("write failed: {}", e.message)
+        }
     } else {
-        let start = parse_word(matches.value_of(start_key).unwrap());
-        let end = parse_word(matches.value_of(end_key).unwrap());
-        do_read(device_path, filename, start, end);
+        let start_str = matches.value_of(start_key).unwrap();
+        let start = match parse_word(start_str) {
+            Ok(v) => v,
+            Err(_) => {
+                println!("ERROR: invalid start address: {}", start_str);
+                return
+            }
+        };
+        let end_str = matches.value_of(end_key).unwrap();
+        let end = match parse_word(end_str) {
+            Ok(v) => v,
+            Err(_) => {
+                println!("ERROR: invalid end address: {}", end_str);
+                return
+            }
+        };
+        match do_read(device_path, filename, start, end) {
+            Ok(count) => println!("read {} words", count),
+            Err(e) => println!("read failed: {}", e.message)
+        }
     }
 
 }
