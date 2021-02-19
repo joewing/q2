@@ -122,7 +122,7 @@ pub fn create_frontpanel(device_path: &str, read_enable: bool) -> Result<FrontPa
         Some(
             chip.get_lines(&INPUT_PINS)?.request(
                 LineRequestFlags::INPUT | LineRequestFlags::ACTIVE_LOW,
-                &[0u8, 12],
+                &[0u8; 12],
                 process_name
             )?
         )
@@ -166,11 +166,11 @@ fn do_write(device_path: &str, filename: &str) -> Result<usize, ProgError> {
 }
 
 fn do_read(device_path: &str, filename: &str, start: u16, end: u16) -> Result<usize, ProgError> {
-    let panel = create_frontpanel(device_path, true).unwrap();
+    let panel = create_frontpanel(device_path, true)?;
     let mut data = String::new();
     let mut count = 0;
     for addr in start..=end {
-        let word = panel.read_word(addr).unwrap();
+        let word = panel.read_word(addr)?;
         data += format!("{:03X}:{:03X}\n", addr, word).as_str();
         count += 1;
     }
