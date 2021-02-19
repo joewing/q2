@@ -148,8 +148,8 @@ lcd_move_cmd:
   .align  128
 
 ; Render the raster image at x0 on the LCD.
-; Raster is a 20x14 pixel image.
-; Input is left-to-right, top-to-bottom 280 words.
+; Raster is a 20x16 pixel image.
+; Input is left-to-right, top-to-bottom 320 words.
 ; Zero is off, one is on. 
 ; This uses the 8 custom LCD characters to
 ; render the image in the left 4 characters.
@@ -172,7 +172,7 @@ lcd_raster_col_loop:
   add   =neg1
   sta   =x5
 
-  lea   =7              ; 7 bytes per character (plus 1 empty byte).
+  lea   =8              ; 8 bytes per character
 lcd_raster_char_loop:
   add   =neg1
   sta   =x4
@@ -200,8 +200,7 @@ lcd_raster_row_loop:
   sta   @=neg1
   lda   =x4
   jfc   lcd_raster_char_loop
-  lea   =0
-  sta   @=neg1          ; empty byte
+
   lda   =x5
   jfc   lcd_raster_col_loop
   lea   =5              ; 5 columns per character
@@ -608,3 +607,6 @@ sprite:
   .dw   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
   .dw   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
   .dw   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+  .dw   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+  .dw   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+

@@ -5,8 +5,6 @@ one:
   .dw   1
 minus1:
   .dw   -1
-ra:
-  .dw   0
 x0:
   .dw   0
 x1:
@@ -17,10 +15,12 @@ x3:
   .dw   0
 x4:
   .dw   0
+x5:
+  .dw   0
 output_ptr:
   .dw   -1
 
-  .org  128
+  .org  0x800
 
 init:
   lda   numerator
@@ -46,7 +46,7 @@ div_ptr:
 
 ; Divide x2 = x0 / x1, remainder in x3
 div:
-  sta   =ra
+  sta   =x5
   lea   =0
   sta   =x2   ; quotient
   sta   =x3   ; remainder
@@ -94,7 +94,7 @@ div_not_set:
 div_skip:
   lda   =x4
   add   =minus1
-  jfc   @=ra
+  jfc   @=x5
   jmp   div_loop
 
 

@@ -23,6 +23,7 @@ module q2_tb;
   reg [11:0] ram[0:4095];
   always @(posedge wrm) begin
     if (abus == 12'hFFF) begin
+      $display("OUTPUT %03x: %03x (%d)", abus, dbus, dbus);
       if (dbus[8]) begin
         if (dbus[7]) begin
           // Set address
@@ -33,8 +34,6 @@ module q2_tb;
             disp[j] <= 8'h20;
           end
           disp_addr <= 0;
-        end else begin
-          $display("OUTPUT %03x: %03x (%d)", abus, dbus, dbus);
         end
       end else begin
         disp[disp_addr] = dbus[7:0];
