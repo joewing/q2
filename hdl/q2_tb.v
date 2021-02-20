@@ -3,6 +3,8 @@
 
 module q2_tb;
 
+  localparam KEY = 2;
+
   reg clk = 1;
   reg [11:0] sw = 12'h800;
   wire [11:0] dbus;
@@ -52,7 +54,7 @@ module q2_tb;
     end
     ram[abus] <= dbus;
   end
-  assign dbus = rdm ? (abus == 12'hFFF ? 12'hFFE : ram[abus]) : 12'bz;
+  assign dbus = rdm ? (abus == 12'hFFF ? (1 << KEY) ^ 12'hFFF : ram[abus]) : 12'bz;
 
   initial begin
 

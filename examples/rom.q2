@@ -26,18 +26,6 @@
 
   .org  0x800
 
-;  lea   $+3
-;  jmp   @$+1
-;  .dw   lcd_init
-;  lda   sprite_ptr
-;  sta   =x0
-;  lea   $+3
-;  jmp   @$+1
-;  .dw   lcd_raster
-;  jmp   $
-;sprite_ptr:
-;  .dw   sprite
-
 menu:
   lea   $+3
   jmp   @$+1
@@ -84,6 +72,15 @@ not_primes:
   .dw   fib
 
 not_fib:
+  sta   =x0
+  shr   =x0
+  jfc   not_maze
+
+  lea   menu
+  jmp   @$+1
+  .dw   maze
+
+not_maze:
 
 ; Invalid
 
@@ -94,7 +91,8 @@ menu_str1:
   .dw   " -- Q2 Demo --"
   .dw   0
 menu_str2:
-  .dw   "0:Primes 1:Fib"
+  ;      0123456789ABCDEF
+  .dw   " 0:Pr 1:Fb 2:Mz "
   .dw   0
 
   .align  128
@@ -216,10 +214,14 @@ lcd_raster_row_loop:
 lcd_raster_addr_cmd:
   .dw   0x140                   ; CGRAM address 0
 lcd_raster_char_cmds:
-  .dw   0x180                   ; DDRAM address 0
-  .dw   0x08, 0x0A, 0x0C, 0x0E  ; First line
-  .dw   0x1C0                   ; DDRAM address 40 (second line)
-  .dw   0x09, 0x0B, 0x0D, 0x0F  ; Second line
+  .dw   0x180                               ; DDRAM address 0 (first line)
+  .dw   0x20, 0x20, 0x20, 0x20, 0x20, 0x20
+  .dw   0x08, 0x0A, 0x0C, 0x0E
+  .dw   0x20, 0x20, 0x20, 0x20, 0x20, 0x20
+  .dw   0x1C0                               ; DDRAM address 40 (second line)
+  .dw   0x20, 0x20, 0x20, 0x20, 0x20, 0x20
+  .dw   0x09, 0x0B, 0x0D, 0x0F
+  .dw   0x20, 0x20, 0x20, 0x20, 0x20, 0x20
   .dw   0
 
   .align  128
@@ -381,6 +383,13 @@ mult_next:
 
   ; shift =x0 right and =x1 left
   shr   =x0
+
+  ; AND off top bit (hardware bug of shr).
+  nor   =zero
+  sta   =x0
+  lda   mult_mask
+  nor   =x0
+
   sta   =x0
   lda   =x1
   add   =x1
@@ -389,6 +398,8 @@ mult_next:
 
 mult_minus2:
   .dw   -2
+mult_mask:
+  .dw   0x800
 
 ; Compute the integer square root of =x0
 ; Returns the result in =x0.
@@ -592,21 +603,5 @@ primes_str:
   .dw   " Primes:        "
   .dw   0
 
-sprite:
-  .dw   0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-  .dw   0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-  .dw   0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-  .dw   0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-  .dw   0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-  .dw   0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-  .dw   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-  .dw   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-  .dw   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-  .dw   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-  .dw   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-  .dw   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-  .dw   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-  .dw   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-  .dw   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-  .dw   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+.include  examples/maze.q2
 

@@ -1,5 +1,5 @@
 
-board_width = 210;
+board_width = 240;
 board_height = 314;
 wall_width = 2;
 board_overlap = 2;
@@ -153,5 +153,5 @@ module back_half() {
     }
 }
 
-front_half();
+//front_half();
 back_half();

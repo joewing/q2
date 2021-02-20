@@ -1,0 +1,241 @@
+
+
+.def  maze_width    20
+.def  maze_height   16
+
+  .align  128
+
+maze:
+  sta   =x11
+
+  ; Fill the maze array with 1s (walls).
+  lda   maze_ptr
+  sta   =x2
+  lda   maze_size
+maze_init:
+  add   =neg1
+  sta   =x1
+  lea   =1
+  sta   @=x2
+  lea   =1
+  add   =x2
+  sta   =x2
+  lda   =x1
+  jfc   maze_init
+  
+  ; Draw 0s on all sizes.
+  lda   maze_ptr
+  sta   =x2
+  lea   =maze_height
+maze_init_lr:
+  add   =neg1
+  sta   =x1
+  lea   =0
+  sta   @=x2
+  lea   =maze_width
+  add   =x2
+  sta   =x2
+  lda   =x1
+  jfc   maze_init_lr
+  lda   maze_ptr
+  sta   =x2
+  lda   maze_bottom
+  sta   =x3
+  lea   =maze_width
+maze_init_tb:
+  add   =neg1
+  sta   =x1
+  lea   =0
+  sta   @=x2
+  sta   @=x3
+  lea   =1
+  add   =x2
+  sta   =x2
+  lea   =1
+  add   =x3
+  sta   =x3
+  lda   =x1
+  jfc   maze_init_tb
+
+  ; Carve the maze
+  lda   maze_stack
+  sta   =x9
+  lda   maze_start
+  sta   =x5
+  lea   $+3
+  jmp   @$+1
+  .dw   maze_carve
+
+  ; Carve out start/end
+  lda   maze_entry
+  sta   =x0
+  lea   =0
+  sta   @=x0
+  lda   maze_exit
+  sta   =x0
+  lea   =0
+  sta   @=x0
+
+  ; Display the maze
+  lda   maze_ptr
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   lcd_raster
+
+  ; Wait for a key press.
+  lea   $+3
+  jmp   @$+1
+  .dw   waitkey
+
+  ; Return
+  jmp   @=x11
+
+maze_clear_cmd:
+  .dw   0x101
+maze_size:
+  .dw   maze_width * maze_height
+maze_bottom:
+  .dw   0x080 + maze_width * maze_height
+maze_start:
+  .dw   0x080 + (maze_width * 2) + 2
+maze_entry:
+  .dw   0x080 + maze_width + 2
+maze_exit:
+  .dw   0x080 + (maze_width * (maze_height - 1)) + maze_width - 2
+maze_ptr:
+  .dw   0x080
+maze_stack:
+  .dw   0x7FF
+
+  .align  128
+; Carve maze at x5, using x9 as a call stack
+; Carve attempts remaining in x7
+; Direction in x8
+; 0s are walls, 1s are spaces, we carve out spaces.
+maze_carve:
+
+  ; Push return address.
+  sta   @=x9
+  lda   =x9
+  add   =neg1
+  sta   =x9
+
+  ; Mark the current location.
+  lea   =0
+  sta   @=x5
+
+  ; Get a random number in x8.
+  lea   $+3
+  jmp   @$+1
+  .dw   rand    ; Destroys x0-x4
+  sta   =x8
+
+  lea   =4
+maze_carve_loop:
+  add   =neg1
+  sta   =x7
+
+  ; Offset in x0.
+  lda   =x8
+  nor   =zero
+  sta   =x0
+  lda   maze_offset_mask
+  nor   =x0
+  add   maze_offsets_ptr
+  sta   =x0
+  lda   @=x0
+  sta   =x0
+
+  lda   =x5
+  add   =x0
+  sta   =x1   ; First move in x1
+  add   =x0
+  sta   =x10  ; Second move in x10
+
+  ; Check if we already carved here.
+  lda   @=x1
+  jfc   $+2
+  jmp   maze_carve_next
+  lda   @=x10
+  jfc   $+2
+  jmp   maze_carve_next
+
+  ; Carve.
+  lea   =0
+  sta   @=x1
+
+  ; Push x8, x7, x5
+  lda   =x8
+  sta   @=x9
+  lda   =x9
+  add   =neg1
+  sta   =x9
+  lda   =x7
+  sta   @=x9
+  lda   =x9
+  add   =neg1
+  sta   =x9
+  lda   =x5
+  sta   @=x9
+  lda   =x9
+  add   =neg1
+  sta   =x9
+
+  ; Display the maze
+  lda   maze_ptr_carve
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   lcd_raster
+
+  ; Carve at x10
+  lda   =x10
+  sta   =x5
+  lea   $+2
+  jmp   maze_carve
+
+  ; Pop x5, x7, x8
+  lea   =1
+  add   =x9
+  sta   =x9
+  lda   @=x9
+  sta   =x5
+  lea   =1
+  add   =x9
+  sta   =x9
+  lda   @=x9
+  sta   =x7
+  lea   =1
+  add   =x9
+  sta   =x9
+  lda   @=x9
+  sta   =x8
+
+maze_carve_next:
+  lea   =1
+  add   =x8
+  sta   =x8
+  lda   =x7
+  jfc   maze_carve_loop
+
+  ; Return.
+  lea   =1
+  add   =x9
+  sta   =x9
+  lda   @=x9
+  sta   =x0
+  jmp   @=x0
+
+maze_offsets:
+  .dw   1
+  .dw   -1
+  .dw   maze_width
+  .dw   -maze_width
+maze_offsets_ptr:
+  .dw   maze_offsets
+maze_offset_mask:
+  .dw   0xFFC
+maze_ptr_carve:
+  .dw   0x080
+
