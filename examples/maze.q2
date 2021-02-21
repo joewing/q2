@@ -8,6 +8,14 @@
 maze:
   sta   =x11
 
+  lda   maze_clear_cmd
+  sta   @=neg1
+  lea   maze_gen_str
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   lcd_puts
+
   ; Fill the maze array with 1s (walls).
   lda   maze_ptr
   sta   =x2
@@ -93,6 +101,9 @@ maze_init_tb:
 
 maze_clear_cmd:
   .dw   0x101
+maze_gen_str:
+  .dw   "Generating..."
+  .dw   0
 maze_size:
   .dw   maze_width * maze_height
 maze_bottom:
@@ -181,13 +192,6 @@ maze_carve_loop:
   lda   =x9
   add   =neg1
   sta   =x9
-
-  ; Display the maze
-  lda   maze_ptr_carve
-  sta   =x0
-  lea   $+3
-  jmp   @$+1
-  .dw   lcd_raster
 
   ; Carve at x10
   lda   =x10
