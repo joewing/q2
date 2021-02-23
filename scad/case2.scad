@@ -11,7 +11,7 @@ screw_offset = 3.5;
 standoff_height = 10;
 standoff_radius = screw_head_radius * 1.6;
 
-interlock_width = 10;
+interlock_width = 20;
 
 case_width = board_width + (wall_width + tol) * 2;
 case_height = board_height + (wall_width + tol) * 2;
