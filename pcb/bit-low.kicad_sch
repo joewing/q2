@@ -826,7 +826,7 @@
     (property "Sheet name" "X Register" (id 0) (at 110.49 40.0045 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
-    (property "Sheet file" "xreg.kicad_sch" (id 1) (at 110.49 75.4385 0)
+    (property "Sheet file" "xlreg.kicad_sch" (id 1) (at 110.49 75.439 0)
       (effects (font (size 1.27 1.27)) (justify left top))
     )
     (pin "DBUS" input (at 147.32 59.69 0)
