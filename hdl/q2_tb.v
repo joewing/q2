@@ -4,6 +4,8 @@
 module q2_tb;
 
   localparam KEY = 2;
+  localparam FAST_HZ = 64000;
+  localparam SLOW_HZ = 32;
 
   reg clk = 1;
   reg [11:0] sw = 12'h800;
@@ -73,14 +75,14 @@ module q2_tb;
       if (!run) begin
         $display("halted after ", i, " clocks");
         $display(
-          "%d seconds at 32kHz, %d seconds at 320Hz",
-          i / 32000, i / 320
+          "%d seconds at %d kHz, %d seconds at %d Hz",
+          i / FAST_HZ, FAST_HZ / 1000, i / SLOW_HZ, SLOW_HZ
         );
         $stop;
       end else if (i % 100000 == 0) begin
         $display(
-          "%d clocks, %d seconds at 32kHz, %d seconds at 320Hz",
-          i, i / 32000, i / 320
+          "%d seconds at %d kHz, %d seconds at %d Hz",
+          i / FAST_HZ, FAST_HZ / 1000, i / SLOW_HZ, SLOW_HZ
         );
       end
     end

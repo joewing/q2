@@ -16,6 +16,7 @@ interlock_width = 20;
 case_width = board_width + (wall_width + tol) * 2;
 case_height = board_height + (wall_width + tol) * 2;
 case_depth = 1.6 + standoff_height + wall_width;
+midpoint = 140;
 
 standoff_positions = [
     [screw_offset, screw_offset],
@@ -103,52 +104,41 @@ module full_case() {
     }
 }
 
-module interlock_holes(t) {
-    // Make hole "t" bigger than insert.
-    hole_size = 5;
-    y = case_height / 2 - t / 2 + 25 - hole_size - wall_width;
-    translate([wall_width - t / 2, y, 0]) {
-        cube([interlock_width + t, hole_size + t, wall_width * 2]);
-    }
-    translate([case_width - wall_width - t / 2 - interlock_width, y, 0]) {
-        cube([interlock_width + t, hole_size + t, wall_width * 2]);
-    }
-    translate([case_width - wall_width - board_overlap - t / 2, y - 50 + hole_size, wall_width]) {
-        cube([board_overlap + t, 50 + t, standoff_height]);
-    }
-    translate([wall_width - t / 2, y - 50 + hole_size, wall_width]) {
-        cube([board_overlap + t, 50 + t, standoff_height]);
+
+module interlock() {
+    translate([0, midpoint, case_depth / 2]) {
+        rotate([0, 90, 0]) {
+            rotate([0, 0, -30]) {
+                cylinder(case_width, case_depth, case_depth, $fn=3);
+            }
+        }
     }
 }
 
 module front_half() {
     translate([0, -0, 0]) {
-        union() {
-            intersection() {
-                full_case();
-                cube([case_width, case_height / 2, case_depth]);
+        intersection() {
+            full_case();
+            union() {
+                cube([case_width, midpoint, case_depth]);
+                interlock();
             }
-            translate([wall_width, board_height / 2 - 25, wall_width]) {
-                cube([interlock_width, 50, wall_width]);
-            }
-            translate([case_width - wall_width - interlock_width, board_height / 2 - 25, wall_width]) {
-                cube([interlock_width, 50, wall_width]);
-            }
-            interlock_holes(0);
         }
     }
 }
 
 module back_half() {
     translate([0, 0, 0]) {
-        difference() {
-            intersection() {
-                full_case();
-                translate([0, case_height / 2, 0]) {
-                    cube([case_width, case_height / 2, case_depth]);
+        intersection() {
+            full_case();
+            translate([0, tol, 0]) {
+                difference() {
+                    translate([0, midpoint, 0]) {
+                        cube([case_width, case_height - midpoint, case_depth]);
+                    }
+                    interlock();
                 }
             }
-            interlock_holes(tol);
         }
     }
 }
