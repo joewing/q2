@@ -105,11 +105,11 @@ module full_case() {
 }
 
 
-module interlock(t) {
-    translate([0, midpoint + t, case_depth / 2]) {
+module interlock() {
+    translate([0, midpoint, case_depth / 2]) {
         rotate([0, 90, 0]) {
             rotate([0, 0, -30]) {
-                cylinder(case_width, case_depth - t, case_depth - t, $fn=3);
+                cylinder(case_width, case_depth, case_depth, $fn=3);
             }
         }
     }
@@ -121,7 +121,7 @@ module front_half() {
             full_case();
             union() {
                 cube([case_width, midpoint, case_depth]);
-                interlock(0);
+                interlock();
             }
         }
     }
@@ -136,12 +136,12 @@ module back_half() {
                     translate([0, midpoint, 0]) {
                         cube([case_width, case_height - midpoint, case_depth]);
                     }
-                    interlock(tol);
+                    interlock();
                 }
             }
         }
     }
 }
 
-front_half();
-//back_half();
+//front_half();
+back_half();
