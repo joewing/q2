@@ -4,8 +4,8 @@ module q2_alu(
   input wire x0,
   input wire x1,
   input wire f,
-  input wire op3,
-  input wire op4,
+  input wire o0,
+  input wire o1,
   output wire alu_out,
   output wire alu_cout
 );
@@ -25,16 +25,16 @@ module q2_alu(
   wire alu_carry = ~(t4 & t0);
 
   assign alu_out = (
-      (x0 & ~op3 & ~op4)
-    | (alu_nor & op3 & ~op4)
-    | (alu_sum & ~op3 & op4)
-    | (x1 & op3 & op4)
+      (x0 & ~o0 & ~o1)
+    | (alu_nor & o0 & ~o1)
+    | (alu_sum & ~o0 & o1)
+    | (x1 & o0 & o1)
   );
 
   assign alu_cout = (
-      (~alu_out & f & ~op4)
-    | (alu_carry & ~op3 & op4)
-    | (f & op3 & op4)
+      (~alu_out & f & ~o1)
+    | (alu_carry & ~o0 & o1)
+    | (f & o0 & o1)
   );
 
 endmodule

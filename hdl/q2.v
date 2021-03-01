@@ -34,6 +34,7 @@ module q2(
   wire wrp;
   wire rdp;
   wire wrf;
+  wire s2in;
 
   // State bits
   wire cdiv;
@@ -43,12 +44,10 @@ module q2(
   wire s3;
   wire f;
   wire f_in;
-  wire op5;
-  wire op4;
-  wire op3;
-  wire op2;
-  wire op1;
-  wire op0;
+  wire o2;
+  wire o1;
+  wire o0;
+  wire deref;
 
   // ALU connections.
   wire alu_cout;
@@ -59,7 +58,7 @@ module q2(
 
   // Halt condition for simulation.
   // Halt when executing "jmp $".
-  wire halt = s0 & s1 & ~s2 & ~s3 && op5 & op4 & ~op3 & ~op2 && (x == p - 1);
+  wire halt = s0 & s1 & ~s2 & ~s3 && o2 & o1 & ~o0 & ~deref && (x == p - 1);
   always @(posedge halt or posedge start_sw or posedge stop_sw) begin
     run = start_sw & ~stop_sw & ~halt;
   end
@@ -71,10 +70,10 @@ module q2(
     .s2(s2),
     .s3(s3),
     .f(f),
-    .op2(op2),
-    .op3(op3),
-    .op4(op4),
-    .op5(op5),
+    .deref(deref),
+    .o0(o0),
+    .o1(o1),
+    .o2(o2),
     .dbus7(dbus[7]),
     .ws(ws),
     .incp_db(incp_sw),
@@ -97,7 +96,8 @@ module q2(
     .wrm(wrm),
     .rdm(rdm),
     .wrf(wrf),
-    .fout(f_in)
+    .fout(f_in),
+    .s2in(s2in)
   );
 
   wire [11:0] a;
@@ -110,8 +110,8 @@ module q2(
     .x0(x[0]),
     .x1(x[1]),
     .f(f),
-    .op3(op3),
-    .op4(op4),
+    .o0(o0),
+    .o1(o1),
     .alu_out(alu_out),
     .alu_cout(alu_cout)
   );
@@ -217,7 +217,7 @@ module q2(
     .xin_p(1'b0),
     .xin_dbus(xlin_dbus),
     .wrs(~s1),
-    .sin(~s2),
+    .sin(s2in),
     .sout(s2),
     .aout(a[3]),
     .xout(x[3]),
@@ -271,8 +271,8 @@ module q2(
     .xin_p(1'b0),
     .xin_dbus(xlin_dbus),
     .wrs(wrf),
-    .sin(f_in),
-    .sout(f),
+    .sin(1'b0),
+    .sout(),
     .aout(a[5]),
     .xout(x[5]),
     .pout(p[5])
@@ -297,14 +297,15 @@ module q2(
     .xin_shift(xlin_shift),
     .xin_p(1'b0),
     .xin_dbus(xlin_dbus),
-    .wrs(wro),
-    .sin(dbus[6]),
-    .sout(op0),
+    .wrs(1'b0),
+    .sin(1'b0),
+    .sout(),
     .aout(a[6]),
     .xout(x[6]),
     .pout(p[6])
   );
 
+  wire unused7;
   q2_slice slice7(
     .rst(rst),
     .dep(dep_sw),
@@ -324,10 +325,10 @@ module q2(
     .xin_shift(xhin_shift),
     .xin_p(xhin_p),
     .xin_dbus(xhin_dbus),
-    .wrs(wro),
+    .wrs(wrf),
     .aout(a[7]),
-    .sin(dbus[7]),
-    .sout(op1),
+    .sin(f_in),
+    .sout(f),
     .xout(x[7]),
     .pout(p[7])
   );
@@ -353,7 +354,7 @@ module q2(
     .xin_dbus(xhin_dbus),
     .wrs(wro),
     .sin(dbus[8]),
-    .sout(op2),
+    .sout(deref),
     .aout(a[8]),
     .xout(x[8]),
     .pout(p[8])
@@ -380,7 +381,7 @@ module q2(
     .xin_dbus(xhin_dbus),
     .wrs(wro),
     .sin(dbus[9]),
-    .sout(op3),
+    .sout(o0),
     .aout(a[9]),
     .xout(x[9]),
     .pout(p[9])
@@ -407,7 +408,7 @@ module q2(
     .xin_dbus(xhin_dbus),
     .wrs(wro),
     .sin(dbus[10]),
-    .sout(op4),
+    .sout(o1),
     .aout(a[10]),
     .xout(x[10]),
     .pout(p[10])
@@ -434,7 +435,7 @@ module q2(
     .xin_dbus(xhin_dbus),
     .wrs(wro),
     .sin(dbus[11]),
-    .sout(op5),
+    .sout(o2),
     .aout(a[11]),
     .xout(x[11]),
     .pout(p[11])

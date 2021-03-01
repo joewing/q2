@@ -260,56 +260,57 @@ fn parse_current_address(input: &str) -> CustomResult<&str, Expression> {
 fn parse_binop<'a>(
     op: &'a str,
     a: Expression,
+    parse_rhs: impl Fn(&'a str) -> CustomResult<&'a str, Expression>,
     builder: impl Fn(Expression, Expression) -> Expression
 ) -> impl Fn(&'a str) -> CustomResult<&'a str, Expression> {
     move |input| {
         let (input, _) = eat_whitespace(input)?;
         let (input, _) = tag(op)(input)?;
         let (input, _) = eat_whitespace(input)?;
-        let (input, b) = parse_expr(input)?;
+        let (input, b) = parse_rhs(input)?;
         let result = builder(a.clone(), b);
         Ok((input, result))
     }
 }
 
 fn parse_add<'a>(lhs: Expression) -> impl Fn(&'a str) -> CustomResult<&'a str, Expression> {
-    move |input| parse_binop("+", lhs.clone(), move |a, b| Expression::Add(Box::from(a), Box::from(b)))(input)
+    move |input| parse_binop("+", lhs.clone(), parse_expr, move |a, b| Expression::Add(Box::from(a), Box::from(b)))(input)
 }
 
 fn parse_sub<'a>(lhs: Expression) -> impl Fn(&'a str) -> CustomResult<&'a str, Expression> {
-    move |input| parse_binop("-", lhs.clone(), move |a, b| Expression::Sub(Box::from(a), Box::from(b)))(input)
+    move |input| parse_binop("-", lhs.clone(), parse_expr, move |a, b| Expression::Sub(Box::from(a), Box::from(b)))(input)
 }
 
 fn parse_mul<'a>(lhs: Expression) -> impl Fn(&'a str) -> CustomResult<&'a str, Expression> {
-    move |input| parse_binop("*", lhs.clone(), move |a, b| Expression::Mul(Box::from(a), Box::from(b)))(input)
+    move |input| parse_binop("*", lhs.clone(), parse_term, move |a, b| Expression::Mul(Box::from(a), Box::from(b)))(input)
 }
 
 fn parse_div<'a>(lhs: Expression) -> impl Fn(&'a str) -> CustomResult<&'a str, Expression> {
-    move |input| parse_binop("/", lhs.clone(), move |a, b| Expression::Div(Box::from(a), Box::from(b)))(input)
+    move |input| parse_binop("/", lhs.clone(), parse_term, move |a, b| Expression::Div(Box::from(a), Box::from(b)))(input)
 }
 
 fn parse_mod<'a>(lhs: Expression) -> impl Fn(&'a str) -> CustomResult<&'a str, Expression> {
-    move |input| parse_binop("/", lhs.clone(), move |a, b| Expression::Mod(Box::from(a), Box::from(b)))(input)
+    move |input| parse_binop("/", lhs.clone(), parse_term, move |a, b| Expression::Mod(Box::from(a), Box::from(b)))(input)
 }
 
 fn parse_and<'a>(lhs: Expression) -> impl Fn(&'a str) -> CustomResult<&'a str, Expression> {
-    move |input| parse_binop("&", lhs.clone(), move |a, b| Expression::And(Box::from(a), Box::from(b)))(input)
+    move |input| parse_binop("&", lhs.clone(), parse_expr, move |a, b| Expression::And(Box::from(a), Box::from(b)))(input)
 }
 
 fn parse_or<'a>(lhs: Expression) -> impl Fn(&'a str) -> CustomResult<&'a str, Expression> {
-    move |input| parse_binop("|", lhs.clone(), move |a, b| Expression::Or(Box::from(a), Box::from(b)))(input)
+    move |input| parse_binop("|", lhs.clone(), parse_expr, move |a, b| Expression::Or(Box::from(a), Box::from(b)))(input)
 }
 
 fn parse_xor<'a>(lhs: Expression) -> impl Fn(&'a str) -> CustomResult<&'a str, Expression> {
-    move |input| parse_binop("^", lhs.clone(), move |a, b| Expression::Xor(Box::from(a), Box::from(b)))(input)
+    move |input| parse_binop("^", lhs.clone(), parse_expr, move |a, b| Expression::Xor(Box::from(a), Box::from(b)))(input)
 }
 
 fn parse_shr<'a>(lhs: Expression) -> impl Fn(&'a str) -> CustomResult<&'a str, Expression> {
-    move |input| parse_binop(">>", lhs.clone(), move |a, b| Expression::Shr(Box::from(a), Box::from(b)))(input)
+    move |input| parse_binop(">>", lhs.clone(), parse_expr, move |a, b| Expression::Shr(Box::from(a), Box::from(b)))(input)
 }
 
 fn parse_shl<'a>(lhs: Expression) -> impl Fn(&'a str) -> CustomResult<&'a str, Expression> {
-    move |input| parse_binop("<<", lhs.clone(), move |a, b| Expression::Shl(Box::from(a), Box::from(b)))(input)
+    move |input| parse_binop("<<", lhs.clone(), parse_expr, move |a, b| Expression::Shl(Box::from(a), Box::from(b)))(input)
 }
 
 fn parse_symbol(input: &str) -> CustomResult<&str, Expression> {
@@ -670,6 +671,27 @@ mod tests {
     }
 
     #[test]
+    fn test_parse_multiple_expr() {
+        assert_eq!(
+            parse_expr("a-b+c"),
+            Ok(
+                (
+                    "",
+                    Expression::Sub(
+                        Box::from(Expression::Symbol(String::from("a"))),
+                        Box::from(
+                            Expression::Add(
+                                Box::from(Expression::Symbol(String::from("b"))),
+                                Box::from(Expression::Symbol(String::from("c")))
+                            )
+                        )
+                    )
+                )
+            )
+        )
+    }
+
+    #[test]
     fn test_parse_order() {
         assert_eq!(
             parse_expr("a-b*c"),
@@ -684,6 +706,32 @@ mod tests {
                                 Box::from(Expression::Symbol(String::from("c")))
                             )
                         )
+                    )
+                )
+            )
+        )
+    }
+
+    #[test]
+    fn test_parse_expr() {
+        assert_eq!(
+            parse_expr("a*(b-c)+d"),
+            Ok(
+                (
+                    "",
+                    Expression::Add(
+                        Box::from(
+                            Expression::Mul(
+                                Box::from(Expression::Symbol(String::from("a"))),
+                                Box::from(
+                                    Expression::Sub(
+                                        Box::from(Expression::Symbol(String::from("b"))),
+                                        Box::from(Expression::Symbol(String::from("c")))
+                                    )
+                                )
+                            )
+                        ),
+                        Box::from(Expression::Symbol(String::from("d")))
                     )
                 )
             )

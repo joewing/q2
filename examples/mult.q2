@@ -44,7 +44,8 @@ mult_loop:
   jmp  @=x3
 
 mult_cont:
-  nor   neg2    ; zero if bit 1 is set
+  shr   =x0
+  sta   =x0
   jfc   mult_next
 
   ; bit is set, update =x2
@@ -54,14 +55,10 @@ mult_cont:
 
 mult_next:
 
-  ; shift =x0 right and =x1 left
-  shr   =x0
-  sta   =x0
+  ; shift =x1 left
   lda   =x1
   add   =x1
   sta   =x1
 
   jmp   mult_loop
-neg2:
-  .dw   -2
 

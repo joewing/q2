@@ -1,73 +1,93 @@
 
-.def  x0  2
-.def  x1  3
-.def  x2  4
-
-  .org  0x800
-
+; Display primes
+; Uses [x0, x1, x2, x3, x4, x5, x6, x7], x8, x9, x10, x11
+  .align 128
 primes:
+  sta   =x11
+
+  lea   =0
+  sta   =x0
+  lea   =1
+  sta   =x1
+  lea   $+3
+  jmp   @$+1
+  .dw   lcd_move
+
+  lea   primes_str
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   lcd_puts
 
   ; Clear the primes array.
   lda   prime_array_size
 primes_init_loop:
-  sta   =x0
+  sta   =x8
   add   prime_array_ptr
-  sta   =x1
+  sta   =x9
   lea   =0
-  sta   @=x1
-  lda   =x0
-  add   neg1
+  sta   @=x9
+  lda   =x8
+  add   =neg1
   jfc   $+2
   jmp   primes_init_loop
 
   lea   =2
-  sta   =x0
+  sta   =x8
 prime_loop:
-  lda   =x0
-  sta   =x2
-  sta   @neg1
-prime_fill_loop:
-  lda   =x0
-  add   prime_array_ptr
-  sta   =x1
-  lea   =1
-  sta   @=x1
-  lda   =x0
-  add   =x2
+  lda   =x8
+  sta   =x10
+
+  lea   =9
   sta   =x0
-  nor   zero
+  lea   =1
+  sta   =x1
+  lea   $+3
+  jmp   @$+1
+  .dw   lcd_move
+
+  lda   =x10
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   putint
+
+prime_fill_loop:
+  lda   =x8
+  add   prime_array_ptr
+  sta   =x9
+  lea   =1
+  sta   @=x9
+  lda   =x8
+  add   =x10
+  sta   =x8
+  nor   =zero
   add   prime_array_size
   jfc   $+2
   jmp   prime_fill_loop
 
-  lda   =x2
-  sta   =x0
+  lda   =x10
+  sta   =x8
 prime_next_loop:
-  lda   =x0
+  lda   =x8
   add   prime_array_ptr
-  sta   =x1
-  lda   @=x1
+  sta   =x9
+  lda   @=x9
   jfc   $+2
   jmp   prime_loop
   lea   =1
-  add   =x0
-  sta   =x0
-  nor   zero
+  add   =x8
+  sta   =x8
+  nor   =zero
   add   prime_array_size
-  jfc   prime_done
+  jfc   @=x11
   jmp   prime_next_loop
-
-prime_done:
-  lda   =x2
-  jmp   $
 
 prime_array_ptr:
   .dw   0x100   ; Prime status array
 prime_array_size:
   .dw   0x200   ; Find primes up to this size
-zero:
+primes_str:
+  .dw   " Primes:        "
   .dw   0
-neg1:
-  .dw   0xFFF
-
 

@@ -1,0 +1,61 @@
+
+; Compute the largest Fibonacci number that fits in 12 bits.
+  .align 128
+fib:
+    sta   =x11
+
+    lea   =0
+    sta   =x0
+    lea   =1
+    sta   =x1
+    lea   $+3
+    jmp   @$+1
+    .dw   lcd_move
+
+    lea   fib_str
+    sta   =x0
+    lea   $+3
+    jmp   @$+1
+    .dw   lcd_puts
+
+    lea   =1
+    sta   =x8
+    sta   =x9
+fib_loop:
+    lda   =x9
+    sta   =x0
+
+    lea   =6
+    sta   =x0
+    lea   =1
+    sta   =x1
+    lea   $+3
+    jmp   @$+1
+    .dw   lcd_move
+
+    lda   =x9
+    sta   =x0
+    lea   $+3
+    jmp   @$+1
+    .dw   putint
+
+    lea   $+3
+    jmp   @$+1
+    .dw   delay
+
+    lda   =x8
+    add   =x9
+    jfc   fib_cont
+    jmp   @=x11
+fib_cont:
+    sta   =x10
+    lda   =x9
+    sta   =x8
+    lda   =x10
+    sta   =x9
+    jmp   fib_loop
+
+fib_str:
+    .dw   " Fib:           "
+    .dw   0
+

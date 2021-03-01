@@ -3,8 +3,8 @@
 
 module q2_tb;
 
-  localparam KEY = 2;
-  localparam FAST_HZ = 64000;
+  localparam KEY = 3;
+  localparam FAST_HZ = 100000;
   localparam SLOW_HZ = 32;
 
   reg clk = 1;
@@ -40,7 +40,7 @@ module q2_tb;
           disp_addr <= 0;
         end
       end else begin
-        disp[disp_addr] = dbus[7:0];
+        disp[disp_addr] = (dbus[7:0] < 8'h20 || dbus[7:0] > 8'h7E) ? 8'h3F : dbus[7:0];
         disp_addr <= disp_addr + 1;
         $write("+----------------+\n|");
         for (j = 0; j < 16; j = j + 1) begin
@@ -69,19 +69,19 @@ module q2_tb;
     #10 rst = 0; stop_sw = 0;
     #10 start_sw = 1;
     #10 start_sw = 0;
-    for (i = 0; i < 5000000; i = i + 1) begin
+    for (i = 0; i < 50000000; i = i + 1) begin
       #10 clk <= 1;
       #10 clk <= 0;
       if (!run) begin
         $display("halted after ", i, " clocks");
         $display(
-          "%d seconds at %d kHz, %d seconds at %d Hz",
+          "%1d seconds at %1d kHz, %1d seconds at %1d Hz",
           i / FAST_HZ, FAST_HZ / 1000, i / SLOW_HZ, SLOW_HZ
         );
         $stop;
       end else if (i % 100000 == 0) begin
         $display(
-          "%d seconds at %d kHz, %d seconds at %d Hz",
+          "%1d seconds at %1d kHz, %1d seconds at %1d Hz",
           i / FAST_HZ, FAST_HZ / 1000, i / SLOW_HZ, SLOW_HZ
         );
       end

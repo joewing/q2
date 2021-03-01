@@ -65,8 +65,7 @@ impl OutputFormat for HexOutputFormat {
     fn name(&self) -> &str { "hex" }
     fn pad(&self, vec: &mut Vec<u8>, last_addr: i64, addr: i64) {
         for _ in last_addr..addr {
-            write_hex(vec, 0);
-            write_str(vec, "\n");
+            write_str(vec, "XX\n");
         }
     }
     fn write(&self, vec: &mut Vec<u8>, _base: u16, st: &CompiledStatement) {
@@ -186,7 +185,6 @@ fn assemble(
         }
         for writer in &mut writers {
             if last_addr != cs.addr {
-                println!("Pad {:03X} to {:03X}", last_addr, cs.addr);
                 writer.format.pad(&mut writer.output, last_addr, cs.addr);
             }
             writer.format.write(&mut writer.output, base, &cs);

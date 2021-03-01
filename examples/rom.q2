@@ -81,6 +81,15 @@ not_fib:
   .dw   maze
 
 not_maze:
+  sta   =x0
+  shr   =x0
+  jfc   not_life
+
+  lea   menu
+  jmp   @$+1
+  .dw   life
+
+not_life:
 
 ; Invalid
 
@@ -92,7 +101,7 @@ menu_str1:
   .dw   0
 menu_str2:
   ;      0123456789ABCDEF
-  .dw   " 0:Pr 1:Fb 2:Mz "
+  .dw   "0:P 1:F 2:M 3:L "
   .dw   0
 
   .align  128
@@ -103,6 +112,7 @@ lcd_init:
   sta   =x1
   lea   =0
   sta   =zero
+  sta   =rseed
   nor   =zero
   sta   =neg1
   lea   =1
@@ -292,13 +302,13 @@ waitkey_loop:
 ; Delay
 ; Destroys x0
 delay:
-    sta   =x0
-;    lea   =0
-    lda   =neg1
+  sta   =x0
+; lea   =0
+  lda   =neg1
 delay_loop:
-    add   =one
-    jfc   delay_loop
-    jmp   @=x0
+  add   =one
+  jfc   delay_loop
+  jmp   @=x0
 
   .align 128
 
@@ -367,11 +377,11 @@ mult_loop:
   lda   =x0
   jfc   mult_cont
 
-  ; done when =x0 is 0.
-  jmp  @=x3
+  jmp   @=x3
 
 mult_cont:
-  nor   mult_minus2   ; zero if bit 1 is set
+  shr   =x0
+  sta   =x0
   jfc   mult_next
 
   ; bit is set, update =x2
@@ -381,16 +391,11 @@ mult_cont:
 
 mult_next:
 
-  ; shift =x0 right and =x1 left
-  shr   =x0
-  sta   =x0
+  ; shift =x1 left
   lda   =x1
   add   =x1
   sta   =x1
   jmp   mult_loop
-
-mult_minus2:
-  .dw   -2
 
 ; Compute the integer square root of =x0
 ; Returns the result in =x0.
@@ -440,159 +445,8 @@ rand_mult:
 rand_add:
   .dw   353
 
-  .align 128
-
-; Compute the largest Fibonacci number that fits in 12 bits.
-fib:
-    sta   =x11
-
-    lea   =0
-    sta   =x0
-    lea   =1
-    sta   =x1
-    lea   $+3
-    jmp   @$+1
-    .dw   lcd_move
-
-    lea   fib_str
-    sta   =x0
-    lea   $+3
-    jmp   @$+1
-    .dw   lcd_puts
-
-    lea   =1
-    sta   =x8
-    sta   =x9
-fib_loop:
-    lda   =x9
-    sta   =x0
-
-    lea   =6
-    sta   =x0
-    lea   =1
-    sta   =x1
-    lea   $+3
-    jmp   @$+1
-    .dw   lcd_move
-
-    lda   =x9
-    sta   =x0
-    lea   $+3
-    jmp   @$+1
-    .dw   putint
-
-    lea   $+3
-    jmp   @$+1
-    .dw   delay
-
-    lda   =x8
-    add   =x9
-    jfc   fib_cont
-    jmp   @=x11
-fib_cont:
-    sta   =x10
-    lda   =x9
-    sta   =x8
-    lda   =x10
-    sta   =x9
-    jmp   fib_loop
-
-fib_str:
-    .dw   " Fib:           "
-    .dw   0
-
-  .align  128
-
-; Display primes
-; Uses [x0, x1, x2, x3, x4, x5, x6, x7], x8, x9, x10, x11
-primes:
-  sta   =x11
-
-  lea   =0
-  sta   =x0
-  lea   =1
-  sta   =x1
-  lea   $+3
-  jmp   @$+1
-  .dw   lcd_move
-
-  lea   primes_str
-  sta   =x0
-  lea   $+3
-  jmp   @$+1
-  .dw   lcd_puts
-
-  ; Clear the primes array.
-  lda   prime_array_size
-primes_init_loop:
-  sta   =x8
-  add   prime_array_ptr
-  sta   =x9
-  lea   =0
-  sta   @=x9
-  lda   =x8
-  add   =neg1
-  jfc   $+2
-  jmp   primes_init_loop
-
-  lea   =2
-  sta   =x8
-prime_loop:
-  lda   =x8
-  sta   =x10
-
-  lea   =9
-  sta   =x0
-  lea   =1
-  sta   =x1
-  lea   $+3
-  jmp   @$+1
-  .dw   lcd_move
-
-  lda   =x10
-  sta   =x0
-  lea   $+3
-  jmp   @$+1
-  .dw   putint
-
-prime_fill_loop:
-  lda   =x8
-  add   prime_array_ptr
-  sta   =x9
-  lea   =1
-  sta   @=x9
-  lda   =x8
-  add   =x10
-  sta   =x8
-  nor   =zero
-  add   prime_array_size
-  jfc   $+2
-  jmp   prime_fill_loop
-
-  lda   =x10
-  sta   =x8
-prime_next_loop:
-  lda   =x8
-  add   prime_array_ptr
-  sta   =x9
-  lda   @=x9
-  jfc   $+2
-  jmp   prime_loop
-  lea   =1
-  add   =x8
-  sta   =x8
-  nor   =zero
-  add   prime_array_size
-  jfc   @=x11
-  jmp   prime_next_loop
-
-prime_array_ptr:
-  .dw   0x100   ; Prime status array
-prime_array_size:
-  .dw   0x200   ; Find primes up to this size
-primes_str:
-  .dw   " Primes:        "
-  .dw   0
-
-.include  examples/maze.q2
+.include examples/fibs.q2
+.include examples/primes.q2
+.include examples/maze.q2
+.include examples/life.q2
 
