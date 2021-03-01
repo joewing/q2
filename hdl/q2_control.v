@@ -5,10 +5,10 @@ module q2_control(
   input wire s2,
   input wire s3,
   input wire f,
-  input wire op2,
-  input wire op3,
-  input wire op4,
-  input wire op5,
+  input wire deref,
+  input wire o0,
+  input wire o1,
+  input wire o2,
   input wire dbus7,
   input wire x0,
   input wire ws,
@@ -37,12 +37,12 @@ module q2_control(
 );
 
   wire state_fetch  = ~s0 & ~s1 & ~s2 & ~s3;
-  wire state_deref  = op2 & s0 & ~s1 & ~s2 & ~s3;
-  wire state_load   = ~op5 & ~s0 & s1 & ~s2 & ~s3;
+  wire state_deref  = deref & s0 & ~s1 & ~s2 & ~s3;
+  wire state_load   = ~o2 & ~s0 & s1 & ~s2 & ~s3;
   wire state_exec   = s0 & s1 & ~s2 & ~s3;
   wire state_alu = ~(~s2 & ~s3);
 
-  assign s2in = ~(((op3 | op4) & op5) | s2);
+  assign s2in = ~(((o0 | o1) & o2) | s2);
 
   assign rdp = state_fetch;
   assign rdx = ~state_fetch;
@@ -54,11 +54,11 @@ module q2_control(
   assign wrx = ~(
     (~state_alu & ~state_deref & ~state_load & ~state_fetch) | ~ws
   );
-  assign wrp = state_exec & op5 & op4 & (~op3 | ~f) & ws;
+  assign wrp = state_exec & o2 & o1 & (~o0 | ~f) & ws;
 
   assign incp_clk = ~(~state_fetch | ~ws) | incp_db;
-  assign wrm = ~(~dep_sw & (~op5 | op4 | ~op3 | ~state_exec | ~ws));
-  assign wrf = ~((~state_alu & (~state_exec | op5)) | ~ws);
+  assign wrm = ~(~dep_sw & (~o2 | o1 | ~o0 | ~state_exec | ~ws));
+  assign wrf = ~((~state_alu & (~state_exec | o2)) | ~ws);
 
   assign xhin_shift = state_alu;
   assign xhin_p = ~(~state_fetch | dbus7);
@@ -73,7 +73,7 @@ module q2_control(
   // 11 - shr - x0
   assign fout = ~(
     (~state_alu | ~alu_cout) &
-    (~state_exec | (op4 & (~op3 | ~x0)))
+    (~state_exec | (o1 & (~o0 | ~x0)))
   );
 
 endmodule

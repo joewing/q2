@@ -8284,6 +8284,12 @@
     (path "/00000000-0000-0000-0000-000061678ebc/b8a1cd09-bc55-4df1-928a-4f0d91edd71e"
       (reference "#FLG01") (unit 1) (value "PWR_FLAG") (footprint "")
     )
+    (path "/00000000-0000-0000-0000-000061678ebc/02b8caf3-2740-4bc5-b604-b1d9fbb03a4a"
+      (reference "#PWR089") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-000061678ebc/6be101f7-d197-49ec-99d9-ea7ec2764f3e"
+      (reference "#PWR091") (unit 1) (value "VCC") (footprint "")
+    )
     (path "/00000000-0000-0000-0000-000061678ebc/00000000-0000-0000-0000-0000616e1141"
       (reference "#PWR0569") (unit 1) (value "VCC") (footprint "")
     )
@@ -8362,6 +8368,12 @@
     (path "/00000000-0000-0000-0000-000061678ebc/00000000-0000-0000-0000-0000616e1137"
       (reference "#PWR0594") (unit 1) (value "GND") (footprint "")
     )
+    (path "/00000000-0000-0000-0000-000061678ebc/4ab2bbeb-a0a4-4737-8279-a5acb2d58c8a"
+      (reference "#PWR0984") (unit 1) (value "VCC") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-000061678ebc/50ce6a92-e45e-4f63-8dba-a78d61cce512"
+      (reference "#PWR0985") (unit 1) (value "GND") (footprint "")
+    )
     (path "/00000000-0000-0000-0000-000061678ebc/224eed61-baeb-4403-ad55-08e1f157343b"
       (reference "BT1") (unit 1) (value "Battery") (footprint "Battery:BatteryHolder_ComfortableElectronic_CH273-2450_1x2450")
     )
@@ -8371,11 +8383,20 @@
     (path "/00000000-0000-0000-0000-000061678ebc/00000000-0000-0000-0000-0000601f5440"
       (reference "C17") (unit 1) (value "0.1u") (footprint "Capacitor_SMD:C_0805_2012Metric")
     )
+    (path "/00000000-0000-0000-0000-000061678ebc/76eb197e-c7ec-4f1e-ad40-a580b3002cca"
+      (reference "C25") (unit 1) (value "1u") (footprint "Capacitor_SMD:C_0805_2012Metric")
+    )
+    (path "/00000000-0000-0000-0000-000061678ebc/43984aad-317a-4a54-9b47-6b3b9744c5c2"
+      (reference "C26") (unit 1) (value "0.1u") (footprint "Capacitor_SMD:C_0805_2012Metric")
+    )
     (path "/00000000-0000-0000-0000-000061678ebc/256175a9-551b-4da3-936a-66a714e4399b"
       (reference "D30") (unit 1) (value "BAT43W") (footprint "Diode_SMD:D_SOD-123")
     )
     (path "/00000000-0000-0000-0000-000061678ebc/499d7bf4-3ef7-40d2-9263-057a7e110d77"
       (reference "D31") (unit 1) (value "BAT43W") (footprint "Diode_SMD:D_SOD-123")
+    )
+    (path "/00000000-0000-0000-0000-000061678ebc/c700c7fc-5651-4584-81cd-83e1987fe795"
+      (reference "D90") (unit 1) (value "BAT43W") (footprint "Diode_SMD:D_SOD-123")
     )
     (path "/00000000-0000-0000-0000-000061678ebc/00000000-0000-0000-0000-0000618f8e9b"
       (reference "Q679") (unit 1) (value "2N7002a") (footprint "Package_TO_SOT_SMD:SOT-23")
@@ -8469,6 +8490,9 @@
     )
     (path "/00000000-0000-0000-0000-000061678ebc/00000000-0000-0000-0000-00006175a005"
       (reference "R297") (unit 1) (value "10k") (footprint "Resistor_SMD:R_0805_2012Metric")
+    )
+    (path "/00000000-0000-0000-0000-000061678ebc/08958e5a-1e2a-45c9-9ad7-0de7c9b7bb59"
+      (reference "R485") (unit 1) (value "10k") (footprint "Resistor_SMD:R_0805_2012Metric")
     )
     (path "/00000000-0000-0000-0000-000061678ebc/00000000-0000-0000-0000-000060075858"
       (reference "U1") (unit 1) (value "6264") (footprint "q2:SOIC127P1210X305-28N")
