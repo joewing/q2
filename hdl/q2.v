@@ -34,6 +34,7 @@ module q2(
   wire wrp;
   wire rdp;
   wire wrf;
+  wire s2in;
 
   // State bits
   wire cdiv;
@@ -97,7 +98,8 @@ module q2(
     .wrm(wrm),
     .rdm(rdm),
     .wrf(wrf),
-    .fout(f_in)
+    .fout(f_in),
+    .s2in(s2in)
   );
 
   wire [11:0] a;
@@ -217,7 +219,7 @@ module q2(
     .xin_p(1'b0),
     .xin_dbus(xlin_dbus),
     .wrs(~s1),
-    .sin(~s2),
+    .sin(s2in),
     .sout(s2),
     .aout(a[3]),
     .xout(x[3]),

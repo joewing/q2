@@ -32,14 +32,17 @@ module q2_control(
   output wire wrm,
   output wire rdm,
   output wire wrf,
-  output wire fout
+  output wire fout,
+  output wire s2in
 );
 
   wire state_fetch  = ~s0 & ~s1 & ~s2 & ~s3;
   wire state_deref  = op2 & s0 & ~s1 & ~s2 & ~s3;
   wire state_load   = ~op5 & ~s0 & s1 & ~s2 & ~s3;
   wire state_exec   = s0 & s1 & ~s2 & ~s3;
-  wire state_alu    = ~(~s2 & ~s3) & ((~op3 & ~op4) | ~op5);
+  wire state_alu = ~(~s2 & ~s3);
+
+  assign s2in = ~(((op3 | op4) & op5) | s2);
 
   assign rdp = state_fetch;
   assign rdx = ~state_fetch;

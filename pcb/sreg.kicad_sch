@@ -269,7 +269,7 @@
   (symbol (lib_id "Transistor_FET:2N7002") (at 67.31 83.82 0)
     (in_bom yes) (on_board yes)
     (uuid 00000000-0000-0000-0000-000061087876)
-    (property "Reference" "Q963" (id 0) (at 72.5424 82.6516 0)
+    (property "Reference" "Q464" (id 0) (at 72.5424 82.6516 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "2N7002b" (id 1) (at 72.542 84.963 0)
