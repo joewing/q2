@@ -8344,11 +8344,8 @@
     (path "/00000000-0000-0000-0000-000061678ebc/00000000-0000-0000-0000-000061759ffe"
       (reference "#PWR0586") (unit 1) (value "VCC") (footprint "")
     )
-    (path "/00000000-0000-0000-0000-000061678ebc/00000000-0000-0000-0000-0000600cd73f"
-      (reference "#PWR0587") (unit 1) (value "GND") (footprint "")
-    )
-    (path "/00000000-0000-0000-0000-000061678ebc/00000000-0000-0000-0000-0000600ce01a"
-      (reference "#PWR0588") (unit 1) (value "GND") (footprint "")
+    (path "/00000000-0000-0000-0000-000061678ebc/3918f868-66e6-46fa-81b0-31410ec5202a"
+      (reference "#PWR0587") (unit 1) (value "VCC") (footprint "")
     )
     (path "/00000000-0000-0000-0000-000061678ebc/00000000-0000-0000-0000-0000600cd0a0"
       (reference "#PWR0589") (unit 1) (value "GND") (footprint "")
@@ -8373,6 +8370,9 @@
     )
     (path "/00000000-0000-0000-0000-000061678ebc/50ce6a92-e45e-4f63-8dba-a78d61cce512"
       (reference "#PWR0985") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-000061678ebc/25bd0019-f51a-4185-8d87-92f5f5686a4a"
+      (reference "#PWR0986") (unit 1) (value "GND") (footprint "")
     )
     (path "/00000000-0000-0000-0000-000061678ebc/224eed61-baeb-4403-ad55-08e1f157343b"
       (reference "BT1") (unit 1) (value "Battery") (footprint "Battery:BatteryHolder_ComfortableElectronic_CH273-2450_1x2450")
@@ -8491,8 +8491,14 @@
     (path "/00000000-0000-0000-0000-000061678ebc/00000000-0000-0000-0000-00006175a005"
       (reference "R297") (unit 1) (value "10k") (footprint "Resistor_SMD:R_0805_2012Metric")
     )
+    (path "/00000000-0000-0000-0000-000061678ebc/9aec0783-8028-4616-bfa4-21b873d910e5"
+      (reference "R484") (unit 1) (value "10k") (footprint "Resistor_SMD:R_0805_2012Metric")
+    )
     (path "/00000000-0000-0000-0000-000061678ebc/08958e5a-1e2a-45c9-9ad7-0de7c9b7bb59"
       (reference "R485") (unit 1) (value "10k") (footprint "Resistor_SMD:R_0805_2012Metric")
+    )
+    (path "/00000000-0000-0000-0000-000061678ebc/fb17cad3-504f-47f3-94b3-31114317096c"
+      (reference "SW31") (unit 1) (value "Bank") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical")
     )
     (path "/00000000-0000-0000-0000-000061678ebc/00000000-0000-0000-0000-000060075858"
       (reference "U1") (unit 1) (value "6264") (footprint "q2:SOIC127P1210X305-28N")

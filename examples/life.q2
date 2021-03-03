@@ -1,0 +1,308 @@
+
+.def  life_width    20
+.def  life_height   16
+.def  life_array1   0x200
+.def  life_array2   life_array1 + life_width * life_height
+
+  .align    128
+life:
+
+  lda   life_clear_cmd
+  sta   @=neg1
+  lea   life_gen_str
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   lcd_puts
+
+  ; Use x8 to track generation
+  ; Use x9 to track cells
+  lea   =0
+  sta   =x8
+  sta   =x9
+
+  ; Fill the array with random values.
+  lda   life_init_array1_ptr
+  sta   =x5
+  add   life_last_row_offset
+  sta   =x6
+
+  ; Top and bottom rows are empty.
+  lea   =life_width
+life_init_loop1:
+  add   =neg1
+  sta   =x7
+  lea   =0
+  sta   @=x5  ; top
+  sta   @=x6  ; bottom
+  lea   =1
+  add   =x5
+  sta   =x5
+  lea   =1
+  add   =x6
+  sta   =x6
+  lda   =x7
+  jfc   life_init_loop1
+
+  ; Fill rows
+  ; x5 -> start of the second row.
+  lea   =life_height - 2
+life_init_loop2:
+  add   =neg1
+  sta   =x6
+
+  ; First column is 0.
+  lea   =0
+  sta   @=x5
+  lea   =1
+  add   =x5
+  sta   =x5
+
+  ; Fill inside with random values.
+  lea   =life_width - 2
+life_init_loop3:
+  add   =neg1
+  sta   =x7
+  lea   $+3
+  jmp   @$+1
+  .dw   rand
+
+  sta   =x0
+  add   =x0
+  lea   =0
+  jfc   $+2
+  lea   =1
+  sta   @=x5
+  add   =x9
+  sta   =x9
+
+  lea   =1
+  add   =x5
+  sta   =x5
+  lda   =x7
+  jfc   life_init_loop3
+
+  ; Last column is 0.
+  lea   =0
+  sta   @=x5
+  lea   =1
+  add   =x5
+  sta   =x5
+
+  lda   =x6
+  jfc   life_init_loop2
+
+  lda   life_init_array1_ptr
+  sta   =x1
+  lda   life_init_array2_ptr
+  sta   =x2
+  jmp   @$+1
+  .dw   life_copy
+
+  ; Loop over each generation.
+life_loop:
+
+  ; Show the board.
+  lda   life_init_array1_ptr
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   lcd_raster
+
+  ; Show and increment generation.
+  lda   life_line1
+  sta   @=neg1
+  lea   =1
+  add   =x8
+  sta   =x8
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   putint
+
+  ; Show cells
+  lda   life_line2
+  sta   @=neg1
+  lda   =x9
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   putint
+
+  ; Run a generation
+  jmp   @$+1
+  .dw   life_generation
+
+life_clear_cmd:
+  .dw   0x101
+life_gen_str:
+  .dw   "Initializing..."
+  .dw   0
+life_line1:
+  .dw   0x180
+life_line2:
+  .dw   0x1c0
+
+life_array_size:
+  .dw   life_width * life_height
+life_init_array1_ptr:
+  .dw   life_array1
+life_init_array2_ptr:
+  .dw   life_array2
+life_last_row_offset:
+  .dw   life_width * (life_height - 1)
+
+; Run a generation
+  .align  128
+life_generation:
+  sta   =x0
+
+  lea   =0
+  sta   =x9
+
+  lda   life_gen_src
+  sta   =x1
+  lda   life_gen_dest
+  sta   =x2
+
+  ; Loop over each row
+  lea   =life_height - 2
+life_gen_row_loop:
+  add   =neg1
+  sta   =x3
+
+  ; Loop over each column in this row.
+  lea   =life_width - 2
+life_gen_col_loop:
+  add   =neg1
+  sta   =x4
+
+  ; Count living neighbors in the source array
+  lda   @=x1
+  lea   =9    ; Add 9 if alive
+  jfc   $+2
+  lea   =0
+  sta   =x5   ; Number of living neighbors
+  lea   life_offsets
+life_gen_off_loop:
+  sta   =x6
+  lda   @=x6
+  jfc   $+2
+  jmp   life_gen_off_done
+  add   =x1
+  sta   =x7
+  lda   =x5
+  add   @=x7
+  sta   =x5
+  lea   =1
+  add   =x6
+  jmp   life_gen_off_loop
+life_gen_off_done:
+
+  ; Look up action in the jump table.
+  lea   life_jump
+  add   =x5
+  sta   =x5
+  lda   @=x5
+  sta   =x5
+
+  lea   =0
+  jmp   @=x5
+
+life_on:
+  lea   =1
+life_off:
+
+  sta   @=x2
+  add   =x9
+  sta   =x9
+
+  ; Move to the next cell.
+  lea   =1
+  add   =x1
+  sta   =x1
+  lea   =1
+  add   =x2
+  sta   =x2
+
+  lda   =x4
+  jfc   life_gen_col_loop
+
+  ; Add 2 to skip to the next row
+  lea   =2
+  add   =x1
+  sta   =x1
+  lea   =2
+  add   =x2
+  sta   =x2
+  lda   =x3
+  jfc   life_gen_row_loop
+
+  ; Copy life_array2 back to life_array1
+  lda   life_copy_src
+  sta   =x1
+  lda   life_copy_dest
+  sta   =x2
+life_copy:
+  lda   life_copy_size
+life_copy_loop:
+  add   =neg1
+  sta   =x3
+  lda   @=x1
+  sta   @=x2
+  lea   =1
+  add   =x1
+  sta   =x1
+  lea   =1
+  add   =x2
+  sta   =x2
+  lda   =x3
+  jfc   life_copy_loop
+
+  jmp   @$+1
+  .dw   life_loop
+
+life_gen_src:
+  .dw   life_array1 + life_width + 1
+life_gen_dest:
+  .dw   life_array2 + life_width + 1
+life_copy_src:
+  .dw   life_array2
+life_copy_dest:
+  .dw   life_array1
+life_copy_size:
+  .dw   life_width * life_height
+
+life_offsets:
+  .dw   -life_width - 1
+  .dw   -life_width
+  .dw   -life_width + 1
+  .dw   -1
+  .dw   1
+  .dw   life_width - 1
+  .dw   life_width
+  .dw   life_width + 1
+  .dw   0
+
+; Jump table for cell updates based on the number of alive neighbors.
+; Here we add 9 if the cell itself is alive.
+life_jump:
+  .dw   life_off    ; 0
+  .dw   life_off    ; 1
+  .dw   life_off    ; 2
+  .dw   life_on     ; 3
+  .dw   life_off    ; 4
+  .dw   life_off    ; 5
+  .dw   life_off    ; 6
+  .dw   life_off    ; 7
+  .dw   life_off    ; 8
+  .dw   life_off    ; 0
+  .dw   life_off    ; 1
+  .dw   life_on     ; 2
+  .dw   life_on     ; 3
+  .dw   life_off    ; 4
+  .dw   life_off    ; 5
+  .dw   life_off    ; 6
+  .dw   life_off    ; 7
+  .dw   life_off    ; 8
+
