@@ -199,20 +199,11 @@ life_gen_off_loop:
   jmp   life_gen_off_loop
 life_gen_off_done:
 
-  ; Look up action in the jump table.
-  lea   life_jump
+  ; Look up and apply the update.
+  lea   life_updates
   add   =x5
   sta   =x5
   lda   @=x5
-  sta   =x5
-
-  lea   =0
-  jmp   @=x5
-
-life_on:
-  lea   =1
-life_off:
-
   sta   @=x2
   add   =x9
   sta   =x9
@@ -284,25 +275,25 @@ life_offsets:
   .dw   life_width + 1
   .dw   0
 
-; Jump table for cell updates based on the number of alive neighbors.
+; Cell updates based on the number of alive neighbors.
 ; Here we add 9 if the cell itself is alive.
-life_jump:
-  .dw   life_off    ; 0
-  .dw   life_off    ; 1
-  .dw   life_off    ; 2
-  .dw   life_on     ; 3
-  .dw   life_off    ; 4
-  .dw   life_off    ; 5
-  .dw   life_off    ; 6
-  .dw   life_off    ; 7
-  .dw   life_off    ; 8
-  .dw   life_off    ; 0
-  .dw   life_off    ; 1
-  .dw   life_on     ; 2
-  .dw   life_on     ; 3
-  .dw   life_off    ; 4
-  .dw   life_off    ; 5
-  .dw   life_off    ; 6
-  .dw   life_off    ; 7
-  .dw   life_off    ; 8
+life_updates:
+  .dw   0   ; 0
+  .dw   0   ; 1
+  .dw   0   ; 2
+  .dw   1   ; 3
+  .dw   0   ; 4
+  .dw   0   ; 5
+  .dw   0   ; 6
+  .dw   0   ; 7
+  .dw   0   ; 8
+  .dw   0   ; 0
+  .dw   0   ; 1
+  .dw   1   ; 2
+  .dw   1   ; 3
+  .dw   0   ; 4
+  .dw   0   ; 5
+  .dw   0   ; 6
+  .dw   0   ; 7
+  .dw   0   ; 8
 

@@ -4,7 +4,7 @@
 module q2_tb;
 
   localparam KEY = 3;
-  localparam FAST_HZ = 64000;
+  localparam FAST_HZ = 100000;
   localparam SLOW_HZ = 32;
 
   reg clk = 1;
@@ -69,7 +69,7 @@ module q2_tb;
     #10 rst = 0; stop_sw = 0;
     #10 start_sw = 1;
     #10 start_sw = 0;
-    for (i = 0; i < 5000000; i = i + 1) begin
+    for (i = 0; i < 50000000; i = i + 1) begin
       #10 clk <= 1;
       #10 clk <= 0;
       if (!run) begin

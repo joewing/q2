@@ -62,7 +62,7 @@ module q2_control(
 
   assign xhin_shift = state_alu;
   assign xhin_p = ~(~state_fetch | dbus7);
-  assign xhin_zero = ~(~state_fetch | ~dbus7);
+  assign xhin_zero = ~(~state_fetch | xhin_p);
   assign xhin_dbus = ~(~state_load & ~state_deref);
   assign xlin_dbus = ~state_alu;
   assign xlin_shift = state_alu;

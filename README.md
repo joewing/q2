@@ -48,30 +48,36 @@ gates and LEDs to be active.
 We assume the RAM chips and the LCD use ~20mA each.
 
 This gives the following:
-  - 73 LEDS (4.7k resistor) = 31mA
-  - 405 10k resistors = 203mA
-  - 7 1k resistors = 35mA
+  - 71 4.7k resistors x 0.64 = 45mA
+  - 403 10k resistors x 0.5 = 202mA
+  - 11 1k resistors x 5 = 55mA
   - 2 RAMs, 1 LCD = 60mA
 
-So we get a worst-case draw of ~329mA or ~2 Watts.
+So we get a worst-case draw of ~362mA or ~1.8 Watts.
 
 ## Clock Frequency Estimation
 
-Each FET gate is ~50pF.
-Maximum propagation is 24 gates (for the ripple through the program
-counter). At each level, the fanout is to 2 gates with a 10k pullup.
-To be recognized as a 1, the pull up resistor needs to bring 0V to
-2.5V (Vth), for a fanout of 2 this gives us:
+Each FET gate has a worst-case capacitance of 50pF and Vth of 2.5V.
+We use either 1k or 10k pull-up resistors depending on how fast
+the gate needs to go. For a 10k pull-up we get:
 
-  2.5 = 5 * exp(-10000 * 50 * 2 * 10^-12 / t)
-  t = 1.4us
+  t10k = n ln(2) / 2000000 seconds
 
-For 24 levels of propagation, we get 1.4 * 24 = 33.6us, which is ~29.8kHz.
-Fortunately, we do not need the result of the program counter to be valid
-at the next clock edge (only the one following it), so we can get away
-running faster than this, but no more than 2x this.
-So here we aim for 32kHz for the fast clock, which gives us 1k instructions
-per second since every instruction takes 32 cycles.
+or:
+
+  t10k = n ln(2) / 2 us
+
+where n is the fanout. And for a 1k pull-up:
+
+  t1k = n ln(2) / 20 us
+
+
+The delay is limited to 10us for all paths to allow a clock frequency
+of 100 kHz. This allows all resistors in flip-flops to be 10k. Some
+resistors in the control logic need to be 1k to keep the delay under 10us.
+
+To get a higher frequency and maintain stability would require smaller
+pull-ups, which would increase power consumption.
 
 ## Sections
 

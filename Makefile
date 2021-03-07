@@ -2,7 +2,8 @@
 ASM = ./q2asm/target/debug/q2asm
 PROG1 = minipro
 PROG2 = ./q2prog/target/debug/q2prog
-DEVICE = AT28C256
+#DEVICE = AT28C256
+DEVICE = AT28C64B
 
 all:
 	@echo "Targets:"
