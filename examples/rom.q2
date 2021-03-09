@@ -37,6 +37,11 @@ menu:
   jmp   @$+1
   .dw   lcd_puts
 
+  lea   menu_items
+  sta   =x9
+
+menu_loop:
+
   lea   =0
   sta   =x0
   lea   =1
@@ -45,7 +50,7 @@ menu:
   jmp   @$+1
   .dw   lcd_move
 
-  lea   menu_str2
+  lda   =x9
   sta   =x0
   lea   $+3
   jmp   @$+1
@@ -55,54 +60,97 @@ menu:
   jmp   @$+1
   .dw   waitkey
 
-  shr   =x0 ; check for 0
-  jfc   not_primes
+  lda   =x0
+  add   menu_left_mask
+  jfc   $+2
+  jmp   menu_not_left
 
-  lea   menu
-  jmp   @$+1
-  .dw   primes
+  lea   menu_items
+  nor   =zero
+  add   =x9
+  jfc   menu_first
+  lda   =x9
+  jmp   menu_not_first
+menu_first:
+  lda   menu_last_item
+menu_not_first:
+  add   menu_prev
+  sta   =x9
+  jmp   menu_loop
 
-not_primes:
-  sta   =x0
-  shr   =x0
-  jfc   not_fib
+menu_not_left:
 
-  lea   menu
-  jmp   @$+1
-  .dw   fib
+  lda   =x0
+  add   menu_right_mask
+  jfc   $+2
+  jmp   menu_not_right
 
-not_fib:
-  sta   =x0
-  shr   =x0
-  jfc   not_maze
-
-  lea   menu
-  jmp   @$+1
-  .dw   maze
-
-not_maze:
-  sta   =x0
-  shr   =x0
-  jfc   not_life
-
-  lea   menu
-  jmp   @$+1
-  .dw   life
-
-not_life:
-
-; Invalid
-
+  lea   =18
+  add   =x9
+  sta   =x9
+  lda   menu_last_item
+  nor   =zero
+  add   =x9
+  nor   =zero
+  jfc   menu_loop
   jmp   menu
+
+menu_not_right:
+
+  lda   =x0
+  add   menu_select_mask
+  jfc   $+2
+  jmp   menu_loop
+
+  lea   =17
+  add   =x9
+  sta   =x9
+  lda   @=x9
+  sta   =x9
+
+  lea   menu
+  jmp   @=x9
 
 menu_str1:
   ;      0123456789ABCDEF
   .dw   " -- Q2 Demo --"
   .dw   0
-menu_str2:
+
+menu_left_mask:
+  .dw   0xFFE
+menu_right_mask:
+  .dw   0xFFD
+menu_select_mask:
+  .dw   0xBFF
+
+menu_prev:
+  .dw   -18
+
+menu_last_item:
+  .dw   menu_items_end
+
+menu_items:
   ;      0123456789ABCDEF
-  .dw   "0:P 1:F 2:M 3:L "
+  .dw   " <   Primes   > "
   .dw   0
+  .dw   primes
+  ;      0123456789ABCDEF
+  .dw   " <     Pi     > "
+  .dw   0
+  .dw   pi
+  ;      0123456789ABCDEF
+  .dw   " <    Fibs    > "
+  .dw   0
+  .dw   fib
+  ;      0123456789ABCDEF
+  .dw   " <    Life    > "
+  .dw   0
+  .dw   life
+  ;      0123456789ABCDEF
+  .dw   " <    Maze    > "
+  .dw   0
+  .dw   maze
+menu_items_end:
 
   .align  128
 
@@ -296,8 +344,14 @@ waitkey_loop:
   lda   @=neg1
   nor   =zero
   sta   =x0
-  jfc   @=x1
+  jfc   $+2
   jmp   waitkey_loop
+
+waitkey_loop2:
+  lea   =1
+  add   @=neg1
+  jfc   waitkey_loop2
+  jmp   @=x1
 
 ; Delay
 ; Destroys x0
@@ -449,4 +503,5 @@ rand_add:
 .include examples/primes.q2
 .include examples/maze.q2
 .include examples/life.q2
+.include examples/pi.q2
 

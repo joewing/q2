@@ -37,8 +37,8 @@ module q2_control(
 );
 
   wire state_fetch  = ~s0 & ~s1 & ~s2 & ~s3;
-  wire state_deref  = deref & s0 & ~s1 & ~s2 & ~s3;
-  wire state_load   = ~o2 & ~s0 & s1 & ~s2 & ~s3;
+  wire state_load   = (~o2 & ~s0 & s1 & ~s2 & ~s3)
+                    | deref & s0 & ~s1 & ~s2 & ~s3;
   wire state_exec   = s0 & s1 & ~s2 & ~s3;
   wire state_alu = ~(~s2 & ~s3);
 
@@ -52,7 +52,7 @@ module q2_control(
   assign wro = ~(~state_fetch | ~ws);
   assign wra = ~(~state_alu | ~ws);
   assign wrx = ~(
-    (~state_alu & ~state_deref & ~state_load & ~state_fetch) | ~ws
+    (~state_alu & ~state_load & ~state_fetch) | ~ws
   );
   assign wrp = state_exec & o2 & o1 & (~o0 | ~f) & ws;
 
@@ -63,7 +63,7 @@ module q2_control(
   assign xhin_shift = state_alu;
   assign xhin_p = ~(~state_fetch | dbus7);
   assign xhin_zero = ~(~state_fetch | xhin_p);
-  assign xhin_dbus = ~(~state_load & ~state_deref);
+  assign xhin_dbus = ~(~state_load);
   assign xlin_dbus = ~state_alu;
   assign xlin_shift = state_alu;
 

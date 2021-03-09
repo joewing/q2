@@ -1,0 +1,89 @@
+
+
+  .align  128
+
+pi:
+  sta   =x8
+
+  lea   =0
+  sta   =x0
+  lea   =1
+  sta   =x1
+  lea   $+3
+  jmp   @$+1
+  .dw   lcd_move
+
+  lea   pi_str
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   lcd_puts
+
+  lda   pi_one
+  sta   =x9
+  lea   =3
+  sta   =x10
+
+pi_loop:
+  lda   pi_one
+  nor   =zero
+  add   =x10
+  jfc   $+2
+  jmp   @=x8
+
+  lda   =x10    ; x -= 4000 / y
+  sta   =x1
+  lda   pi_one
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   div
+  lda   =x9
+  nor   =zero
+  add   =x2
+  nor   =zero
+  sta   =x9
+
+  lea   =2      ; y += 2
+  add   =x10
+  sta   =x10
+
+  lda   =x10    ; x += 4000 / y
+  sta   =x1
+  lda   pi_one
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   div
+  lda   =x9
+  add   =x2
+  sta   =x9
+
+  lea   =2      ; y += 2
+  add   =x10
+  sta   =x10
+
+  lea   =6
+  sta   =x0
+  lea   =1
+  sta   =x1
+  lea   $+3
+  jmp   @$+1
+  .dw   lcd_move
+
+  lda   =x9
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   putint
+
+  jmp   pi_loop
+
+pi_one:
+  .dw   4000
+pi_str:
+  .dw   " PI =          "
+  .dw   0
+
+
+
