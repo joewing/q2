@@ -50,10 +50,10 @@ We assume the RAM chips and the LCD use ~20mA each.
 This gives the following:
   - 71 4.7k resistors x 0.64 = 45mA
   - 404 10k resistors x 0.5 = 202mA
-  - 13 1k resistors x 5 = 65mA
+  - 15 1k resistors x 5 = 75mA
   - 2 RAMs, 1 LCD = 60mA
 
-So we get a worst-case draw of ~372mA or ~1.9 Watts.
+So we get a worst-case draw of ~382mA or ~1.9 Watts.
 
 ## Clock Frequency Estimation
 
@@ -70,7 +70,6 @@ or:
 where n is the fanout. And for a 1k pull-up:
 
   t1k = n ln(2) / 20 us
-
 
 The delay is limited to 10us for all paths to allow a clock frequency
 of 100 kHz. This allows all resistors in flip-flops to be 10k. Some
