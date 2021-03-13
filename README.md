@@ -40,20 +40,21 @@ not be able to read from the Q2).
 
 Each LED is driven through a 4.7k resistor. Assuming a 5v power
 supply and 2v voltage drop through an LED, we can assume ~0.64mA
-for each 4.7k resistor.  Each gate uses either a 10k or a 1k
-(depending on fanout and required speed) resistor pull up,
-so we assume 0.5mA for each 10k resistor and 5mA for each 1k resistor.
-This provides an absolute worst case estimate since we don't expect all
-gates and LEDs to be active.
+for each 4.7k resistor.  Each gate uses a 10k, 1k, or a 100k resistor
+pull-up (depending on fanout and required speed), so we assume 0.5mA
+for each 10k resistor, 5mA for each 1k resistor, and 0.05mA for each
+100k resistor.  This provides an absolute worst case estimate since we
+don't expect all gates and LEDs to be active.
 We assume the RAM chips and the LCD use ~20mA each.
 
 This gives the following:
   - 71 4.7k resistors x 0.64 = 45mA
-  - 404 10k resistors x 0.5 = 202mA
-  - 15 1k resistors x 5 = 75mA
+  - 376 10k resistors x 0.5 = 188mA
+  - 19 100k resistors x 0.05 = 1mA
+  - 16 1k resistors x 5 = 80mA
   - 2 RAMs, 1 LCD = 60mA
 
-So we get a worst-case draw of ~382mA or ~1.9 Watts.
+So we get a worst-case draw of ~374mA or ~1.9 Watts.
 
 ## Clock Frequency Estimation
 
