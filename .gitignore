@@ -11,5 +11,6 @@ target/
 *.vcd
 *.hex
 *.lst
+*.q2p
 a.out
 case.stl
