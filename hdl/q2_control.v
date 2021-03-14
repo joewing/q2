@@ -58,7 +58,7 @@ module q2_control(
 
   assign incp_clk = ~(~state_fetch | ~ws) | incp_db;
   assign wrm = ~(~dep_sw & (~o2 | o1 | ~o0 | ~state_exec | ~ws));
-  assign wrf = ~((~state_alu & (~state_exec | o2)) | ~ws);
+  assign wrf = ~((~state_alu & ~state_exec) | ~ws | o2);
 
   assign xhin_shift = state_alu;
   assign xhin_p = ~(~state_fetch | dbus7);

@@ -3,7 +3,7 @@
 
 module q2_tb;
 
-  localparam KEY = 9;
+  localparam KEY = 3;
   localparam FAST_HZ = 100000;
   localparam SLOW_HZ = 32;
 
@@ -56,7 +56,17 @@ module q2_tb;
     end
     ram[abus] <= dbus;
   end
-  assign dbus = rdm ? (abus == 12'hFFF ? (1 << KEY) ^ 12'hFFF : ram[abus]) : 12'bz;
+  assign dbus = rdm
+              ? (abus == 12'hFFF
+                  ? (key_timer < 64 ? (1 << KEY) ^ 12'hFFF : 12'hFFF)
+                  : ram[abus]
+              ) : 12'bz;
+
+  reg [7:0] key_timer = 0;
+  always @(posedge clk) begin
+    if (key_timer) key_timer = key_timer - 1;
+    else key_timer = 8'hFF;
+  end
 
   initial begin
 

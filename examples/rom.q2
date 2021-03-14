@@ -131,6 +131,10 @@ menu_last_item:
 
 menu_items:
   ;      0123456789ABCDEF
+  .dw   " <    Life    > "
+  .dw   0
+  .dw   life
+  ;      0123456789ABCDEF
   .dw   " <   Primes   > "
   .dw   0
   .dw   primes
@@ -142,10 +146,6 @@ menu_items:
   .dw   " <    Fibs    > "
   .dw   0
   .dw   fib
-  ;      0123456789ABCDEF
-  .dw   " <    Life    > "
-  .dw   0
-  .dw   life
   ;      0123456789ABCDEF
   .dw   " <    Maze    > "
   .dw   0
