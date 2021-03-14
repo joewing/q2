@@ -3,7 +3,7 @@
 
 module q2_tb;
 
-  localparam KEY = 3;
+  localparam KEY = 9;
   localparam FAST_HZ = 100000;
   localparam SLOW_HZ = 32;
 
