@@ -1020,11 +1020,6 @@
     (uuid 0629ad8c-622b-4bda-9400-03bf66c7a015)
   )
 
-  (text "Since min VIH is 2.4, which\nis higher than the typical Vth,\nwe have a stronger pull-up."
-    (at 85.725 86.995 0)
-    (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid 277f7d31-34e1-4c46-8589-34217d160a52)
-  )
   (text "A13 (pin 26) is an active high\nchip enable. Here we hold it\nlow for a moment after Vcc is\napplied and pull it low quickly\nwhen Vcc is removed to avoid\nspurious writes."
     (at 113.665 165.1 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
@@ -2044,11 +2039,11 @@
 
   (symbol (lib_id "Device:R") (at 88.265 83.82 0) (unit 1)
     (in_bom yes) (on_board yes)
-    (uuid b8cb3eb0-54ee-49e1-a060-b7144e8086b8)
+    (uuid 47784cef-e193-47ec-a744-dbcbd9841e98)
     (property "Reference" "R290" (id 0) (at 90.043 82.6516 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Value" "4.7k" (id 1) (at 90.043 84.963 0)
+    (property "Value" "10k" (id 1) (at 90.043 84.963 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Footprint" "Resistor_SMD:R_0805_2012Metric" (id 2) (at 86.487 83.82 90)
@@ -2057,11 +2052,11 @@
     (property "Datasheet" "~" (id 3) (at 88.265 83.82 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "LCSC" "C17673" (id 4) (at 88.265 83.82 0)
+    (property "LCSC" "C17414" (id 4) (at 88.265 83.82 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid ed3f87d0-d4b2-4c3a-9c7f-0daa343c45b9))
-    (pin "2" (uuid 52894213-ca36-4e53-bb33-20e6cfe13ef7))
+    (pin "1" (uuid 4389a16e-d8aa-48a6-94c1-d5506b79b828))
+    (pin "2" (uuid 07ca48ce-96be-4e69-acf0-4ea364e92930))
   )
 
   (symbol (lib_id "Device:R") (at 101.6 27.94 0) (unit 1)

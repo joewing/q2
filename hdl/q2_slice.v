@@ -18,6 +18,7 @@ module q2_slice(
   input wire xin_shift,
   input wire xin_p,
   input wire xin_dbus,
+  input wire rsts,
   input wire wrs,
   input wire sin,
   output wire aout,
@@ -60,8 +61,8 @@ module q2_slice(
   assign pout = p;
 
   reg s;
-  always @(posedge wrs or posedge rst) begin
-    s <= rst ? 1'b0 : sin;
+  always @(posedge wrs or posedge rsts) begin
+    s <= rsts ? 1'b0 : sin;
   end
   assign sout = s;
 
