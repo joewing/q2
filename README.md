@@ -51,10 +51,10 @@ This gives the following:
   - 71 4.7k resistors x 0.64 = 45mA
   - 376 10k resistors x 0.5 = 188mA
   - 19 100k resistors x 0.05 = 1mA
-  - 16 1k resistors x 5 = 80mA
+  - 17 1k resistors x 5 = 85mA
   - 2 RAMs, 1 LCD = 60mA
 
-So we get a worst-case draw of ~374mA or ~1.9 Watts.
+So we get a worst-case draw of ~379mA or ~1.9 Watts.
 
 ## Clock Frequency Estimation
 
@@ -304,8 +304,7 @@ The address space is 4096 12-bit words.
 
   Address   | Description
   --------- | --------------
-  000 - 7FF | RAM
-  800 - FFE | ROM
+  000 - FFE | RAM
   FFF       | I/O
 
 ## Zero-Page Layout

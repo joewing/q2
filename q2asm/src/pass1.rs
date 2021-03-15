@@ -72,7 +72,8 @@ mod tests {
         let map = pass1(&vec![
             StatementWithContext {
                 file: String::from("file"),
-                line: 1,
+                line_number: 1,
+                line: String::from(""),
                 statement: Statement::Define(String::from("asdf"), Expression::Constant(3))
             }
         ]);

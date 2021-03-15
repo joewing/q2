@@ -80,8 +80,8 @@ module q2_tb;
     #10 start_sw = 1;
     #10 start_sw = 0;
     for (i = 0; i < 50000000; i = i + 1) begin
-      #10 clk <= 1;
-      #10 clk <= 0;
+      #5 clk <= 1;
+      #5 clk <= 0;
       if (!run) begin
         $display("halted after ", i, " clocks");
         $display(

@@ -11,7 +11,6 @@ mod eval;
 mod pass1;
 mod pass2;
 
-use parser::Listing;
 use std::rc::Rc;
 use crate::pass2::CompiledStatement;
 
@@ -88,7 +87,7 @@ impl OutputFormat for ListOutputFormat {
             Some(word)  => write_hex(vec, word),
             None        => write_str(vec, "    ")
         }
-        write_str(vec, format!("    {}\n", st.statement.emit_listing()).as_ref())
+        write_str(vec, &*format!("    {}\n", st.line.as_str()))
     }
 }
 

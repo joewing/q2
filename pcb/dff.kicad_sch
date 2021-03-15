@@ -213,15 +213,6 @@
         )
         (polyline
           (pts
-            (xy 1.016 0)
-            (xy 2.032 0.381)
-            (xy 2.032 -0.381)
-            (xy 1.016 0)
-          )
-          (stroke (width 0)) (fill (type outline))
-        )
-        (polyline
-          (pts
             (xy 2.794 0.508)
             (xy 2.921 0.381)
             (xy 3.683 0.381)
@@ -237,6 +228,15 @@
             (xy 3.302 0.381)
           )
           (stroke (width 0)) (fill (type none))
+        )
+        (polyline
+          (pts
+            (xy 1.016 0)
+            (xy 2.032 0.381)
+            (xy 2.032 -0.381)
+            (xy 1.016 0)
+          )
+          (stroke (width 0)) (fill (type outline))
         )
       )
       (symbol "2N7002_1_1"
