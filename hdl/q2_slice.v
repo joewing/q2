@@ -29,14 +29,14 @@ module q2_slice(
 
   reg a;
   always @(posedge wra) begin
-    a <= ain;
+    #0.7 a <= ain;
   end
-  assign dbus = rda ? a : 1'bz;
-  assign aout = a;
+  assign #1.4 dbus = rda ? a : 1'bz;
+  assign #1.4 aout = a;
 
   reg x;
   always @(posedge wrx) begin
-    x <= 1;
+    #0.7 x <= 1;
     case ({xin_zero, xin_shift, xin_p, xin_dbus})
       4'b1000:  x <= 0;
       4'b0100:  x <= xshift;
@@ -44,27 +44,27 @@ module q2_slice(
       4'b0001:  x <= dbus;
     endcase
   end
-  assign abus = rdx ? x : 1'bz;
-  assign xout = x;
+  assign #1.4 abus = rdx ? x : 1'bz;
+  assign #1.4 xout = x;
 
   reg p;
   always @(posedge incp_clk or posedge wrp or posedge rst) begin
     if (rst) begin
-      p <= sw;
+      #0.7 p <= sw;
     end else if (wrp) begin
-      p <= x;
+      #0.7 p <= x;
     end else if (incp_clk) begin
-      p <= ~p;
+      #0.7 p <= ~p;
     end
   end
-  assign abus = rdp ? p : 1'bz;
-  assign pout = p;
+  assign #1.4 abus = rdp ? p : 1'bz;
+  assign #1.4 pout = p;
 
   reg s;
   always @(posedge wrs or posedge rsts) begin
-    s <= rsts ? 1'b0 : sin;
+    #0.7 s <= rsts ? 1'b0 : sin;
   end
-  assign sout = s;
+  assign #0.7 sout = s;
 
   assign dbus = dep ? sw : 1'bz;
 

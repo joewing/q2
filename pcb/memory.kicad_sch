@@ -2405,7 +2405,7 @@
     (property "Value" "Battery" (id 1) (at 235.7121 65.9193 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Footprint" "Battery:BatteryHolder_ComfortableElectronic_CH273-2450_1x2450" (id 2) (at 233.045 63.246 90)
+    (property "Footprint" "Batteries:BATTCOM_20MM_PTH" (id 2) (at 233.045 63.246 90)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 233.045 63.246 90)
