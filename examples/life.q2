@@ -5,6 +5,13 @@
 .def  life_array2   life_array1 + life_width * life_height
 
   .align    128
+
+life_clear_cmd:
+  .dw   0x101
+life_gen_str:
+  .dw   "Initializing..."
+  .dw   0
+
 life:
 
   lda   life_clear_cmd
@@ -100,6 +107,15 @@ life_init_loop3:
   jmp   @$+1
   .dw   life_copy
 
+life_array_size:
+  .dw   life_width * life_height
+life_init_array1_ptr:
+  .dw   life_array1
+life_init_array2_ptr:
+  .dw   life_array2
+life_last_row_offset:
+  .dw   life_width * (life_height - 1)
+
   ; Loop over each generation.
 life_loop:
 
@@ -130,28 +146,27 @@ life_loop:
   jmp   @$+1
   .dw   putint
 
+  ; Show help
+  lea   life_help
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   lcd_puts
+
   ; Run a generation
   jmp   @$+1
   .dw   life_generation
 
-life_clear_cmd:
-  .dw   0x101
-life_gen_str:
-  .dw   "Initializing..."
-  .dw   0
 life_line1:
   .dw   0x180
 life_line2:
   .dw   0x1c0
-
-life_array_size:
-  .dw   life_width * life_height
-life_init_array1_ptr:
-  .dw   life_array1
-life_init_array2_ptr:
-  .dw   life_array2
-life_last_row_offset:
-  .dw   life_width * (life_height - 1)
+life_help:
+  .dw   0x18b
+  .dw   "0:Rst"
+  .dw   0x1cb
+  .dw   "1:Hlt"
+  .dw   0
 
 ; Run a generation
   .align  128
@@ -180,11 +195,11 @@ life_gen_col_loop:
 
   ; Count living neighbors in the source array
   lda   @=x1
-  jfc   life_not_alive
-  lea   =9    ; Add 9 if alive
-  jmp   $+2
-life_not_alive:
+  jfc   life_is_alive
   lea   =0
+  jmp   $+2
+life_is_alive:
+  lea   =9    ; Add 9 if alive
   sta   =x5   ; Number of living neighbors
   lea   life_offsets
 life_gen_off_loop:
@@ -192,6 +207,7 @@ life_gen_off_loop:
   lda   @=x6
   jfc   $+2
   jmp   life_gen_off_done
+
   add   =x1
   sta   =x7
   lda   =x5
@@ -210,6 +226,23 @@ life_gen_off_done:
   sta   @=x2
   add   =x9
   sta   =x9
+
+  ; Check for a key press.
+  lda   @=neg1
+  nor   =zero
+  sta   =x5
+  shr   =x5
+  jfc   life_not_reset
+  jmp   @$+1
+  .dw   life
+life_not_reset:
+  sta   =x5
+  shr   =x5
+  jfc   life_not_exit
+  jmp   @$+1
+  .dw   menu
+life_not_exit:
+
 
   ; Move to the next cell.
   lea   =1

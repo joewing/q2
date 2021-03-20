@@ -43,6 +43,15 @@ menu:
 menu_loop:
 
   lea   =0
+  sta   =rseed
+
+menu_new_seed:
+
+  lea   =1
+  add   =rseed
+  sta   =rseed
+
+  lea   =0
   sta   =x0
   lea   =1
   sta   =x1
@@ -55,6 +64,20 @@ menu_loop:
   lea   $+3
   jmp   @$+1
   .dw   lcd_puts
+
+  lea   =11
+  sta   =x0
+  lea   =1
+  sta   =x1
+  lea   $+3
+  jmp   @$+1
+  .dw   lcd_move
+
+  lda   =rseed
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   putint
 
   lea   $+3
   jmp   @$+1
@@ -85,7 +108,7 @@ menu_not_left:
   jfc   $+2
   jmp   menu_not_right
 
-  lea   =18
+  lea   =12
   add   =x9
   sta   =x9
   lda   menu_last_item
@@ -100,9 +123,9 @@ menu_not_right:
   lda   =x0
   add   menu_select_mask
   jfc   $+2
-  jmp   menu_loop
+  jmp   menu_new_seed
 
-  lea   =17
+  lea   =11
   add   =x9
   sta   =x9
   lda   @=x9
@@ -113,41 +136,40 @@ menu_not_right:
 
 menu_str1:
   ;      0123456789ABCDEF
-  .dw   " -- Q2 Demo --"
-  .dw   0
+  .dw   "--- Q2 Demo ---", 0
 
 menu_left_mask:
   .dw   0xFFE
 menu_right_mask:
   .dw   0xFFD
 menu_select_mask:
-  .dw   0xBFF
+  .dw   0xFFB
 
 menu_prev:
-  .dw   -18
+  .dw   -12
 
 menu_last_item:
   .dw   menu_items_end
 
 menu_items:
   ;      0123456789ABCDEF
-  .dw   " <    Life    > "
+  .dw   "< > Life  "
   .dw   0
   .dw   life
   ;      0123456789ABCDEF
-  .dw   " <   Primes   > "
+  .dw   "< > Primes"
   .dw   0
   .dw   primes
   ;      0123456789ABCDEF
-  .dw   " <     Pi     > "
+  .dw   "< > Pi    "
   .dw   0
   .dw   pi
   ;      0123456789ABCDEF
-  .dw   " <    Fibs    > "
+  .dw   "< > Fibs  "
   .dw   0
   .dw   fib
   ;      0123456789ABCDEF
-  .dw   " <    Maze    > "
+  .dw   "< > Maze  "
   .dw   0
   .dw   maze
 menu_items_end:
@@ -160,7 +182,6 @@ lcd_init:
   sta   =x1
   lea   =0
   sta   =zero
-  sta   =rseed
   nor   =zero
   sta   =neg1
   lea   =1

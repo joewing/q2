@@ -43,10 +43,6 @@ impl<I> ParseError<I> for CustomError<I> {
 
 type CustomResult<I, O> = IResult<I, O, CustomError<I>>;
 
-pub trait Listing {
-    fn emit_listing(&self) -> String;
-}
-
 #[derive(Debug, PartialEq, Clone)]
 pub enum Expression {
     Add(Box<Expression>, Box<Expression>),
@@ -64,42 +60,6 @@ pub enum Expression {
     Symbol(String),
     Constant(i64),
     CurrentAddress,
-}
-
-impl Listing for Expression {
-    fn emit_listing(&self) -> String {
-        match self {
-            Expression::Add(a, b) => format!("({} + {})", a.emit_listing(), b.emit_listing()),
-            Expression::Sub(a, b) => format!("({} - {})", a.emit_listing(), b.emit_listing()),
-            Expression::Mul(a, b) => format!("({} * {})", a.emit_listing(), b.emit_listing()),
-            Expression::Div(a, b) => format!("({} / {})", a.emit_listing(), b.emit_listing()),
-            Expression::Mod(a, b) => format!("({} % {})", a.emit_listing(), b.emit_listing()),
-            Expression::Negate(a) => format!("-{}", a.emit_listing()),
-            Expression::Not(a)    => format!("~{}", a.emit_listing()),
-            Expression::And(a, b) => format!("({} & {})", a.emit_listing(), b.emit_listing()),
-            Expression::Or(a, b)  => format!("({} | {})", a.emit_listing(), b.emit_listing()),
-            Expression::Xor(a, b) => format!("({} ^ {})", a.emit_listing(), b.emit_listing()),
-            Expression::Shr(a, b) => format!("({} >> {})", a.emit_listing(), b.emit_listing()),
-            Expression::Shl(a, b) => format!("({} << {})", a.emit_listing(), b.emit_listing()),
-            Expression::Symbol(s) => s.clone(),
-            Expression::Constant(i) => format!("{}", i),
-            Expression::CurrentAddress => format!("$"),
-        }
-    }
-}
-
-impl<T: Listing> Listing for Vec<T> {
-    fn emit_listing(&self) -> String {
-        let mut result = String::new();
-        let n = self.len();
-        for i in 0..n {
-            if i > 0 {
-                result.extend(", ".chars());
-            }
-            result.extend(self.get(i).unwrap().emit_listing().chars());
-        }
-        result
-    }
 }
 
 #[derive(Debug, PartialEq, Clone, Copy)]
@@ -127,34 +87,12 @@ impl InstructionType {
     ];
 }
 
-impl Listing for InstructionType {
-    fn emit_listing(self: &Self) -> String {
-        for (i, s) in InstructionType::MAPPING {
-            if i == self {
-                return String::from(*s);
-            }
-        }
-        String::from("invalid")
-    }
-}
-
 #[derive(Debug, PartialEq, Clone)]
 pub enum AddressMode {
     Relative,           // x
     ZeroPage,           // =x
     RelativeIndirect,   // @x
     ZeroPageIndirect,   // @=x
-}
-
-impl Listing for AddressMode {
-    fn emit_listing(&self) -> String {
-        match self {
-            AddressMode::Relative           => format!(""),
-            AddressMode::ZeroPage           => format!("="),
-            AddressMode::RelativeIndirect   => format!("@"),
-            AddressMode::ZeroPageIndirect   => format!("@="),
-        }
-    }
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -170,47 +108,17 @@ pub enum Statement {
     Macro(String, Vec<Statement>),
 }
 
-impl Listing for Statement {
-    fn emit_listing(&self) -> String {
-        match self {
-            Statement::Define(n, e)         => format!(".def {}    {}", n, e.emit_listing()),
-            Statement::Label(n)             => format!("{}:", n),
-            Statement::Origin(e)            => format!("    .org   {}", e.emit_listing()),
-            Statement::Align(e)             => format!("    .align {}", e.emit_listing()),
-            Statement::Bank(e)              => format!("    .bank  {}", e.emit_listing()),
-            Statement::Word(e)              => format!("    .dw    {}", e.emit_listing()),
-            Statement::Reserve(e)           => format!("    .bss   {}", e.emit_listing()),
-            Statement::Instruction(t, m, o) =>
-                format!("    {}    {}{}", t.emit_listing(), m.emit_listing(), o.emit_listing()),
-            Statement::Macro(n, ss)         => {
-                let mut result = String::new();
-                result.extend(format!(".macro {}\n", n).chars());
-                for s in ss.iter() {
-                    result.extend(s.emit_listing().chars());
-                }
-                result += ".end\n";
-                result
-            },
-        }
-    }
-}
-
 #[derive(Debug, PartialEq, Clone)]
 pub struct StatementWithContext {
     pub statement: Statement,
     pub file: String,
-    pub line: usize
+    pub line_number: usize,
+    pub line: String
 }
 
 impl StatementWithContext {
     pub fn error<T>(&self, msg: String) -> Result<T, String> {
-        Err(format!("{}[{}]: {}", self.file, self.line, msg))
-    }
-}
-
-impl Listing for StatementWithContext {
-    fn emit_listing(&self) -> String {
-        self.statement.emit_listing()
+        Err(format!("{}[{}]: {}", self.file, self.line_number, msg))
     }
 }
 
@@ -492,16 +400,16 @@ fn parse_string(input: &str) -> CustomResult<&str, Vec<Expression>> {
 fn parse_word(input: &str) -> CustomResult<&str, Statement> {
     let (input, _) = tag(".dw")(input)?;
     let (input, _) = eat_whitespace(input)?;
-    let (input, exprs) = alt(
-        (
-            separated_nonempty_list(
-                char(','),
-                parse_expr
-            ),
-            parse_string
+    let (input, exprs) = separated_nonempty_list(
+        char(','),
+        alt(
+            (
+                |i| parse_expr(i).map(|r| (r.0, vec![r.1])),
+                parse_string
+            )
         )
     )(input)?;
-    Ok((input, Statement::Word(exprs)))
+    Ok((input, Statement::Word(exprs.into_iter().flatten().collect())))
 }
 
 fn parse_reserve(input: &str) -> CustomResult<&str, Statement> {
@@ -520,9 +428,9 @@ fn parse_define(input: &str) -> CustomResult<&str, Statement> {
     Ok((input, Statement::Define(String::from(name), expr)))
 }
 
-fn parse_statement<'a>(file: &'a str, line: usize) -> impl Fn(&'a str) -> CustomResult<&'a str, Vec<StatementWithContext>> {
-    move |input| {
-        let (input, _) = eat_whitespace(input)?;
+fn parse_statement<'a>(file: &'a str, line_number: usize) -> impl Fn(&'a str) -> CustomResult<&'a str, Vec<StatementWithContext>> {
+    move |line| {
+        let (input, _) = eat_whitespace(line)?;
         let (input, statement) = alt(
             (
                 parse_label,
@@ -536,7 +444,19 @@ fn parse_statement<'a>(file: &'a str, line: usize) -> impl Fn(&'a str) -> Custom
             )
         )(input)?;
         let (input, _) = eat_whitespace(input)?;
-        Ok((input, vec![StatementWithContext { file: String::from(file), line, statement }]))
+        Ok(
+            (
+                input,
+                vec![
+                    StatementWithContext {
+                        file: String::from(file),
+                        line_number,
+                        line: String::from(line),
+                        statement
+                    }
+                ]
+            )
+        )
     }
 }
 
@@ -770,12 +690,14 @@ mod tests {
             vec![
                 StatementWithContext {
                     file: String::from("file"),
-                    line: 1,
-                    statement: Statement::Label(String::from("label"))
+                    line_number: 1,
+                    statement: Statement::Label(String::from("label")),
+                    line: String::from("")
                 },
                 StatementWithContext {
                     file: String::from("file"),
-                    line: 2,
+                    line_number: 2,
+                    line: String::from(""),
                     statement: Statement::Instruction(
                         InstructionType::Add,
                         AddressMode::ZeroPage,

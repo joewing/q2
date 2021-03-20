@@ -527,15 +527,6 @@
         )
         (polyline
           (pts
-            (xy 1.016 0)
-            (xy 2.032 0.381)
-            (xy 2.032 -0.381)
-            (xy 1.016 0)
-          )
-          (stroke (width 0)) (fill (type outline))
-        )
-        (polyline
-          (pts
             (xy 2.794 0.508)
             (xy 2.921 0.381)
             (xy 3.683 0.381)
@@ -551,6 +542,15 @@
             (xy 3.302 0.381)
           )
           (stroke (width 0)) (fill (type none))
+        )
+        (polyline
+          (pts
+            (xy 1.016 0)
+            (xy 2.032 0.381)
+            (xy 2.032 -0.381)
+            (xy 1.016 0)
+          )
+          (stroke (width 0)) (fill (type outline))
         )
       )
       (symbol "2N7002_1_1"
@@ -1485,22 +1485,6 @@
     )
   )
 
-  (symbol (lib_id "power:PWR_FLAG") (at 153.035 68.58 0) (unit 1)
-    (in_bom yes) (on_board yes)
-    (uuid b8a1cd09-bc55-4df1-928a-4f0d91edd71e)
-    (property "Reference" "#FLG01" (id 0) (at 153.035 66.675 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Value" "PWR_FLAG" (id 1) (at 153.035 64.2556 0))
-    (property "Footprint" "" (id 2) (at 153.035 68.58 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Datasheet" "~" (id 3) (at 153.035 68.58 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (pin "1" (uuid a3ee6be0-1392-4359-989e-58f09648beba))
-  )
-
   (symbol (lib_id "power:VCC") (at 36.83 24.13 0) (unit 1)
     (in_bom yes) (on_board yes)
     (uuid 00000000-0000-0000-0000-0000616e1141)
@@ -1643,6 +1627,22 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 8a686c70-7716-4245-b095-7b5637e8fe50))
+  )
+
+  (symbol (lib_id "power:PWR_FLAG") (at 153.035 68.58 0) (unit 1)
+    (in_bom yes) (on_board yes)
+    (uuid b8a1cd09-bc55-4df1-928a-4f0d91edd71e)
+    (property "Reference" "#FLG01" (id 0) (at 153.035 66.675 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Value" "PWR_FLAG" (id 1) (at 153.035 64.2556 0))
+    (property "Footprint" "" (id 2) (at 153.035 68.58 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "~" (id 3) (at 153.035 68.58 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid a3ee6be0-1392-4359-989e-58f09648beba))
   )
 
   (symbol (lib_id "power:GND") (at 36.83 185.42 0) (unit 1)

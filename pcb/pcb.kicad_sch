@@ -35,17 +35,8 @@
       (symbol "USB_B_0_1"
         (circle (center -3.81 2.159) (radius 0.635) (stroke (width 0.254)) (fill (type outline)))
         (circle (center -0.635 3.429) (radius 0.381) (stroke (width 0.254)) (fill (type outline)))
-        (rectangle (start -5.08 -7.62) (end 5.08 7.62)
-          (stroke (width 0.254)) (fill (type background))
-        )
-        (rectangle (start -3.81 5.588) (end -2.54 4.572)
-          (stroke (width 0)) (fill (type outline))
-        )
         (rectangle (start -0.127 -7.62) (end 0.127 -6.858)
           (stroke (width 0)) (fill (type none))
-        )
-        (rectangle (start 0.254 1.27) (end -0.508 0.508)
-          (stroke (width 0.254)) (fill (type outline))
         )
         (rectangle (start 5.08 -2.667) (end 4.318 -2.413)
           (stroke (width 0)) (fill (type none))
@@ -55,6 +46,15 @@
         )
         (rectangle (start 5.08 4.953) (end 4.318 5.207)
           (stroke (width 0)) (fill (type none))
+        )
+        (rectangle (start -3.81 5.588) (end -2.54 4.572)
+          (stroke (width 0)) (fill (type outline))
+        )
+        (rectangle (start 0.254 1.27) (end -0.508 0.508)
+          (stroke (width 0.254)) (fill (type outline))
+        )
+        (rectangle (start -5.08 -7.62) (end 5.08 7.62)
+          (stroke (width 0.254)) (fill (type background))
         )
         (polyline
           (pts
@@ -83,15 +83,6 @@
         )
         (polyline
           (pts
-            (xy 0.635 2.794)
-            (xy 0.635 1.524)
-            (xy 1.905 2.159)
-            (xy 0.635 2.794)
-          )
-          (stroke (width 0.254)) (fill (type outline))
-        )
-        (polyline
-          (pts
             (xy -4.064 4.318)
             (xy -2.286 4.318)
             (xy -2.286 5.715)
@@ -101,6 +92,15 @@
             (xy -4.064 4.318)
           )
           (stroke (width 0)) (fill (type none))
+        )
+        (polyline
+          (pts
+            (xy 0.635 2.794)
+            (xy 0.635 1.524)
+            (xy 1.905 2.159)
+            (xy 0.635 2.794)
+          )
+          (stroke (width 0.254)) (fill (type outline))
         )
       )
       (symbol "USB_B_1_1"

@@ -7,6 +7,7 @@ pub struct CompiledStatement {
     pub addr: i64,
     pub code: Option<u16>,
     pub statement: Statement,
+    pub line: String
 }
 
 impl CompiledStatement {
@@ -64,40 +65,42 @@ pub fn pass2(
     let mut bank: i64 = 0;
 
     for st in statements {
+        let line = st.line.clone();
         match &st.statement {
             Statement::Define(_, _)         => result.push(
-                CompiledStatement { bank, addr, statement: st.statement.clone(), code: None }
+                CompiledStatement { bank, addr, statement: st.statement.clone(), code: None, line }
             ),
             Statement::Label(_)             => result.push(
-                CompiledStatement { bank, addr, statement: st.statement.clone(), code: None }
+                CompiledStatement { bank, addr, statement: st.statement.clone(), code: None, line }
             ),
             Statement::Origin(e)            => {
                 addr = eval(addr, &e, symbols, 0)?;
                 result.push(
-                    CompiledStatement { bank, addr, statement: st.statement.clone(), code: None }
+                    CompiledStatement { bank, addr, statement: st.statement.clone(), code: None, line }
                 );
             },
             Statement::Align(e)             => {
                 let alignment = eval(addr, &e, symbols, 0)?;
                 addr = addr + alignment - addr % alignment;
                 result.push(
-                    CompiledStatement { bank, addr, statement: st.statement.clone(), code: None }
+                    CompiledStatement { bank, addr, statement: st.statement.clone(), code: None, line }
                 );
             },
             Statement::Bank(e) => {
                 bank = eval(addr, &e, symbols, 0)?;
                 result.push(
-                    CompiledStatement { bank, addr, statement: st.statement.clone(), code: None }
+                    CompiledStatement { bank, addr, statement: st.statement.clone(), code: None, line }
                 );
             },
             Statement::Instruction(inst, mode, op) => {
                 let word = emit_instruction(addr, &inst, &mode, &op, symbols, &st)?;
                 result.push(
-                    CompiledStatement { bank, addr, statement: st.statement.clone(), code: Some(word) }
+                    CompiledStatement { bank, addr, statement: st.statement.clone(), code: Some(word), line }
                 );
                 addr += 1;
             },
             Statement::Word(es)              => {
+                let mut current_line = line;
                 for e in es {
                     let word = eval(addr, &e, symbols, 0)?;
                     if word > 0xfff {
@@ -108,16 +111,18 @@ pub fn pass2(
                             bank,
                             addr,
                             statement: Statement::Word(vec![e.clone()]),
-                            code: Some((word & 0xfff) as u16)
+                            code: Some((word & 0xfff) as u16),
+                            line: current_line.clone()
                         }
                     );
+                    current_line.clear();
                     addr += 1;
                 }
             },
             Statement::Reserve(e)           => {
                 let count = eval(addr, &e, symbols, 0)?;
                 result.push(
-                    CompiledStatement { bank, addr, statement: st.statement.clone(), code: None }
+                    CompiledStatement { bank, addr, statement: st.statement.clone(), code: None, line }
                 );
                 addr += count;
             },
