@@ -153,21 +153,13 @@ menu_last_item:
 
 menu_items:
   ;      0123456789ABCDEF
+  .dw   "< > Snake "
+  .dw   0
+  .dw   snake
+  ;      0123456789ABCDEF
   .dw   "< > Life  "
   .dw   0
   .dw   life
-  ;      0123456789ABCDEF
-  .dw   "< > Primes"
-  .dw   0
-  .dw   primes
-  ;      0123456789ABCDEF
-  .dw   "< > Pi    "
-  .dw   0
-  .dw   pi
-  ;      0123456789ABCDEF
-  .dw   "< > Fibs  "
-  .dw   0
-  .dw   fib
   ;      0123456789ABCDEF
   .dw   "< > Maze  "
   .dw   0
@@ -221,8 +213,6 @@ lcd_move:
   jmp   @=x2
 lcd_move_cmd:
   .dw   0x180
-
-  .align  128
 
 ; Render the raster image at x0 on the LCD.
 ; Raster is a 20x16 pixel image.
@@ -472,35 +462,6 @@ mult_next:
   sta   =x1
   jmp   mult_loop
 
-; Compute the integer square root of =x0
-; Returns the result in =x0.
-; Destroys =x0, =x1, =x2, =x3
-isqrt:
-  sta   =x3
-  lea   =1
-  sta   =x1       ; x1 = 1
-  lea   =3
-  sta   =x2       ; x2 = 3
-isqrt_loop:
-  lda   =x0
-  nor   =zero
-  add   =x1
-  jfc   isqrt_cont  ; if x0 >= x1 continue
-  shr   =x2     ; return x0 = (x2 / 2) - 1
-  add   =neg1
-  sta   =x0
-  jmp   @=x3
-isqrt_cont:
-  lda   =x1
-  add   =x2
-  sta   =x1   ; x1 += x2
-  lda   =x2
-  add   isqrt_two
-  sta   =x2   ; x2 += 2
-  jmp   isqrt_loop
-isqrt_two:
-  .dw   2
-
 ; Return a random number in A.
 ; Destroys x0, x1, x2, x3, x4
 rand:
@@ -520,9 +481,7 @@ rand_mult:
 rand_add:
   .dw   353
 
-.include examples/fibs.q2
-.include examples/primes.q2
+.include examples/snake.q2
 .include examples/maze.q2
 .include examples/life.q2
-.include examples/pi.q2
 

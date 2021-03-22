@@ -3,9 +3,9 @@
 
 module q2_tb;
 
-  localparam KEY = 3;
-  localparam FAST_HZ = 100000;
-  localparam SLOW_HZ = 32;
+  localparam KEY = 2;
+  localparam FAST_HZ = 100_000;
+  localparam SLOW_HZ = 100;
 
   reg clk = 1;
   reg [11:0] sw = 12'h800;
@@ -27,7 +27,7 @@ module q2_tb;
   reg [11:0] ram[0:4095];
   always @(posedge wrm) begin
     if (abus == 12'hFFF) begin
-      $display("OUTPUT %03x: %03x (%d)", abus, dbus, dbus);
+      $display("OUTPUT %03x (%d)", dbus, dbus);
       if (dbus[8]) begin
         if (dbus[7]) begin
           // Set address
@@ -56,12 +56,14 @@ module q2_tb;
     end
     ram[abus] <= dbus;
   end
-  assign dbus = rdm
-              ? (abus == 12'hFFF
-                  ? (key_timer < 64 ? (1 << KEY) ^ 12'hFFF : 12'hFFF)
-                  : ram[abus]
-              ) : 12'bz;
 
+  assign dbus = rdm
+    ? (abus == 12'hFFF
+        ? (key_timer[7] ? (1 << KEY) ^ 12'hFFF : 12'hFFF)
+        : ram[abus])
+    : 12'bz;
+
+  // Continuously press and release a key.
   reg [7:0] key_timer = 0;
   always @(posedge clk) begin
     if (key_timer) key_timer = key_timer - 1;
