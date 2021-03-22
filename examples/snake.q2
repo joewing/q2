@@ -1,0 +1,517 @@
+
+
+.def snake_level      x9
+.def snake_foodx      x10
+.def snake_foody      x11
+.def snake_dir        x12
+.def snake_tail_index x13
+.def snake_x          x14
+.def snake_y          x15
+
+; Snake data is an array of (x, y)
+; Max length is 20x16 x2 = 640 = 0x280 words
+.def snake_data       0x100   ; to 0x37F
+
+; Snake display buffer.
+; Size is 20x16 = 320 = 0x140 words
+.def snake_display    0x400
+
+  .align  128
+
+snake:
+
+  ; Clear the buffer.
+  lea   $+3
+  jmp   @$+1
+  .dw   pixel_clear
+
+  ; Draw the screen.
+  lea   snake_text
+  sta   =x0
+  lea   snake_text_end
+  jmp   @$+1
+  .dw   lcd_puts
+snake_text:
+  .dw   0x180   ; Line 1
+  .dw   0x20, 0xFF, 0x08, 0x0A, 0x0C, 0x0E, 0xFF, 0x20
+  .dw   " Snake  "
+  .dw   0x1C0   ; Line 2
+  .dw   0x20, 0xFF, 0x09, 0x0B, 0x0D, 0x0F, 0xFF, 0x20
+  .dw   " 00000  "
+  .dw   0
+snake_text_end:
+
+  ; Start with a length of 2 (level 1 is length 2).
+  lea   =1
+  sta   =snake_level
+
+  ; Set initial direction.
+  lea   =4
+  sta   =snake_dir
+
+  ; Tail index.
+  lea   =0
+  sta   =snake_tail_index
+
+  ; First position (tail) is (5, 7)
+  lda   snake_init_data_ptr
+  sta   =x8
+  lea   =5
+  sta   =x0
+  sta   @=x8
+  lea   =1
+  add   =x8
+  sta   =x8
+  lea   =7
+  sta   =x7
+  sta   @=x8
+  lea   $+3
+  jmp   @$+1
+  .dw   pixel_xor
+
+  ; Second position (head) is (6, 7)
+  lea   =1
+  add   =x8
+  sta   =x8
+  lea   =6
+  sta   =x0
+  sta   @=x8
+  sta   =snake_x
+  lea   =1
+  add   =x8
+  sta   =x8
+  lea   =7
+  sta   =x7
+  sta   @=x8
+  sta   =snake_y
+  lea   $+3
+  jmp   @$+1
+  .dw   pixel_xor
+
+  ; Start the game by placing food.
+  jmp   @$+1
+  .dw   snake_put_food
+
+snake_init_data_ptr:
+  .dw   snake_data
+
+  .align 128
+snake_move:
+
+  ; Insert a slight delay and check for a change in direction.
+  lea   =20   ; Length of delay.
+snake_delay_loop:
+  add   =neg1
+  sta   =x0
+  lda   @=neg1
+  nor   =zero
+  jfc   $+2
+  jmp   $+2
+  sta   =snake_dir
+  lda   =x0
+  jfc   snake_delay_loop
+
+  shr   =snake_dir
+  jfc   snake_move_not_left
+
+  ; Move left
+  lda   =snake_x
+  jfc   snake_move_no_left_wrap
+  lea   =19
+  sta   =snake_x
+  jmp   snake_move_position_updated
+snake_move_no_left_wrap:
+  add   =neg1
+  sta   =snake_x
+  jmp   snake_move_position_updated
+snake_move_not_left:
+  sta   =x0
+  shr   =x0
+  jfc   snake_move_not_down
+
+  ; Move down
+  lea   =15
+  nor   =zero
+  sta   =x2
+  lea   =1
+  add   =snake_y
+  nor   =zero
+  nor   =x2   ; (y + 1) & 15
+  sta   =snake_y
+  jmp   snake_move_position_updated
+
+snake_move_not_down:
+  sta   =x0
+  shr   =x0
+  jfc   snake_move_not_up
+
+  ; Move up
+  lda   =snake_y
+  jfc   snake_move_no_up_wrap
+  lea   =15
+  sta   =snake_y
+  jmp   snake_move_position_updated
+snake_move_no_up_wrap:
+  add   =neg1
+  sta   =snake_y
+  jmp   snake_move_position_updated
+
+snake_move_not_up:
+
+  ; Assumed to be right
+  lea   =19
+  nor   =zero
+  add   =snake_x
+  nor   =zero
+  jfc   snake_move_no_right_wrap
+  sta   =snake_x
+  jmp   snake_move_position_updated
+snake_move_no_right_wrap:
+  lea   =1
+  add   =snake_x
+  sta   =snake_x
+snake_move_position_updated:
+
+  ; Check if we got food.
+  lda   =snake_foodx
+  nor   =zero
+  add   =snake_x
+  nor   =zero           ; F=1 if foodx == snakex
+  jfc   snake_move_not_food
+  lda   =snake_foody
+  nor   =zero
+  add   =snake_y
+  nor   =zero
+  jfc   snake_move_not_food
+
+  ; Got food.
+  ; Do not clear tail or place new head.
+  ; Instead, increment level, insert head by shifting
+  ; the array, and place new food.
+
+  ; Increment level.
+  lea   =1
+  add   =snake_level
+  sta   =snake_level
+
+  ; Insert a hole in the snake array so we don't overwrite the tail.
+  ; We have: [0 1 .. tail old .. level - 1]
+  ; We need: [0 1 .. tail new old .. level]
+  ; Where the new head is the food.
+  ; Shift count is 2x (level - tail_index)
+  ; Start at end, shifting 2 words (for x and y).
+  lea   =1    ; Start at second word, which is y.
+  add   snake_move_data_ptr
+  add   =snake_level
+  add   =snake_level
+  sta   =x1   ; x1 -> dest (1 entry past the current last)
+  add   =neg1
+  add   =neg1
+  sta   =x2   ; x2 -> src
+  lda   =snake_level
+  nor   =zero
+  add   =snake_tail_index
+  nor   =zero
+  jfc   $+2
+  jmp   snake_move_skip_loop
+  sta   =x0
+  add   =x0     ; 2x (level - tail)
+snake_move_loop:
+  add   =neg1
+  sta   =x0
+  lda   @=x2
+  sta   @=x1
+  lda   =x2
+  add   =neg1
+  sta   =x2
+  lda   =x1
+  add   =neg1
+  sta   =x1
+  lda   =x0
+  jfc   snake_move_loop
+snake_move_skip_loop:
+
+  ; Store the new head.
+  lea   =2  ; Don't overwrite the tail.
+  add   snake_move_data_ptr
+  add   =snake_tail_index
+  add   =snake_tail_index
+  sta   =x0
+  lda   =snake_x
+  sta   @=x0
+  lea   =1
+  add   =x0
+  sta   =x0
+  lda   =snake_y
+  sta   @=x0
+
+  ; Place new food.
+  jmp   @$+1
+  .dw   snake_put_food
+
+snake_move_not_food:
+  jmp   @$+1
+  .dw   snake_shift
+
+snake_move_data_ptr:
+  .dw   snake_data
+
+  .align    128
+snake_shift:
+
+  ; Did not get food.
+  ; Remove tail, shift snake array, and place head.
+  ; We always shift the same amount to keep the delay
+  ; the same. We have a game over if placing the head
+  ; collides with an existing pixel, since we already
+  ; checked for food.
+
+  lda   @=neg1
+  nor   =zero
+  jfc   $+2
+  jmp   $+2
+  sta   =snake_dir
+
+  ; Remove tail and save the new head in its place.
+  lda   snake_shift_data_ptr
+  add   =snake_tail_index
+  add   =snake_tail_index   ; x2 for x and y.
+  sta   =x2
+  lda   @=x2
+  sta   =x0   ; x0 = x
+  lda   =snake_x
+  sta   @=x2
+  lea   =1
+  add   =x2
+  sta   =x2
+  lda   @=x2
+  sta   =x7   ; x7 = y
+  lda   =snake_y
+  sta   @=x2
+  lea   $+3
+  jmp   @$+1
+  .dw   pixel_xor
+
+  ; Decrement the tail index.
+  lda   =snake_tail_index
+  jfc   snake_shift_no_wrap
+  lda   =snake_level
+  jmp   snake_shift_save_tail
+snake_shift_no_wrap:
+  add   =neg1
+snake_shift_save_tail:
+  sta   =snake_tail_index
+
+  lda   @=neg1
+  nor   =zero
+  jfc   $+2
+  jmp   $+2
+  sta   =snake_dir
+
+  ; Place the head.
+  lda   =snake_x
+  sta   =x0
+  lda   =snake_y
+  sta   =x7
+  lea   $+3
+  jmp   @$+1
+  .dw   pixel_xor
+
+  ; Game over if x1 is non-zero
+  lda   =x1
+  jfc   snake_game_over
+
+  jmp   @$+1
+  .dw   snake_move
+
+snake_game_over:
+
+  lea   snake_over_msg
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   lcd_puts
+
+snake_game_over_wait:
+  lda   @=neg1
+  nor   =zero
+  jfc   snake_game_over_wait
+
+  lea   $+3
+  jmp   @$+1
+  .dw   waitkey
+
+  jmp   @$+1
+  .dw   menu
+
+snake_over_msg:
+  .dw   0x180 + 2
+  .dw   "GAME"
+  .dw   0x1C0 + 2
+  .dw   "OVER"
+  .dw   0
+
+snake_shift_data_ptr:
+  .dw   snake_data
+
+snake_put_food:
+
+  ; Draw the score.
+  lda   snake_score_cmd
+  sta   @=neg1
+
+  lda   =snake_level
+  sta   =x0
+  lea   snake_put_food_loop
+  jmp   @$+1
+  .dw   putint
+
+snake_score_cmd:
+  .dw   0x180 + 0x040 + 10
+
+snake_put_food_loop:
+
+  ; Determine an X-coordinate to use (0-19).
+  ; We use the remainder after dividing a random number by 20.
+  lea   $+3
+  jmp   @$+1
+  .dw   rand
+  sta   =x0
+  lea   =20
+  sta   =x1
+  lea   $+3
+  jmp   @$+1
+  .dw   div
+  lda   =x3     ; x3 = rand % 20
+  sta   =snake_foodx
+
+  ; Determine a Y-coordinate to use (0-15)
+  ; Use masking here.
+  lea   $+3
+  jmp   @$+1
+  .dw   rand
+  sta   =x0
+  lea   =15
+  nor   =zero
+  nor   =x0
+  sta   =snake_foody
+  sta   =x7
+
+  ; Draw the food.
+  lda   =snake_foodx
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   pixel_xor
+
+  ; If this position is already used, try again.
+  ; Otherwise, go back to moving the snake.
+  lda   =x1
+  jfc   snake_put_food_again
+  jmp   @$+1
+  .dw   snake_move
+
+snake_put_food_again:
+  ; Clear the food.
+  lda   =snake_foody
+  sta   =x7
+  lda   =snake_foodx
+  sta   =x0
+  lea   snake_put_food_loop
+  jmp   @$+1
+  .dw   pixel_xor
+
+  .align  128
+; XOR pixel at x0 (0-19), x7 (0-15)
+; Returns x1 old mask (set if pixel was set, 0 if pixel was not set).
+; Uses 0x400 as the pixel buffer.
+; Destroys x0-x7
+; Each character is 5 pixels wide and 8 pixels tall.
+; We store each character as 8 words (for a total of 64 words).
+; Display is organized as:
+;   0 2 4 6
+;   1 3 5 7
+; This means the offset of interest is:
+;   word = (x / 5) * 16 + y
+; The bit of the character of interest is:
+;   bit = x % 5
+pixel_xor:
+  sta   =x6
+  lea   =5
+  sta   =x1
+  lea   $+3
+  jmp   @$+1
+  .dw   div
+  lda   =x2   ; x2 = x / 5, x3 = x % 5
+  add   =x2
+  sta   =x2   ; (x / 5) * 2
+  add   =x2   ; (x / 5) * 4
+  add   =x2   ; (x / 5) * 6
+  add   =x2   ; (x / 5) * 8
+  sta   =x2
+  add   =x2   ; (x / 5) * 16
+  add   =x7
+  sta   =x7   ; x7 = word offset
+  add   pixel_buffer_ptr
+  sta   =x4   ; x4 -> byte to modify
+  lea   pixel_masks
+  add   =x3
+  sta   =x3
+  lda   @=x3
+  sta   =x2
+  nor   =x2
+  sta   =x3   ; x2 = mask, x3 = ~mask
+
+  lda   @=x4
+  sta   =x0   ; x0 = current
+  nor   =x0
+  sta   =x1   ; x0 = current, x1 = ~current
+
+  nor   =x3
+  sta   =x1   ; x1 = ~(~mask | ~current) = mask & current
+
+  lda   =x2
+  nor   =x0   ; ~(mask | current)
+  nor   =x1   ; mask ^ current
+
+  sta   @=x4
+
+  lda   pixel_cgram_ptr
+  add   =x7
+  sta   @=neg1    ; Set CGRAM address
+  lda   @=x4
+  sta   @=neg1    ; Update CGRAM
+  jmp   @=x6
+pixel_masks:
+  .dw   0x010   ; 4
+  .dw   0x008   ; 3
+  .dw   0x004   ; 2
+  .dw   0x002   ; 1
+  .dw   0x001   ; 0
+pixel_buffer_ptr:
+  .dw   0x400
+pixel_cgram_ptr:
+  .dw   0x140   ; CGRAM address 0
+
+; Clear pixel display.
+; Destroys x0 - x2
+pixel_clear:
+  sta   =x0
+  lda   pixel_buffer_ptr
+  sta   =x1
+  lda   pixel_cgram_ptr
+  sta   @=neg1
+  lea   =64   ; Need to clear 64 words
+pixel_clear_loop:
+  add   =neg1
+  sta   =x2
+  lea   =0
+  sta   @=x1
+  sta   @=neg1
+  lea   =1
+  add   =x1
+  sta   =x1
+  lda   =x2
+  jfc   pixel_clear_loop
+  jmp   @=x0
+

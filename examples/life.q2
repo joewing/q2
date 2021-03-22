@@ -76,10 +76,9 @@ life_init_loop3:
 
   sta   =x0
   add   =x0
-  jfc   $+3
-  lea   =1
-  jmp   $+2
   lea   =0
+  jfc   $+2
+  lea   =1
   sta   @=x5
   add   =x9
   sta   =x9
@@ -195,11 +194,10 @@ life_gen_col_loop:
 
   ; Count living neighbors in the source array
   lda   @=x1
+  lea   =9        ; Add 9 if alive
   jfc   life_is_alive
   lea   =0
-  jmp   $+2
 life_is_alive:
-  lea   =9    ; Add 9 if alive
   sta   =x5   ; Number of living neighbors
   lea   life_offsets
 life_gen_off_loop:

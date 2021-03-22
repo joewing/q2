@@ -117,6 +117,20 @@ module interlock() {
 
 module front_half() {
     translate([0, -0, 0]) {
+        translate([0, 10, case_depth]) {
+            difference() {
+                cube([case_width, midpoint - 10, wall_width]);
+                translate([case_width, midpoint - 10 + board_overlap, 0]) rotate([0, -45, 180]) {
+                    translate([0, 0, -10 - wall_width + tol]) cube([case_width, midpoint - 10, 10]);
+                }
+                translate([0, midpoint - 10 + board_overlap, 0]) rotate([0, -135, 180]) {
+                    translate([0, 0, wall_width - tol]) cube([case_width, midpoint - 10, 10]);
+                }
+                translate([wall_width * 2, 0, 0]) {
+                    cube([case_width - wall_width * 4, midpoint - 10, wall_width]);
+                }
+            }
+        }
         intersection() {
             full_case();
             union() {

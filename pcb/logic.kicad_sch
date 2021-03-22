@@ -934,7 +934,7 @@
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid a312e2ad-ba26-4582-b053-217c5d87aaae)
   )
-  (text "Relative (Z=0)\nFanout to 5 gates (1.7us)" (at 170.18 30.48 0)
+  (text "Relative (Z=0)\nFanout to 6 gates (2us)" (at 170.18 30.48 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 65624017-90ee-4282-bcac-0acacd9f9f5d)
   )
