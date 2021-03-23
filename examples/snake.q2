@@ -31,11 +31,11 @@ snake:
   .dw   lcd_puts
 snake_text:
   .dw   0x180   ; Line 1
-  .dw   0x08, 0x0A, 0x0C, 0x0E, 0x20, 0x20, 0x20, 0x20
-  .dw   0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20
+  .dw   0x20, 0xFF, 0x08, 0x0A, 0x0C, 0x0E, 0xFF, 0x20
+  .dw   " Snake  "
   .dw   0x1C0   ; Line 2
-  .dw   0x09, 0x0B, 0x0D, 0x0F, 0x20, 0x20, 0x20, 0x20
-  .dw   0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20
+  .dw   0x20, 0xFF, 0x09, 0x0B, 0x0D, 0x0F, 0xFF, 0x20
+  .dw   " 00000  "
   .dw   0
 snake_text_end:
 
@@ -89,6 +89,14 @@ snake_init_data_ptr:
 
   .align 128
 snake_move:
+
+  ; Check for a change in direction.
+  lda   @=neg1
+  nor   =zero
+  jfc   $+2
+  jmp   $+2
+  sta   =snake_dir
+
   ; Set the next head position.
   ; This is past the end of the array, which will
   ; be shifted later if we don't get food.
@@ -178,11 +186,10 @@ snake_move_position_updated:
   sta   @=x1  ; store new x or y
 
   ; Check if we got food.
-  lda   snake_move_data_ptr
+  lea   =2
+  add   snake_move_data_ptr
   add   =snake_level
   add   =snake_level
-  add   =one
-  add   =one
   sta   =x0             ; x0 -> snakex
   lda   =snake_foodx
   nor   =zero
@@ -218,11 +225,10 @@ snake_shift:
 
   ; Did not get food.
   ; Remove tail, shift snake array, and place head.
-  ; We update direction while shifting, and always
-  ; shift the same amount to keep the delay the same.
-  ; We have a game over if placing the head collides
-  ; with an existing pixel, since we already checked
-  ; for food.
+  ; We always shift the same amount to keep the delay
+  ; the same. We have a game over if placing the head
+  ; collides with an existing pixel, since we already
+  ; checked for food.
 
   ; Remove tail.
   lda   snake_shift_data_ptr
@@ -237,6 +243,33 @@ snake_shift:
   lea   $+3
   jmp   @$+1
   .dw   pixel_xor
+
+  ; Place the head.
+  lea   =2
+  add   snake_shift_data_ptr
+  add   =snake_level
+  add   =snake_level
+  sta   =x0       ; x0 -> x
+  add   =one
+  sta   =x7       ; x7 -> y
+  lda   @=x7
+  sta   =x7       ; x7 = y
+  lda   @=x0
+  sta   =x0       ; x0 = x
+  lea   $+3
+  jmp   @$+1
+  .dw   pixel_xor
+
+  ; Game over if x1 is non-zero
+  lda   =x1
+  jfc   snake_game_over
+
+  ; Check for a change in direction.
+  lda   @=neg1
+  nor   =zero
+  jfc   $+2
+  jmp   $+2
+  sta   =snake_dir
 
   ; Shift array by 2 (x and y).
   lda   snake_shift_data_ptr
@@ -258,47 +291,59 @@ snake_shift_loop:
   lda   =x0
   jfc   snake_shift_loop
 
-  ; Check for a change in direction.
-  lda   @=neg1
-  nor   =zero
-  jfc   $+2
-  jmp   $+2
-  sta   =snake_dir
-
-  ; Place the head.
-  lda   snake_shift_data_ptr
-  add   =snake_level
-  add   =snake_level
-  sta   =x0       ; x0 -> x
-  add   =one
-  sta   =x7       ; x7 -> y
-  lda   @=x7
-  sta   =x7       ; x7 = y
-  lda   @=x0
-  sta   =x0       ; x0 = x
-  lea   $+3
-  jmp   @$+1
-  .dw   pixel_xor
-
-  ; Game over if x1 is non-zero
-  lda   =x1
-  jfc   snake_game_over
   jmp   @$+1
   .dw   snake_move
 
 snake_game_over:
+
+  lea   snake_over_msg
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   lcd_puts
+
+snake_game_over_wait:
+  lda   @=neg1
+  nor   =zero
+  jfc   snake_game_over_wait
+
+  lea   $+3
+  jmp   @$+1
+  .dw   waitkey
+
   jmp   @$+1
   .dw   menu
 
+snake_over_msg:
+  .dw   0x180 + 2
+  .dw   "GAME"
+  .dw   0x1C0 + 2
+  .dw   "OVER"
+  .dw   0
+
 snake_move_data_length:
-  .dw   200   ; Words to move (snake length x2 - 2)
+  .dw   128   ; Words to move (snake length x2 - 2)
 snake_shift_data_ptr:
   .dw   snake_data
 snake_shift_two:
   .dw   2
 
-  .align  128
 snake_put_food:
+
+  ; Draw the score.
+  lda   snake_score_cmd
+  sta   @=neg1
+
+  lda   =snake_level
+  sta   =x0
+  lea   snake_put_food_loop
+  jmp   @$+1
+  .dw   putint
+
+snake_score_cmd:
+  .dw   0x180 + 0x040 + 10
+
+snake_put_food_loop:
 
   ; Determine an X-coordinate to use (0-19).
   ; We use the remainder after dividing a random number by 20.
@@ -346,7 +391,7 @@ snake_put_food_again:
   sta   =x7
   lda   =snake_foodx
   sta   =x0
-  lea   snake_put_food
+  lea   snake_put_food_loop
   jmp   @$+1
   .dw   pixel_xor
 
