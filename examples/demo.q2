@@ -1,35 +1,40 @@
 
-.def  x0      0
-.def  x1      1
-.def  x2      2
-.def  x3      3
-.def  x4      4
-.def  x5      5
-.def  x6      6
-.def  x7      7
-.def  x8      8
-.def  x9      9
-.def  x10     10
-.def  x11     11
-.def  x12     12
-.def  x13     13
-.def  x14     14
-.def  x15     15
+.def  x0      2
+.def  x1      3
+.def  x2      4
+.def  x3      5
+.def  x4      6
+.def  x5      7
+.def  x6      8
+.def  x7      9
+.def  x8      10
+.def  x9      11
+.def  x10     12
+.def  x11     13
+.def  x12     14
+.def  x13     15
+.def  x14     16
+.def  x15     17
 
-.def  zero    16
-.def  one     17
-.def  neg1    18
+.def  zero    18
+.def  one     19
+.def  neg1    20
 
-.def  rseed   19
+.def  rseed   21
 
 .def  buf     63  ; Last word of the first page.
+
+  .org  0x000
+
+  jmp   @$+1
+  .dw   menu
 
   .org  0x800
 
 menu:
   lea   $+3
   jmp   @$+1
-  .dw   lcd_init
+  .dw   init
 
   lea   menu_str1
   sta   =x0
@@ -51,13 +56,10 @@ menu_new_seed:
   add   =rseed
   sta   =rseed
 
-  lea   =0
-  sta   =x0
-  lea   =1
-  sta   =x1
-  lea   $+3
-  jmp   @$+1
-  .dw   lcd_move
+  lda   $+3
+  sta   @=neg1
+  jmp   $+2
+  .dw   0x180 + 0x40
 
   lda   =x9
   sta   =x0
@@ -65,13 +67,10 @@ menu_new_seed:
   jmp   @$+1
   .dw   lcd_puts
 
-  lea   =11
-  sta   =x0
-  lea   =1
-  sta   =x1
-  lea   $+3
-  jmp   @$+1
-  .dw   lcd_move
+  lda   $+3
+  sta   @=neg1
+  jmp   $+2
+  .dw   0x180 + 0x40 + 11
 
   lda   =rseed
   sta   =x0
@@ -168,9 +167,9 @@ menu_items_end:
 
   .align  128
 
-; Initialize the LCD
+; Initialize the LCD and constants.
 ; Destroys x0, x1
-lcd_init:
+init:
   sta   =x1
   lea   =0
   sta   =zero
@@ -178,41 +177,18 @@ lcd_init:
   sta   =neg1
   lea   =1
   sta   =one
-  lea   lcd_init_cmds
+  lea   init_cmds
   sta   =x0
   lda   =x1
   jmp   @$+1
   .dw   lcd_puts
-lcd_init_cmds:
+init_cmds:
   .dw   0x138   ; Function set (8-bits, 2-lines, 5x8)
-  .dw   0x10E   ; Display on, cursor on, blink off
+  .dw   0x10C   ; Display on, cursor off, blink off
   .dw   0x106   ; Entry mode, increment, no shift
 lcd_clear_cmd:
   .dw   0x101   ; Clear screen
   .dw   0x000
-
-; Clear the LCD and move to 0, 0.
-; Destroys x0
-lcd_clear:
-  sta   =x0
-  lda   lcd_clear_cmd
-  sta   @=neg1
-  jmp   @=x0
-
-; Move the cursor to column x0 (0-15), row x1 (0-1)
-; Destroys x0, x1, x2
-lcd_move:
-  sta   =x2
-  lda   =x1
-  lea   =0x40
-  jfc   $+2
-  lea   =0
-  add   =x0
-  add   lcd_move_cmd
-  sta   @=neg1
-  jmp   @=x2
-lcd_move_cmd:
-  .dw   0x180
 
 ; Render the raster image at x0 on the LCD.
 ; Raster is a 20x16 pixel image.
@@ -293,25 +269,11 @@ lcd_raster_char_cmds:
   .dw   0x20, 0x20, 0x20, 0x20, 0x20, 0x20
   .dw   0
 
-  .align  128
-
-; Write the string at x0
-; Uses x0, x1
-lcd_puts:
-  sta   =x1
-lcd_puts_loop:
-  lda   @=x0
-  jfc   $+2
-  jmp   @=x1
-  sta   @=neg1
-  lea   =1
-  add   =x0
-  sta   =x0
-  jmp   lcd_puts_loop
-
 ; Write int in x0
 ; Writes 4 chars
 ; Uses x0, x1, x2, x3, x4, x5, x6, x7
+putint_chars:
+  .dw   4
 putint:
   sta   =x7
   lea   =buf
@@ -341,9 +303,21 @@ putint_loop1:
   lea   =buf
   sta   =x0
   lda   =x7
-  jmp   lcd_puts
-putint_chars:
-  .dw   4
+  ; fall through
+
+; Write the string at x0
+; Uses x0, x1
+lcd_puts:
+  sta   =x1
+lcd_puts_loop:
+  lda   @=x0
+  jfc   $+2
+  jmp   @=x1
+  sta   @=neg1
+  lea   =1
+  add   =x0
+  sta   =x0
+  jmp   lcd_puts_loop
 
   .align 128
 
