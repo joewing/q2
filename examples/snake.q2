@@ -99,7 +99,7 @@ snake_init_data_ptr:
 snake_move:
 
   ; Insert a slight delay and check for a change in direction.
-  lea   =16   ; Length of delay.
+  lea   =20   ; Length of delay.
 snake_delay_loop:
   add   =neg1
   sta   =x0
@@ -266,6 +266,12 @@ snake_shift:
   ; collides with an existing pixel, since we already
   ; checked for food.
 
+  lda   @=neg1
+  nor   =zero
+  jfc   $+2
+  jmp   $+2
+  sta   =snake_dir
+
   ; Remove tail and save the new head in its place.
   lda   snake_shift_data_ptr
   add   =snake_tail_index
@@ -295,6 +301,12 @@ snake_shift_no_wrap:
   add   =neg1
 snake_shift_save_tail:
   sta   =snake_tail_index
+
+  lda   @=neg1
+  nor   =zero
+  jfc   $+2
+  jmp   $+2
+  sta   =snake_dir
 
   ; Place the head.
   lda   =snake_x

@@ -20,8 +20,8 @@ const INPUT_PINS: [u32; 12] = [
 const SET_PIN: u32 = 22;
 const DEPOSIT_PIN: u32 = 23;
 
-const DELAY_SHORT: Duration = Duration::from_millis(10);
-const DELAY_LONG: Duration = Duration::from_millis(100);
+const DELAY_SHORT: Duration = Duration::from_millis(5);
+const DELAY_LONG: Duration = Duration::from_millis(95);
 
 pub struct ProgError {
     message: String
@@ -59,23 +59,23 @@ pub struct FrontPanel {
 }
 
 impl FrontPanel {
-    fn press_button(&self, line: &LineHandle) -> Result<(), Error> {
+    fn press_button(&self, line: &LineHandle, dur: &Duration) -> Result<(), Error> {
         line.set_value(1)?;
         thread::sleep(DELAY_SHORT);
         line.set_value(0)?;
-        thread::sleep(DELAY_LONG);
+        thread::sleep(*dur);
         Ok(())
     }
 
     fn press_set(&self) -> Result<(), Error> {
-        self.press_button(&self.set_line)
+        self.press_button(&self.set_line, &DELAY_LONG)
     }
 
     fn press_deposit(&self) -> Result<(), Error> {
-        self.press_button(&self.deposit_line)
+        self.press_button(&self.deposit_line, &DELAY_SHORT)
     }
 
-    pub fn set_value(&self, value: u16) -> Result<(), Error> {
+    fn set_value(&self, value: u16) -> Result<(), Error> {
         let mut temp = [0u8; 12];
         for i in 0..12 {
             if (value >> i) & 1 != 0 {
@@ -97,7 +97,7 @@ impl FrontPanel {
     }
 
     pub fn write_word(&self, addr: u16, word: u16) -> Result<(), Error> {
-        println!("write {:03x} = {:03x}", addr, word);
+        eprintln!("write {:03x} = {:03x}", addr, word);
         self.set_value(addr)?;
         self.press_set()?;
         self.set_value(word)?;
@@ -108,8 +108,13 @@ impl FrontPanel {
         self.set_value(addr)?;
         self.press_set()?;
         let word = self.get_value()?;
-        println!("read {:03x} = {:03x}", addr, word);
+        eprintln!("read {:03x} = {:03x}", addr, word);
         Ok(word)
+    }
+
+    pub fn cleanup(&self) -> Result<(), Error> {
+        self.set_value(0u16)?;
+        self.press_set()
     }
 }
 
@@ -165,7 +170,7 @@ fn do_write(device_path: &str, filename: &str) -> Result<usize, ProgError> {
             return Err(ProgError { message: format!("ERROR: invalid line: {}", line) })
         }
     }
-    panel.set_value(0u16)?;
+    panel.cleanup()?;
     Ok(count)
 }
 
@@ -187,7 +192,7 @@ fn do_verify(device_path: &str, filename: &str) -> Result<usize, ProgError> {
             return Err(ProgError { message: format!("ERROR: invalid line: {}", line) })
         }
     }
-    panel.set_value(0u16)?;
+    panel.cleanup()?;
     Ok(count)
 }
 
@@ -197,15 +202,18 @@ fn do_read(device_path: &str, filename: &str, start: u16, end: u16) -> Result<us
     let mut count = 0;
     for addr in start..=end {
         let word = panel.read_word(addr)?;
-        data += format!("{:03X}:{:03X}\n", addr, word).as_str();
+        let line = format!("{:03X}:{:03X}\n", addr, word);
+        if filename == "-" {
+            println!("{}", line);
+        } else {
+            data += line.as_str();
+        }
         count += 1;
     }
-    if filename == "-" {
-        println!("{}", data);
-    } else {
+    if filename != "-" {
         fs::write(filename, data)?;
     }
-    panel.set_value(0u16)?;
+    panel.cleanup()?;
     Ok(count)
 }
 
@@ -262,20 +270,20 @@ fn main() {
     let device_path = matches.value_of(device_key).unwrap();
     if matches.value_of(action_key).unwrap() == write_action {
         match do_write(device_path, filename) {
-            Ok(count) => println!("wrote {} words", count),
-            Err(e) => println!("write failed: {}", e.message)
+            Ok(count) => eprintln!("wrote {} words", count),
+            Err(e) => eprintln!("write failed: {}", e.message)
         }
     } else if matches.value_of(action_key).unwrap() == verify_action {
         match do_verify(device_path, filename) {
-            Ok(count) => println!("verified {} words", count),
-            Err(e) => println!("verification failed: {}", e.message)
+            Ok(count) => eprintln!("verified {} words", count),
+            Err(e) => eprintln!("verification failed: {}", e.message)
         }
     } else {
         let start_str = matches.value_of(start_key).unwrap();
         let start = match parse_word(start_str) {
             Ok(v) => v,
             Err(_) => {
-                println!("ERROR: invalid start address: {}", start_str);
+                eprintln!("ERROR: invalid start address: {}", start_str);
                 return
             }
         };
@@ -283,13 +291,13 @@ fn main() {
         let end = match parse_word(end_str) {
             Ok(v) => v,
             Err(_) => {
-                println!("ERROR: invalid end address: {}", end_str);
+                eprintln!("ERROR: invalid end address: {}", end_str);
                 return
             }
         };
         match do_read(device_path, filename, start, end) {
-            Ok(count) => println!("read {} words", count),
-            Err(e) => println!("read failed: {}", e.message)
+            Ok(count) => eprintln!("read {} words", count),
+            Err(e) => eprintln!("read failed: {}", e.message)
         }
     }
 

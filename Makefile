@@ -39,6 +39,9 @@ prog-high-%: examples/%.high.hex
 prog-%: $(PROG) examples/%.q2p
 	$(PROG) write -f examples/$*.q2p
 
+verify-%: $(PROG) examples/%.q2p
+	$(PROG) verify -f examples/$*.q2p
+
 $(ASM): q2asm/src/*.rs
 	(cd q2asm && cargo build)
 
