@@ -152,13 +152,13 @@ menu_last_item:
 
 menu_items:
   ;      0123456789ABCDEF
-  .dw   "< > Snake "
-  .dw   0
-  .dw   snake
-  ;      0123456789ABCDEF
   .dw   "< > Life  "
   .dw   0
   .dw   life
+  ;      0123456789ABCDEF
+  .dw   "< > Snake "
+  .dw   0
+  .dw   snake
   ;      0123456789ABCDEF
   .dw   "< > Maze  "
   .dw   0
@@ -251,23 +251,9 @@ lcd_raster_row_loop:
   sta   =x0
   lda   =x6
   jfc   lcd_raster_outer_loop
-  lea   lcd_raster_char_cmds
-  sta   =x0
-  lda   =x7
-  jmp   @$+1
-  .dw   lcd_puts
+  jmp   @=x7
 lcd_raster_addr_cmd:
   .dw   0x140                   ; CGRAM address 0
-lcd_raster_char_cmds:
-  .dw   0x180                               ; DDRAM address 0 (first line)
-  .dw   0x20, 0x20, 0x20, 0x20, 0x20, 0x20
-  .dw   0x08, 0x0A, 0x0C, 0x0E
-  .dw   0x20, 0x20, 0x20, 0x20, 0x20, 0x20
-  .dw   0x1C0                               ; DDRAM address 40 (second line)
-  .dw   0x20, 0x20, 0x20, 0x20, 0x20, 0x20
-  .dw   0x09, 0x0B, 0x0D, 0x0F
-  .dw   0x20, 0x20, 0x20, 0x20, 0x20, 0x20
-  .dw   0
 
 ; Write int in x0
 ; Writes 4 chars
@@ -337,17 +323,6 @@ waitkey_loop2:
   add   @=neg1
   jfc   waitkey_loop2
   jmp   @=x1
-
-; Delay
-; Destroys x0
-delay:
-  sta   =x0
-; lea   =0
-  lda   =neg1
-delay_loop:
-  add   =one
-  jfc   delay_loop
-  jmp   @=x0
 
   .align 128
 

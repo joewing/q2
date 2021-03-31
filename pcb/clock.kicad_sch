@@ -809,7 +809,7 @@
     (uuid b47681c3-456a-4746-aa00-00ead1ba9659)
   )
 
-  (text "Fast clock should be about 100 kHz\nSlow clock should be about 100 Hz"
+  (text "Fast clock should be about 80 kHz\nSlow clock should be about 80 Hz"
     (at 31.75 102.87 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid d691885f-3c98-4b07-a071-f449d04782d1)
@@ -1638,10 +1638,13 @@
     (uuid 4a0b3cc7-16d7-4dcb-acfb-22f42edcf8d0)
     (property "Reference" "SW1" (id 0) (at 48.26 68.0782 0))
     (property "Value" "Speed" (id 1) (at 48.26 70.377 0))
-    (property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical" (id 2) (at 48.26 76.2 0)
+    (property "Footprint" "Button_Switch_SMD:SW_TA3524S-A2" (id 2) (at 48.26 76.2 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "" (id 3) (at 48.26 76.2 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "LCSC" "C514017" (id 4) (at 48.26 76.2 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid ffed1d9e-110e-45a1-9128-a172480fa3ba))

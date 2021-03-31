@@ -8,6 +8,8 @@
 maze:
   sta   =x11
 
+maze_gen:
+
   lda   maze_clear_cmd
   sta   @=neg1
   lea   maze_gen_str
@@ -91,11 +93,26 @@ maze_init_tb:
   jmp   @$+1
   .dw   lcd_raster
 
+  lea   maze_str
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   lcd_puts
+
   ; Wait for a key press.
+maze_wait_loop:
   lea   $+3
   jmp   @$+1
   .dw   waitkey
 
+  shr   =x0
+  sta   =x0
+  jfc   maze_not_gen
+  jmp   maze_gen
+maze_not_gen:
+  shr   =x0
+  jfc   maze_wait_loop
+  
   ; Return
   jmp   @=x11
 
@@ -118,6 +135,14 @@ maze_ptr:
   .dw   0x080
 maze_stack:
   .dw   0x7FF
+maze_str:
+  .dw   0x180                               ; DDRAM address 0 (first line)
+  .dw   0x08, 0x0A, 0x0C, 0x0E
+  .dw   "  0:New     "
+  .dw   0x1C0                               ; DDRAM address 40 (second line)
+  .dw   0x09, 0x0B, 0x0D, 0x0F
+  .dw   "  1:Exit    "
+  .dw   0
 
   .align  128
 ; Carve maze at x5, using x9 as a call stack

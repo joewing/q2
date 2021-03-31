@@ -876,13 +876,13 @@
     (uuid 80fd103e-a257-4e89-9277-874011b701fd)
   )
 
-  (text "The max delay from SC through\nthe control lines is based on the\nmax delay through the state\ndecoder plus the delay through\nthe control logic.\nThis gives us 10.1+1.7=11.7us.\n\nAssuming 12us, we should be able\nto run the clock at 80 kHz safely."
-    (at 22.86 251.46 0)
+  (text "The max delay from SC through\nthe control lines is based on the\nmax delay through the state\ndecoder plus the delay through\nthe control logic.\nThis gives us for signals depending on\n~STATE_EXEC~ we get: 10.9+1.3=12.2us\nfor others we get: 9.4+1.9=11.3us.\n\nAssuming 12us, we should be able\nto run the clock at 80 kHz safely\nand likely higher."
+    (at 22.86 255.905 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid ce4289b1-2a4e-4517-ad1b-1b4ed54ba1aa)
   )
   (text "Capacitive load on DBUS is limited to 5 gates.\nAt 50pF per gate, this gives 1.7us delay from\nDBUS valid to write.\nSRAM is 70ns from ABUS valid to DBUS valid\n(we round to 0.1us)."
-    (at 22.86 262.89 0)
+    (at 22.86 267.335 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid f1f6888c-9699-41f4-9140-512b1ba10748)
   )
@@ -934,7 +934,7 @@
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid a312e2ad-ba26-4582-b053-217c5d87aaae)
   )
-  (text "Relative (Z=0)\nFanout to 6 gates (2us)" (at 170.18 30.48 0)
+  (text "Relative (Z=0)\nFanout to 6 gates (0.2us)" (at 170.18 30.48 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 65624017-90ee-4282-bcac-0acacd9f9f5d)
   )
@@ -952,7 +952,8 @@
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid d9561b4d-a3ec-48cc-a6e3-85eda0b94ab8)
   )
-  (text "Zero-Page (Z=1).\nFanout to 5 gates (1.7us)" (at 234.95 29.21 0)
+  (text "Zero-Page (Z=1).\nFanout to 5 gates (0.2+1.7=1.9us)"
+    (at 234.95 29.21 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid ff2aeaea-6096-478d-a5bb-6f31e029d60c)
   )
@@ -2214,7 +2215,7 @@
     (property "Reference" "R42" (id 0) (at 164.338 28.0416 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Value" "10k" (id 1) (at 164.338 30.353 0)
+    (property "Value" "1k" (id 1) (at 164.338 30.353 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Footprint" "Resistor_SMD:R_0805_2012Metric" (id 2) (at 160.782 29.21 90)
@@ -2223,7 +2224,7 @@
     (property "Datasheet" "~" (id 3) (at 162.56 29.21 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "LCSC" "C17414" (id 4) (at 162.56 29.21 0)
+    (property "LCSC" "C17513" (id 4) (at 162.56 29.21 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 71544810-38b0-4323-b210-41422a1ef8c4))

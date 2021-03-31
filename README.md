@@ -56,29 +56,6 @@ This gives the following:
 
 So we get a worst-case draw of ~379mA or ~1.9 Watts.
 
-## Clock Frequency Estimation
-
-Each FET gate has a worst-case capacitance of 50pF and Vth of 2.5V.
-We use either 1k or 10k pull-up resistors depending on how fast
-the gate needs to go. For a 10k pull-up we get:
-
-  t10k = n ln(2) / 2000000 seconds
-
-or:
-
-  t10k = n ln(2) / 2 us
-
-where n is the fanout. And for a 1k pull-up:
-
-  t1k = n ln(2) / 20 us
-
-The delay is limited to 10us for all paths to allow a clock frequency
-of 100 kHz. This allows all resistors in flip-flops to be 10k. Some
-resistors in the control logic need to be 1k to keep the delay under 10us.
-
-To get a higher frequency and maintain stability would require smaller
-pull-ups, which would increase power consumption.
-
 ## Sections
 
 ### Slice
@@ -315,24 +292,26 @@ Here is a possible layout:
 
   Addr  | Name  | Description
   ----- | ----- | ------------------------------
-  000   | =x0   | Temporary
-  001   | =x1   | Temporary
-  002   | =x2   | Temporary
-  003   | =x3   | Temporary
-  004   | =x4   | Temporary
-  005   | =x5   | Temporary
-  006   | =x6   | Temporary
-  007   | =x7   | Tempoarary
-  008   | =x8   | Tempoarary
-  009   | =x9   | Tempoarary
-  00A   | =x10  | Tempoarary
-  00B   | =x11  | Tempoarary
-  00C   | =x12  | Tempoarary
-  00D   | =x13  | Tempoarary
-  00E   | =x14  | Tempoarary
-  00F   | =x15  | Tempoarary
-  010   | =zero | 0
-  011   | =one  | 1
-  012   | =two  | 2
-  013   | =neg1 | -1
+  000   |       | jmp @$+1 (jump to entry point)
+  001   | =init | Entry point 
+  002   | =x0   | Temporary
+  003   | =x1   | Temporary
+  004   | =x2   | Temporary
+  005   | =x3   | Temporary
+  006   | =x4   | Temporary
+  007   | =x5   | Temporary
+  008   | =x6   | Temporary
+  009   | =x7   | Tempoarary
+  00A   | =x8   | Tempoarary
+  00B   | =x9   | Tempoarary
+  00C   | =x10  | Tempoarary
+  00D   | =x11  | Tempoarary
+  00E   | =x12  | Tempoarary
+  00F   | =x13  | Tempoarary
+  010   | =x14  | Tempoarary
+  011   | =x15  | Tempoarary
+  012   | =zero | 0
+  013   | =one  | 1
+  014   | =two  | 2
+  015   | =neg1 | -1
 

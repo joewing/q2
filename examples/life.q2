@@ -6,16 +6,19 @@
 
   .align    128
 
-life_clear_cmd:
-  .dw   0x101
 life_gen_str:
-  .dw   "Initializing..."
+  .dw   0x180                               ; DDRAM address 0 (first line)
+  .dw   "---- "
+  .dw   0x08, 0x0A, 0x0C, 0x0E
+  .dw   " 0:New "
+  .dw   0x1C0                               ; DDRAM address 40 (second line)
+  .dw   "---- "
+  .dw   0x09, 0x0B, 0x0D, 0x0F
+  .dw   " 1:Exit"
   .dw   0
 
 life:
 
-  lda   life_clear_cmd
-  sta   @=neg1
   lea   life_gen_str
   sta   =x0
   lea   $+3
@@ -125,6 +128,21 @@ life_loop:
   jmp   @$+1
   .dw   lcd_raster
 
+  ; Run a generation
+  jmp   @$+1
+  .dw   life_generation
+
+; Run a generation
+  .align  128
+
+life_line1:
+  .dw   0x180
+life_line2:
+  .dw   0x1c0
+
+life_generation:
+  sta   =x0
+
   ; Show and increment generation.
   lda   life_line1
   sta   @=neg1
@@ -144,33 +162,6 @@ life_loop:
   lea   $+3
   jmp   @$+1
   .dw   putint
-
-  ; Show help
-  lea   life_help
-  sta   =x0
-  lea   $+3
-  jmp   @$+1
-  .dw   lcd_puts
-
-  ; Run a generation
-  jmp   @$+1
-  .dw   life_generation
-
-life_line1:
-  .dw   0x180
-life_line2:
-  .dw   0x1c0
-life_help:
-  .dw   0x18b
-  .dw   "0:Rst"
-  .dw   0x1cb
-  .dw   "1:Hlt"
-  .dw   0
-
-; Run a generation
-  .align  128
-life_generation:
-  sta   =x0
 
   lea   =0
   sta   =x9

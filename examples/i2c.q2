@@ -1,0 +1,143 @@
+
+.def I2C_EN   0x800
+.def I2C_SCL  0x400
+.def I2C_SDA  0x200
+
+  .align 128
+
+; Note I2C signals are inverted.
+i2c_zero:
+  .dw   I2C_EN | I2C_SDA | I2C_SCL
+i2c_zero_clk:
+  .dw   I2C_EN | I2C_SDA
+i2c_one:
+  .dw   I2C_EN | I2C_SCL
+i2c_one_clk:
+  .dw   I2C_EN
+i2c_input_mask:
+  .dw   ~I2C_SDA
+
+; Send I2C start
+; Take SDA low while SCL stays high.
+i2c_start:
+  sta   =x1
+  lda   i2c_one_clk   ; SDA=1, CLK=1
+  sta   @=neg1
+  lda   i2c_zero_clk  ; SDA=0, CLK=1
+  sta   @=neg1
+  jmp   @=x1
+
+; Send I2C stop
+; Take SDA high while SCL stays high.
+i2c_stop:
+  sta   =x1
+  lda   i2c_zero_clk    ; SDA=0, CLK=1
+  sta   @=neg1
+  lda   i2c_one_clk     ; SDA=1, CLK=1
+  sta   @=neg1
+  jmp   @=x1
+
+; Write byte in x0.
+; Destroys x0-x2
+i2c_write:
+  sta   =x1
+
+  ; Shift out high 4 bits
+  lda   =x0
+  add   =x0
+  sta   =x0   ; x2
+  add   =x0
+  sta   =x0   ; x4
+  add   =x0
+  sta   =x0   ; x8
+  add   =x0
+  sta   =x0   ; x16
+
+  lea   =8
+i2c_write_loop:
+  add   =neg1
+  sta   =x2
+
+  lda   =x0
+  add   =x0
+  sta   =x0
+  jfc   i2c_write_zero
+
+  ; Write 1
+  lda   i2c_one
+  sta   @=neg1
+  lda   i2c_one_clk
+  sta   @=neg1
+  lda   i2c_one
+
+  jmp   i2c_write_cont
+i2c_write_zero:
+
+  ; Write 0
+  lda   i2c_zero
+  sta   @=neg1
+  lda   i2c_zero_clk
+  sta   @=neg1
+  lda   i2c_zero
+
+i2c_write_cont:
+  sta   @=neg1
+  lda   =x2
+  jfc   i2c_write_loop
+
+  ; Acknowledge
+  lda   i2c_one
+  sta   @=neg1
+  lda   i2c_one_clk
+  sta   @=neg1
+  lda   i2c_one
+  sta   @=neg1
+
+  jmp   @=x1
+
+; Read a byte into x0
+i2c_read:
+  sta   =x1
+  lea   =0
+  sta   =x0
+
+  lea   =8
+i2c_read_loop:
+  add   =neg1
+  sta   =x2
+
+  lda   i2c_one
+  sta   @=neg1
+  lda   i2c_one_clk
+  sta   @=neg1
+
+  lda   @=neg1
+  nor   i2c_input_mask
+  lea   =1
+  jfc   i2c_read_set
+  lea   =0
+i2c_read_set:
+  add   =x0
+  add   =x0
+  sta   =x0
+
+  lda   i2c_one
+  sta   @=neg1
+
+  lda   =x0
+  add   =x0
+  sta   =x0
+
+  lda   =x2
+  jfc   i2c_read_loop
+
+  ; Acknowledge
+  lda   i2c_one
+  sta   @=neg1
+  lda   i2c_one_clk
+  sta   @=neg1
+  lda   i2c_one
+  sta   @=neg1
+
+  jmp   @=x1
+
