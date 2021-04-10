@@ -1,0 +1,156 @@
+
+; Raster is 20x16 = 320 words
+.def  raster_buffer   0x100
+
+  .align  128
+
+; XOR pixel at x0 (0-19), x7 (0-15)
+; Returns x1 old mask (set if pixel was set, 0 if pixel was not set).
+; Destroys x0-x7
+; Each character is 5 pixels wide and 8 pixels tall.
+; We store each character as 8 words (for a total of 64 words).
+; Display is organized as:
+;   0 2 4 6
+;   1 3 5 7
+; This means the offset of interest is:
+;   word = (x / 5) * 16 + y
+; The bit of the character of interest is:
+;   bit = x % 5
+raster_xor:
+  sta   =x6
+  lea   =5
+  sta   =x1
+  lea   $+3
+  jmp   @$+1
+  .dw   div
+  lda   =x2   ; x2 = x / 5, x3 = x % 5
+  add   =x2
+  sta   =x2   ; (x / 5) * 2
+  add   =x2   ; (x / 5) * 4
+  add   =x2   ; (x / 5) * 6
+  add   =x2   ; (x / 5) * 8
+  sta   =x2
+  add   =x2   ; (x / 5) * 16
+  add   =x7
+  sta   =x7   ; x7 = word offset
+  add   raster_buffer_ptr
+  sta   =x4   ; x4 -> byte to modify
+  lea   raster_masks
+  add   =x3
+  sta   =x3
+  lda   @=x3
+  sta   =x2
+  nor   =x2
+  sta   =x3   ; x2 = mask, x3 = ~mask
+  lda   @=x4
+  sta   =x0   ; x0 = current
+  nor   =x0
+  sta   =x1   ; x0 = current, x1 = ~current
+  nor   =x3
+  sta   =x1   ; x1 = ~(~mask | ~current) = mask & current
+  lda   =x2
+  nor   =x0   ; ~(mask | current)
+  nor   =x1   ; mask ^ current
+  sta   @=x4
+  lda   raster_cgram_ptr
+  add   =x7
+  sta   @=neg1    ; Set CGRAM address
+  lda   @=x4
+  sta   @=neg1    ; Update CGRAM
+  jmp   @=x6
+raster_masks:
+  .dw   0x010   ; 4
+  .dw   0x008   ; 3
+  .dw   0x004   ; 2
+  .dw   0x002   ; 1
+  .dw   0x001   ; 0
+raster_buffer_ptr:
+  .dw   raster_buffer
+raster_cgram_ptr:
+  .dw   0x140   ; CGRAM address 0
+
+; Clear raster.
+; Destroys x0 - x2
+raster_clear:
+  sta   =x0
+  lda   raster_buffer_ptr
+  sta   =x1
+  lda   raster_cgram_ptr
+  sta   @=neg1
+  lea   =64   ; Need to clear 64 words
+raster_clear_loop:
+  add   =neg1
+  sta   =x2
+  lea   =0
+  sta   @=x1
+  sta   @=neg1
+  lea   =1
+  add   =x1
+  sta   =x1
+  lda   =x2
+  jfc   raster_clear_loop
+  jmp   @=x0
+
+; Render the raster image on the LCD.
+; Raster is a 20x16 pixel image.
+; Input is left-to-right, top-to-bottom 320 words.
+; Zero is off, one is on. 
+; This uses the 8 custom LCD characters to
+; render the image in the left 4 characters.
+; Organization is:
+;   0 2 4 6
+;   1 3 5 7
+; Destroys x0, x1, x2, x3, x4, x5, x6, x7
+raster_put:
+  sta   =x7
+  lda   raster_put_addr_cmd
+  sta   @=neg1          ; First character to update.
+  lda   raster_buffer_ptr
+  sta   =x0
+  lea   =4              ; 4 characters per row
+raster_put_outer_loop:
+  add   =neg1
+  sta   =x6
+  lda   =x0
+  sta   =x3
+  lea   =2              ; 2 characters per column.
+raster_put_col_loop:
+  add   =neg1
+  sta   =x5
+  lea   =8              ; 8 bytes per character
+raster_put_char_loop:
+  add   =neg1
+  sta   =x4
+  lea   =0
+  sta   =x2
+  lea   =5              ; 5 bits per character.
+raster_put_row_loop:
+  add   =neg1
+  sta   =x1
+  lda   =x2
+  add   =x2
+  add   @=x3
+  sta   =x2
+  lea   =1             ; Next bit
+  add   =x3
+  sta   =x3
+  lda   =x1
+  jfc   raster_put_row_loop
+  lea   =20-5 ; Next row
+  add   =x3
+  sta   =x3
+  lda   =x2
+  sta   @=neg1
+  lda   =x4
+  jfc   raster_put_char_loop
+  lda   =x5
+  jfc   raster_put_col_loop
+  lea   =5              ; 5 columns per character
+  add   =x0
+  sta   =x0
+  lda   =x6
+  jfc   raster_put_outer_loop
+  jmp   @=x7
+raster_put_addr_cmd:
+  .dw   0x140                   ; CGRAM address 0
+

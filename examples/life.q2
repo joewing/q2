@@ -1,7 +1,7 @@
 
 .def  life_width    20
 .def  life_height   16
-.def  life_array1   0x200
+.def  life_array1   raster_buffer
 .def  life_array2   life_array1 + life_width * life_height
 
   .align    128
@@ -23,7 +23,7 @@ life:
   sta   =x0
   lea   $+3
   jmp   @$+1
-  .dw   lcd_puts
+  .dw   puts
 
   ; Use x8 to track generation
   ; Use x9 to track cells
@@ -122,11 +122,9 @@ life_last_row_offset:
 life_loop:
 
   ; Show the board.
-  lda   life_init_array1_ptr
-  sta   =x0
   lea   $+3
   jmp   @$+1
-  .dw   lcd_raster
+  .dw   raster_put
 
   ; Run a generation
   jmp   @$+1

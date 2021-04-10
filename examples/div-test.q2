@@ -1,0 +1,26 @@
+; Test program for div.
+
+.include examples/zeropage.q2
+
+  .org    0x800
+
+  lda   numerator
+  sta   =x0
+  lda   denominator
+  sta   =x1
+  lea   $+3
+  jmp   @$+1
+  .dw   div
+  lda   =x2
+  sta   @=neg1
+  lda   =x3
+  sta   @=neg1
+  jmp   $
+
+numerator:
+  .dw   53
+denominator:
+  .dw   7
+
+.include examples/div.q2
+

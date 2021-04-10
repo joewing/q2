@@ -1,49 +1,4 @@
 
-zero:
-  .dw   0
-one:
-  .dw   1
-neg1:
-  .dw   -1
-x0:
-  .dw   0
-x1:
-  .dw   0
-x2:
-  .dw   0
-x3:
-  .dw   0
-x4:
-  .dw   0
-x5:
-  .dw   0
-output_ptr:
-  .dw   -1
-
-  .org  0x800
-
-init:
-  lda   numerator
-  sta   =x0
-  lda   denominator
-  sta   =x1
-  lea   $+2
-  jmp   @div_ptr
-  lda   =x2
-  sta   @=output_ptr
-  lda   =x3
-  sta   @=output_ptr
-  jmp   $
-
-numerator:
-  .dw   53
-denominator:
-  .dw   7
-div_ptr:
-  .dw   div
-
-  .org 256
-
 ; Divide x2 = x0 / x1, remainder in x3
 div:
   sta   =x5

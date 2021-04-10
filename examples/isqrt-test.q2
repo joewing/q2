@@ -1,0 +1,19 @@
+
+.include examples/zeropage.q2
+
+  .org  0x800
+
+  lda   value
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   isqrt
+  lda   =x0
+  sta   @=neg1
+  jmp   $
+
+value:
+    .dw   2047
+
+.include examples/isqrt.q2
+

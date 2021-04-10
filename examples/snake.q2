@@ -10,11 +10,7 @@
 
 ; Snake data is an array of (x, y)
 ; Max length is 20x16 x2 = 640 = 0x280 words
-.def snake_data       0x100   ; to 0x37F
-
-; Snake display buffer.
-; Size is 20x16 = 320 = 0x140 words
-.def snake_display    0x400
+.def snake_data       0x300   ; to 0x57F
 
   .align  128
 
@@ -23,14 +19,14 @@ snake:
   ; Clear the buffer.
   lea   $+3
   jmp   @$+1
-  .dw   pixel_clear
+  .dw   raster_clear
 
   ; Draw the screen.
   lea   snake_text
   sta   =x0
   lea   snake_text_end
   jmp   @$+1
-  .dw   lcd_puts
+  .dw   puts
 snake_text:
   .dw   0x180   ; Line 1
   .dw   0x20, 0xFF, 0x08, 0x0A, 0x0C, 0x0E, 0xFF, 0x20
@@ -67,7 +63,7 @@ snake_text_end:
   sta   @=x8
   lea   $+3
   jmp   @$+1
-  .dw   pixel_xor
+  .dw   raster_xor
 
   ; Second position (head) is (6, 7)
   lea   =1
@@ -86,7 +82,7 @@ snake_text_end:
   sta   =snake_y
   lea   $+3
   jmp   @$+1
-  .dw   pixel_xor
+  .dw   raster_xor
 
   ; Start the game by placing food.
   jmp   @$+1
@@ -290,7 +286,7 @@ snake_shift:
   sta   @=x2
   lea   $+3
   jmp   @$+1
-  .dw   pixel_xor
+  .dw   raster_xor
 
   ; Decrement the tail index.
   lda   =snake_tail_index
@@ -315,7 +311,7 @@ snake_shift_save_tail:
   sta   =x7
   lea   $+3
   jmp   @$+1
-  .dw   pixel_xor
+  .dw   raster_xor
 
   ; Game over if x1 is non-zero
   lda   =x1
@@ -330,7 +326,7 @@ snake_game_over:
   sta   =x0
   lea   $+3
   jmp   @$+1
-  .dw   lcd_puts
+  .dw   puts
 
 snake_game_over_wait:
   lda   @=neg1
@@ -402,7 +398,7 @@ snake_put_food_loop:
   sta   =x0
   lea   $+3
   jmp   @$+1
-  .dw   pixel_xor
+  .dw   raster_xor
 
   ; If this position is already used, try again.
   ; Otherwise, go back to moving the snake.
@@ -419,99 +415,5 @@ snake_put_food_again:
   sta   =x0
   lea   snake_put_food_loop
   jmp   @$+1
-  .dw   pixel_xor
-
-  .align  128
-; XOR pixel at x0 (0-19), x7 (0-15)
-; Returns x1 old mask (set if pixel was set, 0 if pixel was not set).
-; Uses 0x400 as the pixel buffer.
-; Destroys x0-x7
-; Each character is 5 pixels wide and 8 pixels tall.
-; We store each character as 8 words (for a total of 64 words).
-; Display is organized as:
-;   0 2 4 6
-;   1 3 5 7
-; This means the offset of interest is:
-;   word = (x / 5) * 16 + y
-; The bit of the character of interest is:
-;   bit = x % 5
-pixel_xor:
-  sta   =x6
-  lea   =5
-  sta   =x1
-  lea   $+3
-  jmp   @$+1
-  .dw   div
-  lda   =x2   ; x2 = x / 5, x3 = x % 5
-  add   =x2
-  sta   =x2   ; (x / 5) * 2
-  add   =x2   ; (x / 5) * 4
-  add   =x2   ; (x / 5) * 6
-  add   =x2   ; (x / 5) * 8
-  sta   =x2
-  add   =x2   ; (x / 5) * 16
-  add   =x7
-  sta   =x7   ; x7 = word offset
-  add   pixel_buffer_ptr
-  sta   =x4   ; x4 -> byte to modify
-  lea   pixel_masks
-  add   =x3
-  sta   =x3
-  lda   @=x3
-  sta   =x2
-  nor   =x2
-  sta   =x3   ; x2 = mask, x3 = ~mask
-
-  lda   @=x4
-  sta   =x0   ; x0 = current
-  nor   =x0
-  sta   =x1   ; x0 = current, x1 = ~current
-
-  nor   =x3
-  sta   =x1   ; x1 = ~(~mask | ~current) = mask & current
-
-  lda   =x2
-  nor   =x0   ; ~(mask | current)
-  nor   =x1   ; mask ^ current
-
-  sta   @=x4
-
-  lda   pixel_cgram_ptr
-  add   =x7
-  sta   @=neg1    ; Set CGRAM address
-  lda   @=x4
-  sta   @=neg1    ; Update CGRAM
-  jmp   @=x6
-pixel_masks:
-  .dw   0x010   ; 4
-  .dw   0x008   ; 3
-  .dw   0x004   ; 2
-  .dw   0x002   ; 1
-  .dw   0x001   ; 0
-pixel_buffer_ptr:
-  .dw   0x400
-pixel_cgram_ptr:
-  .dw   0x140   ; CGRAM address 0
-
-; Clear pixel display.
-; Destroys x0 - x2
-pixel_clear:
-  sta   =x0
-  lda   pixel_buffer_ptr
-  sta   =x1
-  lda   pixel_cgram_ptr
-  sta   @=neg1
-  lea   =64   ; Need to clear 64 words
-pixel_clear_loop:
-  add   =neg1
-  sta   =x2
-  lea   =0
-  sta   @=x1
-  sta   @=neg1
-  lea   =1
-  add   =x1
-  sta   =x1
-  lda   =x2
-  jfc   pixel_clear_loop
-  jmp   @=x0
+  .dw   raster_xor
 

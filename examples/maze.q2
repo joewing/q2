@@ -16,7 +16,7 @@ maze_gen:
   sta   =x0
   lea   $+3
   jmp   @$+1
-  .dw   lcd_puts
+  .dw   puts
 
   ; Fill the maze array with 1s (walls).
   lda   maze_ptr
@@ -87,17 +87,15 @@ maze_init_tb:
   sta   @=x0
 
   ; Display the maze
-  lda   maze_ptr
-  sta   =x0
   lea   $+3
   jmp   @$+1
-  .dw   lcd_raster
+  .dw   raster_put
 
   lea   maze_str
   sta   =x0
   lea   $+3
   jmp   @$+1
-  .dw   lcd_puts
+  .dw   puts
 
   ; Wait for a key press.
 maze_wait_loop:
@@ -124,15 +122,15 @@ maze_gen_str:
 maze_size:
   .dw   maze_width * maze_height
 maze_bottom:
-  .dw   0x080 + maze_width * maze_height
+  .dw   raster_buffer + maze_width * maze_height
 maze_start:
-  .dw   0x080 + (maze_width * 2) + 2
+  .dw   raster_buffer + (maze_width * 2) + 2
 maze_entry:
-  .dw   0x080 + maze_width + 2
+  .dw   raster_buffer + maze_width + 2
 maze_exit:
-  .dw   0x080 + (maze_width * (maze_height - 1)) + maze_width - 2
+  .dw   raster_buffer + (maze_width * (maze_height - 1)) + maze_width - 2
 maze_ptr:
-  .dw   0x080
+  .dw   raster_buffer
 maze_stack:
   .dw   0x7FF
 maze_str:
@@ -266,5 +264,5 @@ maze_offsets_ptr:
 maze_offset_mask:
   .dw   0xFFC
 maze_ptr_carve:
-  .dw   0x080
+  .dw   raster_buffer
 

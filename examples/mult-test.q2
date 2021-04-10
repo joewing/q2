@@ -1,0 +1,25 @@
+; mult function test
+
+.include  examples/zeropage.q2
+
+  .org  0x800
+
+  lda   value1
+  sta   =x0
+  lda   value2
+  sta   =x1
+  lea   $+3
+  jmp   @$+1
+  .dw   mult
+  lda   =x2
+  sta   @=neg1
+  jmp   $
+
+value1:
+  .dw   35
+value2:
+  .dw   15
+
+.include examples/mult.q2
+
+

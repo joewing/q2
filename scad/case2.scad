@@ -8,14 +8,12 @@ screw_radius = 1.7;
 screw_head_radius = 2.8;
 screw_head_height = 3;
 screw_offset = 3.5;
-standoff_height = 10;
+standoff_height = 8;
 standoff_radius = screw_head_radius * 1.6;
-
-interlock_width = 20;
 
 case_width = board_width + (wall_width + tol) * 2;
 case_height = board_height + (wall_width + tol) * 2;
-case_depth = 1.6 + standoff_height + wall_width;
+case_depth = 1.6 + standoff_height + wall_width + tol;
 midpoint = 140;
 
 standoff_positions = [
@@ -131,17 +129,15 @@ module back_half() {
     translate([0, 0, 0]) {
         intersection() {
             full_case();
-            translate([0, tol, 0]) {
-                difference() {
-                    translate([0, midpoint, 0]) {
-                        cube([case_width, case_height - midpoint, case_depth]);
-                    }
-                    interlock();
+            difference() {
+                translate([0, midpoint, 0]) {
+                    cube([case_width, case_height - midpoint, case_depth]);
                 }
+                interlock();
             }
         }
     }
 }
 
-front_half();
-//back_half();
+//front_half();
+back_half();

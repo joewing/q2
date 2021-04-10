@@ -1,0 +1,42 @@
+
+.include examples/zeropage.q2
+
+  .org  0x800
+
+  lda   program_ptr
+  sta   =x0
+  lda   data_ptr
+  sta   =x1
+  lea   $+3
+  jmp   @$+1
+  .dw   bfrun
+  jmp   $
+
+program_ptr:
+  .dw   program
+data_ptr:
+  .dw   data
+
+  .align 128
+program:
+
+  ; Multiply
+;  .dw   "+++>++++<"
+;  .dw   "[>[->+.>+<<]>>[-<<+>>]<<<-]>>."
+
+  ; Square root
+  .dw   "+++++++++"
+  .dw   ">>>+<<<[->>+>-[<-]<[->>+.[-<++<+>>]<+<[->>+<<]<]<]"
+
+  .dw   0
+
+  .align 128
+data:
+  .dw   0
+  .dw   0
+  .dw   0
+  .dw   0
+  .dw   0
+  .dw   0
+
+.include examples/bf.q2

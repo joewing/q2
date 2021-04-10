@@ -1,7 +1,7 @@
 
 # Q2
 
-A 12-bit discrete transistor computer.
+A single-board 12-bit discrete transistor computer.
 
 This repo contains the following subdirectories:
   - hdl - A Verilog model and test bench for simulating Q2 programs.
@@ -11,117 +11,95 @@ This repo contains the following subdirectories:
   - examples - Q2 assembly language examples.
   - pcb - Schematics and PCB in KiCad
 
-## Frontpanel
+See [joewing.net/projects/q2](https://joewing.net/projects/q2) for
+more information.
 
-The frontpanel provides the main interface to the computer.
+## Requirements
 
-  - 12 address LEDs
-  - 12 data LEDs
-  - 12 toggle switches for input
-  - Buttons:
-    - Reset/Set Address
-    - Increment Address
-    - Deposit
-    - Start
-    - Stop
+### For software development:
 
-## Programmer Interface
+ * Rust - q2asm and q2prog are written in Rust.
+  Install instructions are available
+  [here](https://www.rust-lang.org/tools/install).
+  Note that rustup will also install cargo, which is required.
 
-A 40-pin connector provides an interface to the front-panel switches,
-deposit switch, reset switch, and data output. The pinout is designed
-to align with the GPIO pins of a Raspberry Pi so that the Pi can be
-used to both program and backup the Q2.
+### For programming:
 
-The pins are configured such that the original Raspberry Pi with a
-26-pin connector can be used for programming the Q2 (though it will
-not be able to read from the Q2).
+ * Raspberry Pi - The GPIO pins on a
+  [Raspberry Pi](https://www.raspberrypi.org) are used to
+  program the Q2. The exact model does not matter, though older
+  Pis with only 26 GPIO pins will not be able to read programs
+  back from the Q2. If desired, a Raspberry Pi can be used as
+  a complete development environment for the Q2.
 
-## Power Estimation
+### For simulation:
 
-Each LED is driven through a 4.7k resistor. Assuming a 5v power
-supply and 2v voltage drop through an LED, we can assume ~0.64mA
-for each 4.7k resistor.  Each gate uses a 10k, 1k, or a 100k resistor
-pull-up (depending on fanout and required speed), so we assume 0.5mA
-for each 10k resistor, 5mA for each 1k resistor, and 0.05mA for each
-100k resistor.  This provides an absolute worst case estimate since we
-don't expect all gates and LEDs to be active.
-We assume the RAM chips and the LCD use ~20mA each.
+ * iverilog - [Icarus Verilog](http://iverilog.icarus.com) can be
+  used to run the Verilog model.
 
-This gives the following:
-  - 71 4.7k resistors x 0.64 = 45mA
-  - 376 10k resistors x 0.5 = 188mA
-  - 19 100k resistors x 0.05 = 1mA
-  - 17 1k resistors x 5 = 85mA
-  - 2 RAMs, 1 LCD = 60mA
+### To make the hardware:
 
-So we get a worst-case draw of ~379mA or ~1.9 Watts.
+ * OpenSCAD - The 3D model for the case is written in
+  [OpenSCAD](http://www.openscad.org). To print the case you
+  will also need a 3D printer and the necessary slicer program.
+ * KiCad - The PCB and schematics are in
+  [KiCad](https://kicad.org).
 
-## Sections
+## q2asm
 
-### Slice
+q2asm is the assembler for Q2 programs. It is built using 'cargo build'
+in the q2asm directory.
 
-The registers are divided into 12 slices each consisting of
-4 flip-flops. Each slice contains one bit of the A register
-(accumulator), one bit of X register (operand), one bit of
-the P register (program counter), and one bit of the state
-register. Note that only 10 bits are used for state:
-one for the flag register, four for the state machine,
-one for the clock divider, and four for the opcode. We don't
-need to save the zero-page bit because it is only used during
-the fetch state.
-
-### ALU
-
-The ALU is bit-serial, supporting the following operations:
-
-  - 00 - Load
-  - 01 - NOR
-  - 10 - Add
-  - 11 - Shift right
-
-All writes to the A register happen through the ALU, shifting
-into the most significant bit.
-
-### Clock
-
-A two phase, non-overlapping clock is generated using
-a relaxation oscillator (CLK signal) tied to a positive
-edge-triggered flip-flop. Two NOR gates are used to
-generate the phases.
-The output of the flip-flop is Q:
+The Makefile will take care of assembling programs in the examples
+directory automatically:
 
 ```
-  WS = ~(Q | CLK)
-  SC = ~(~Q | CLK)
+make examples/hello.lst
 ```
 
-When not running, CLK is high. At reset Q is set to 0.
-This means that on reset we have CLK=1 and Q=0. Thus,
-the starting sequence looks like this:
+This will generate the listing file for examples/hello.q2 as
+examples/hello.lst.
 
-  RUN | RST | CLK | Q | WS | SC | Notes
-  --- | --- | --- | - | -- | -- | --------------------------------
-   0  |  1  |  1  | 0 |  0 |  0 | Reset button pressed
-   0  |  0  |  1  | 0 |  0 |  0 | Reset button released
-   1  |  0  |  0  | 0 |  1 |  0 | Run button pressed (and latched)
-   1  |  0  |  1  | 1 |  0 |  0 |
-   1  |  0  |  0  | 1 |  0 |  1 |
-   1  |  0  |  1  | 0 |  0 |  0 |
-   1  |  0  |  0  | 0 |  1 |  0 |
+## q2prog
 
-## Registers
+q2prog is run on a Raspberry Pi to program the Q2.
+It is built using 'cargo build' in the q2prog directory.
 
-  Name  | Size  | Description
-  ----- | ----- | ----------------
-  A     | 12    | Accumulator
-  P     | 12    | Program counter
-  X     | 12    | Operand
-  O     | 4     | Opcode
-  F     | 1     | Flag
-  S     | 4     | State
-  C     | 1     | Clock divider
+To program the Q2, connect a 40-pin connector to both the GPIO pins
+of the Raspberry Pi and the Q2 (be sure the pins line up correctly).
+Make sure all input switches on the Q2 are "off". Some of the data LEDs
+will glow, but that is just due to pull-downs on some of the GPIO pins.
 
-## Instructions
+To write a program (examples/hello.q2) to the Q2 (this will also build
+examples/hello.q2p if necessary):
+
+```
+make prog-hello
+```
+
+To verify that the program was correctly written:
+
+```
+make verify-hello
+```
+
+Note that if q2prog is killed, the Raspberry Pi will hold the switches
+in some state that is likely not zero. This means you will either
+need to disconnect the Raspberry Pi or run q2prog to completion before
+using the Q2.
+
+## Simulation
+
+Simulation of Q2 programs can be performed using the Verilog model.
+The model reads in "test.hex" and runs the simulation outputting
+a simulated 16x2 LCD (characters only) every time it is updated.
+
+For convenience, the Makefile will take care of setting everything
+up. Simply place the program to be simulated in the examples
+directory and run 'make sim-name'. This will assemble and
+simulate 'examples/name.q2'.
+
+## Instruction Set
 
 All instructions are 1 word with the following format
 
@@ -301,15 +279,15 @@ Here is a possible layout:
   006   | =x4   | Temporary
   007   | =x5   | Temporary
   008   | =x6   | Temporary
-  009   | =x7   | Tempoarary
-  00A   | =x8   | Tempoarary
-  00B   | =x9   | Tempoarary
-  00C   | =x10  | Tempoarary
-  00D   | =x11  | Tempoarary
-  00E   | =x12  | Tempoarary
-  00F   | =x13  | Tempoarary
-  010   | =x14  | Tempoarary
-  011   | =x15  | Tempoarary
+  009   | =x7   | Temporary
+  00A   | =x8   | Temporary
+  00B   | =x9   | Temporary
+  00C   | =x10  | Temporary
+  00D   | =x11  | Temporary
+  00E   | =x12  | Temporary
+  00F   | =x13  | Temporary
+  010   | =x14  | Temporary
+  011   | =x15  | Temporary
   012   | =zero | 0
   013   | =one  | 1
   014   | =two  | 2

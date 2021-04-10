@@ -1,0 +1,26 @@
+
+.include examples/zeropage.q2
+
+  .org  0x800
+
+  lda   input1
+  sta   =x0
+  lda   input2
+  sta   =x1
+
+  lea   $+3
+  jmp   @$+1
+  .dw   gcd
+
+  lda   =x0
+  sta   @=neg1
+
+  jmp   $
+
+input1:
+  .dw   252
+input2:
+  .dw   105
+
+.include examples/gcd.q2
+

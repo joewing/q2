@@ -1,35 +1,4 @@
 
-  jmp   @=1
-  .dw   init
-x0:
-  .dw   0
-x1:
-  .dw   0
-x2:
-  .dw   0
-x3:
-  .dw   0
-neg1:
-  .dw   -1
-
-  .org 0x800
-
-init:
-  lda   value1
-  sta   =x0
-  lda   value2
-  sta   =x1
-  lea   $+2
-  jmp   mult
-  lda   =x2
-  sta   @=neg1
-  jmp   $
-
-value1:
-  .dw   35
-value2:
-  .dw   15
-
 ; Multiply x2 = x0 * x1
 ; Destroys x0, x1, x2, x3
 mult:

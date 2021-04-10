@@ -1,22 +1,4 @@
 
-.def  x0    2
-.def  x1    3
-.def  x2    4
-.def  x3    5
-
-    .org    0x800
-
-  lda   value
-  sta   =x0
-  lea   $+2
-  jmp   isqrt
-  lda   =x0
-  sta   @neg1
-  jmp   $
-
-value:
-    .dw   2047
-
 ; Compute the integer square root of =x0
 ; Returns the result in =x0.
 ; Destroys =x0, =x1, =x2, =x3
@@ -27,12 +9,12 @@ isqrt:
   lea   =3
   sta   =x2       ; x2 = 3
 isqrt_loop:
-  lda   =x0
-  nor   zero
+  lea   =0
+  nor   =x0
   add   =x1
   jfc   isqrt_cont  ; if x0 >= x1 continue
   shr   =x2         ; return x0 = (x2 / 2) - 1
-  add   neg1
+  add   =neg1
   sta   =x0
   jmp   @=x3
 isqrt_cont:
@@ -43,8 +25,4 @@ isqrt_cont:
   add   =x2
   sta   =x2   ; x2 += 2
   jmp   isqrt_loop
-neg1:
-  .dw   -1
-zero:
-  .dw   0
 

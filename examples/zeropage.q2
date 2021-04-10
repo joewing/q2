@@ -1,0 +1,33 @@
+; Zero page layout
+
+.def  x0      2
+.def  x1      3
+.def  x2      4
+.def  x3      5
+.def  x4      6
+.def  x5      7
+.def  x6      8
+.def  x7      9
+.def  x8      10
+.def  x9      11
+.def  x10     12
+.def  x11     13
+.def  x12     14
+.def  x13     15
+.def  x14     16
+.def  x15     17
+
+  .org  0
+  jmp   @$+1
+  .dw   0x800
+
+  .org  18
+zero:
+  .dw   0
+one:
+  .dw   1
+neg1:
+  .dw   -1
+rseed:
+  .dw   0
+

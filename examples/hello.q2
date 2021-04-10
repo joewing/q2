@@ -1,0 +1,28 @@
+
+.def  x0  0
+
+  .org  0x800
+
+  lea   cmds
+hello_loop:
+  sta   =x0
+  lda   @=x0
+  jfc   $+2
+  jmp   $     ; Halt when we hit 0
+
+  sta   @output
+  lea   =1
+  add   =x0
+  jmp   hello_loop
+output:
+  .dw   0xFFF
+
+
+cmds:
+  .dw   0x138   ; Function set (8-bits, 2-lines, 5x8)
+  .dw   0x10E   ; Display on, cursor on, blink off
+  .dw   0x106   ; Entry mode, increment, no shift
+  .dw   0x101   ; Clear screen
+  .dw   "Hello!"
+  .dw   0
+
