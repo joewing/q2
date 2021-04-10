@@ -8,7 +8,7 @@ module q2_tb;
   localparam SLOW_HZ = 100;
 
   reg clk = 1;
-  reg [11:0] sw = 12'h800;
+  reg [11:0] sw = 12'h000;
   wire [11:0] dbus;
   wire [11:0] abus;
   reg incp_sw = 0;
