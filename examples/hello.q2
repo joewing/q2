@@ -1,8 +1,4 @@
 
-.def  x0  0
-
-  .org  0x800
-
   lea   cmds
 hello_loop:
   sta   =x0
@@ -25,4 +21,7 @@ cmds:
   .dw   0x101   ; Clear screen
   .dw   "Hello!"
   .dw   0
+
+x0:
+  .dw 0
 

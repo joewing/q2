@@ -2,14 +2,14 @@
 `include "q2_control.v"
 `include "q2_alu.v"
 `include "q2_slice.v"
+`include "q2_ram.v"
+`include "q2_i2c.v"
+`include "q2_lcd.v"
+`include "q2_buttons.v"
 
 module q2(
   input wire clk,
   input wire [11:0] sw,
-  inout wire [11:0] dbus,
-  inout wire [11:0] abus,
-  output wire wrm,
-  output wire rdm,
   input wire incp_sw,
   input wire dep_sw,
   input wire start_sw,
@@ -17,6 +17,9 @@ module q2(
   input wire rst,
   output reg run
 );
+
+  wire [11:0] abus;
+  wire [11:0] dbus;
 
   // Control lines
   wire wro;
@@ -63,6 +66,41 @@ module q2(
     run = start_sw & ~stop_sw & ~halt;
   end
 
+  // Memory and I/O.
+  wire wrm;
+  wire io = &abus;
+  assign io_rd  = ~(~io | rda);
+  wire lcd_wr = ~(~wrm | dbus[11] | ~io);
+  wire i2c_wr = ~(~dbus[11] | ~wrm | ~io);
+  wire ram_ce = ~io;
+  wire rdm = ~rda;
+
+  q2_lcd lcd(
+    .wr(lcd_wr),
+    .dbus(dbus)
+  );
+
+  q2_i2c i2c(
+    .rst(rst),
+    .wr(i2c_wr),
+    .rd(io_rd),
+    .dbus(dbus)
+  );
+
+  q2_ram ram(
+    .ce(ram_ce),
+    .oe(rdm),
+    .we(wrm),
+    .abus(abus),
+    .dbus(dbus)
+  );
+
+  q2_buttons buttons(
+    .clk(clk),
+    .rd(io_rd),
+    .dbus(dbus)
+  );
+
   q2_control control(
     .x0(x[0]),
     .s0(s0),
@@ -94,7 +132,6 @@ module q2(
     .incp_clk(incp_clk),
     .rdp(rdp),
     .wrm(wrm),
-    .rdm(rdm),
     .wrf(wrf),
     .fout(f_in),
     .s2in(s2in)

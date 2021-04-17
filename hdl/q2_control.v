@@ -30,7 +30,6 @@ module q2_control(
   output wire incp_clk,
   output wire rdp,
   output wire wrm,
-  output wire rdm,
   output wire wrf,
   output wire fout,
   output wire s2in
@@ -47,7 +46,6 @@ module q2_control(
   assign rdp = state_fetch;
   assign rdx = ~state_fetch;
   assign rda = state_exec;
-  assign rdm = ~state_exec;
 
   assign wro = ~(~state_fetch | ~ws);
   assign wra = ~(~state_alu | ~ws);

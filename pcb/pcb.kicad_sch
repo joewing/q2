@@ -298,7 +298,6 @@
   )
 
   (junction (at 91.44 223.52) (diameter 0.9144) (color 0 0 0 0))
-  (junction (at 96.52 243.84) (diameter 0.9144) (color 0 0 0 0))
   (junction (at 99.06 240.03) (diameter 0.9144) (color 0 0 0 0))
 
   (no_connect (at 59.69 34.29) (uuid 618b7cd5-4d43-4736-8071-ed3938357a28))
@@ -457,7 +456,7 @@
     (stroke (width 0) (type solid) (color 0 0 0 0))
     (uuid f4c9d0d5-c251-4a01-9e12-7447df0969f0)
   )
-  (wire (pts (xy 87.63 243.84) (xy 96.52 243.84))
+  (wire (pts (xy 87.63 243.84) (xy 116.84 243.84))
     (stroke (width 0) (type solid) (color 0 0 0 0))
     (uuid e1eab841-464b-45f7-b638-c1cc39463567)
   )
@@ -472,18 +471,6 @@
   (wire (pts (xy 96.52 215.9) (xy 91.44 215.9))
     (stroke (width 0) (type solid) (color 0 0 0 0))
     (uuid 444aa1ba-8e6e-497b-9aef-0788fa74938e)
-  )
-  (wire (pts (xy 96.52 243.84) (xy 116.84 243.84))
-    (stroke (width 0) (type solid) (color 0 0 0 0))
-    (uuid e1eab841-464b-45f7-b638-c1cc39463567)
-  )
-  (wire (pts (xy 96.52 254) (xy 96.52 243.84))
-    (stroke (width 0) (type solid) (color 0 0 0 0))
-    (uuid 0b0e6966-3143-4019-9c26-50891b8e0a6c)
-  )
-  (wire (pts (xy 97.79 254) (xy 96.52 254))
-    (stroke (width 0) (type solid) (color 0 0 0 0))
-    (uuid 0b0e6966-3143-4019-9c26-50891b8e0a6c)
   )
   (wire (pts (xy 99.06 240.03) (xy 116.84 240.03))
     (stroke (width 0) (type solid) (color 0 0 0 0))
@@ -1137,13 +1124,6 @@
     (effects (font (size 1.27 1.27)) (justify left))
     (uuid 69d68d3d-be0c-47d4-a397-47a75037c920)
     (property "Intersheet References" "${INTERSHEET_REFS}" (id 0) (at 110.0728 215.8206 0)
-      (effects (font (size 1.27 1.27)) (justify left) hide)
-    )
-  )
-  (global_label "RDM" (shape input) (at 97.79 254 0)
-    (effects (font (size 1.27 1.27)) (justify left))
-    (uuid 7d548fc8-d100-4d52-ad87-20256342e45f)
-    (property "Intersheet References" "${INTERSHEET_REFS}" (id 0) (at 105.7185 253.9206 0)
       (effects (font (size 1.27 1.27)) (justify left) hide)
     )
   )
@@ -10874,14 +10854,20 @@
     (path "/b6cba801-f9e8-4397-ba60-79d2dfc4f2fd/2f979dae-2822-4643-a595-9e2d75ead060"
       (reference "#PWR01001") (unit 1) (value "VCC") (footprint "")
     )
+    (path "/b6cba801-f9e8-4397-ba60-79d2dfc4f2fd/6740322f-5024-4cc3-810f-c256a8592e07"
+      (reference "#PWR01004") (unit 1) (value "VCC") (footprint "")
+    )
     (path "/b6cba801-f9e8-4397-ba60-79d2dfc4f2fd/2045eb23-2259-456e-95eb-828685d40851"
       (reference "D91") (unit 1) (value "Blue") (footprint "LED_SMD:LED_0805_2012Metric")
     )
     (path "/b6cba801-f9e8-4397-ba60-79d2dfc4f2fd/8102127d-eb23-4263-a691-0968b83e431d"
       (reference "D92") (unit 1) (value "Blue") (footprint "LED_SMD:LED_0805_2012Metric")
     )
+    (path "/b6cba801-f9e8-4397-ba60-79d2dfc4f2fd/9427ccfc-13f0-4221-b649-e19e3ec665d3"
+      (reference "D93") (unit 1) (value "BAT43W") (footprint "Diode_SMD:D_SOD-123")
+    )
     (path "/b6cba801-f9e8-4397-ba60-79d2dfc4f2fd/084ccc96-c10d-4d06-b9b8-187b1d86ea62"
-      (reference "J3") (unit 1) (value "I2C") (footprint "Connector_JST:JST_PH_B4B-PH-K_1x04_P2.00mm_Vertical")
+      (reference "J3") (unit 1) (value "I2C") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical")
     )
     (path "/b6cba801-f9e8-4397-ba60-79d2dfc4f2fd/1a6bbbf0-e700-4e74-a699-8a653905397a"
       (reference "Q854") (unit 1) (value "2N7002K") (footprint "Package_TO_SOT_SMD:SOT-23")
@@ -10936,6 +10922,9 @@
     )
     (path "/b6cba801-f9e8-4397-ba60-79d2dfc4f2fd/11652f05-c68a-4c4e-99b8-0e432e433d36"
       (reference "Q1110") (unit 1) (value "2N7002K") (footprint "Package_TO_SOT_SMD:SOT-23")
+    )
+    (path "/b6cba801-f9e8-4397-ba60-79d2dfc4f2fd/3ab7a9f5-c412-48d9-b89b-9e41d8c43a8f"
+      (reference "R286") (unit 1) (value "10k") (footprint "Resistor_SMD:R_0805_2012Metric")
     )
     (path "/b6cba801-f9e8-4397-ba60-79d2dfc4f2fd/91b327e4-5a5a-4455-a96b-61fbae28ef8e"
       (reference "R486") (unit 1) (value "10k") (footprint "Resistor_SMD:R_0805_2012Metric")

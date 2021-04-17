@@ -1,0 +1,38 @@
+
+.include examples/zeropage.q2
+
+  .org  0x800
+
+  lea   $+3
+  jmp   @$+1
+  .dw   i2c_start
+
+  lea   =1
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   i2c_write
+
+  lea   =2
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   i2c_write
+
+  lea   =3
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   i2c_write
+
+  lea   $+3
+  jmp   @$+1
+  .dw   i2c_read
+
+  lea   $+3
+  jmp   @$+1
+  .dw   i2c_stop
+
+  jmp   $
+
+.include examples/i2c.q2

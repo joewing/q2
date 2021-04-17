@@ -113,10 +113,9 @@ i2c_read_loop:
 
   lda   @=neg1
   nor   i2c_input_mask
-  lea   =1
-  jfc   i2c_read_set
   lea   =0
-i2c_read_set:
+  jfc   $+2
+  lea   =1
   add   =x0
   add   =x0
   sta   =x0

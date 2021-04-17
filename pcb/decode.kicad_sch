@@ -474,7 +474,7 @@
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid e7621667-7d38-44c2-a765-569ea78b57ae)
   )
-  (text "Fanout to 6 gates (2.1us)" (at 153.67 24.13 0)
+  (text "Fanout to 4 gates (1.4us)" (at 153.67 24.13 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 30baa776-96d6-4cc8-9584-bc7f5311f67c)
   )
@@ -492,7 +492,7 @@
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 373543be-071d-47f0-91d3-f8ba5aeacf71)
   )
-  (text "Max delay through the decoder is 2.1us for\n~STATE_EXEC~ and 0.7us for other states.\nDelay through state bits is 8.7us.\nDelay from SC to states is 10.9us for ~STATE_EXEC~\nand 9.4us for others."
+  (text "Max delay through the decoder is 1.4us for\n~STATE_EXEC~ and 0.7us for other states.\nDelay through state bits is 8.7us.\nDelay from SC to states is 10.1us for ~STATE_EXEC~\nand 9.4us for others."
     (at 220.345 66.04 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 3ecf7c55-79a1-461a-b0e0-b8ff87a30e80)
