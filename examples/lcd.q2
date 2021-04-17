@@ -49,3 +49,21 @@ puts_loop:
   sta   =x0
   jmp   puts_loop
 
+
+; Wait for a key press and return it in x0
+; Destroys x0, x1
+waitkey:
+  sta   =x1
+waitkey_loop:
+  lda   @=neg1
+  nor   =zero
+  sta   =x0
+  jfc   $+2
+  jmp   waitkey_loop
+
+waitkey_loop2:
+  lea   =1
+  add   @=neg1
+  jfc   waitkey_loop2
+  jmp   @=x1
+

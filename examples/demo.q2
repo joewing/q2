@@ -137,6 +137,10 @@ menu_items:
   .dw   "< > Maze  "
   .dw   0
   .dw   maze
+  ;      0123456789ABCDEF
+  .dw   "< > Pong  "
+  .dw   0
+  .dw   pong
 menu_items_end:
 
   .align  128
@@ -167,25 +171,6 @@ lcd_clear_cmd:
 .include examples/lcd.q2
 
   .align 128
-
-; Wait for a key press and return it in x0
-; Destroys x0, x1
-waitkey:
-  sta   =x1
-waitkey_loop:
-  lda   @=neg1
-  nor   =zero
-  sta   =x0
-  jfc   $+2
-  jmp   waitkey_loop
-
-waitkey_loop2:
-  lea   =1
-  add   @=neg1
-  jfc   waitkey_loop2
-  jmp   @=x1
-
-  .align 128
 .include examples/div.q2
 .include examples/mult.q2
 .include examples/rand.q2
@@ -195,5 +180,6 @@ waitkey_loop2:
 .include examples/snake.q2
 .include examples/maze.q2
 .include examples/life.q2
+.include examples/pong.q2
 
 

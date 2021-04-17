@@ -1,0 +1,293 @@
+; Pong game
+
+.def  pong_paddle   x10
+.def  pong_x        x11
+.def  pong_y        x12
+.def  pong_score    x13
+.def  pong_dx       x14
+.def  pong_dy       x15
+
+.def  pong_paddle_len 6
+
+
+  .align  128
+
+pong_str:
+  .dw   0x180                               ; DDRAM address 0 (first line)
+  .dw   0x20, 0xFF, 0x08, 0x0A, 0x0C, 0x0E, 0xFF
+  .dw   "  Pong   "
+  .dw   0x1C0                               ; DDRAM address 40 (second line)
+  .dw   0x20, 0xFF, 0x09, 0x0B, 0x0D, 0x0F, 0xFF
+  .dw   "  0000   "
+  .dw   0
+
+pong:
+  lea   pong_str
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   puts
+
+  lea   $+3
+  jmp   @$+1
+  .dw   raster_clear
+
+  lea   =0
+  sta   =pong_x
+  sta   =pong_y
+  sta   =pong_paddle
+  sta   =pong_score
+  lea   =1
+  sta   =pong_dx
+  sta   =pong_dy
+
+  ; Draw the paddle.
+  lea   =pong_paddle_len
+pong_init_loop:
+  add   =neg1
+  sta   =x8
+  sta   =x0
+  lea   =15
+  sta   =x7
+  lea   $+3
+  jmp   @$+1
+  .dw   raster_xor
+  lda   =x8
+  jfc   pong_init_loop
+
+pong_loop:
+
+  ; Move the ball while the ball is not displayed.
+  lea   $+3
+  jmp   @$+1
+  .dw   pong_move_ball
+
+  ; Turn on the ball.
+  lea   $+2
+  jmp   pong_draw_ball
+
+  ; Check for input/delay.
+  lea   =100
+pong_delay:
+  add   =neg1
+  sta   =x1
+  shr   @=neg1
+  sta   =x0
+  jfc   pong_left
+  shr   =x0
+  jfc   pong_right
+pong_nomove:
+
+  lda   =x1
+  jfc   pong_delay
+
+  ; Turn off the ball and loop.
+pong_ball_off:
+  lea   pong_loop
+pong_draw_ball:
+  sta   =x8
+  lda   =pong_x
+  sta   =x0
+  lda   =pong_y
+  sta   =x7
+  lda   =x8
+  jmp   @$+1
+  .dw   raster_xor
+
+pong_left:
+
+  ; Make sure this is a valid move.
+  lda   =pong_paddle
+  jfc   $+2
+  jmp   pong_nomove
+
+  ; Turn off the right-most pixel.
+  lea   =pong_paddle_len - 1
+  add   =pong_paddle
+  sta   =x0
+  lea   =15
+  sta   =x7
+  lea   $+3
+  jmp   @$+1
+  .dw   raster_xor
+
+  ; Move the paddle.
+  lda   =pong_paddle
+  add   =neg1
+  sta   =pong_paddle
+
+  ; Turn on the new left-most pixel.
+  jmp   pong_paddle_pixel_on
+
+pong_right:
+
+  ; Make sure this is a valid move.
+  lea   =20 - pong_paddle_len
+  nor   =zero
+  add   =pong_paddle
+  nor   =zero
+  jfc   $+2
+  jmp   pong_nomove
+
+  ; Turn off the left-most pixel.
+  lda   =pong_paddle
+  sta   =x0
+  lea   =15
+  sta   =x7
+  lea   $+3
+  jmp   @$+1
+  .dw   raster_xor
+
+  ; Move the paddle.
+  lda   =pong_paddle
+  add   =one
+  sta   =pong_paddle
+
+  ; Turn on the new right-most pixel.
+  lea   =pong_paddle_len - 1
+  add   =pong_paddle
+pong_paddle_pixel_on:
+  sta   =x0
+  lea   =15
+  sta   =x7
+  lea   pong_ball_off
+  jmp   @$+1
+  .dw   raster_xor
+
+  .align  128
+pong_move_ball:
+  sta     =x9
+
+  ; Move in the x direction.
+  lda   =pong_x
+  add   =pong_dx
+  sta   =x0
+  add   pong_800
+  jfc   pong_move_x_not_left
+  jmp   pong_move_x_at_edge
+
+pong_move_x_not_left:
+  ; Not at left edge; check right edge.
+  lda   =x0
+  add   pong_neg20
+  jfc   pong_move_x_done
+
+pong_move_x_at_edge:
+  ; At an edge (left or right)
+  ; Negate direction. 
+  lda   =pong_dx
+  nor   =zero
+  add   =one
+  sta   =pong_dx
+  jmp   pong_move_x_done
+pong_move_x_done:
+  lda   =pong_x
+  add   =pong_dx
+  sta   =pong_x
+
+  ; Move in the y direction.
+  lda   =pong_y
+  add   =pong_dy
+  sta   =x0
+  add   pong_800
+  jfc   pong_move_y_not_top
+  jmp   pong_hit_done       ; Hit top
+
+pong_move_y_not_top:
+  ; Not at the top edge; check bottom
+  lda   =x0
+  add   pong_neg15
+  jfc   pong_move_y_done
+
+  ; At the bottom, update direction based on paddle position.
+  lda   =pong_paddle
+  nor   =zero
+  add   =one
+  add   =pong_x
+  jfc   pong_game_over    ; ball before paddle
+  add   =neg1
+  jfc   pong_hit_left     ; ball on left-most part
+
+pong_hit_not_left:
+  lea   =pong_paddle_len - 1 - 1
+  add   =pong_paddle
+  sta   =x0
+  lda   =pong_x
+  nor   =zero
+  add   =x0
+  jfc   pong_game_over    ; ball after paddle
+  add   =neg1
+  jfc   pong_hit_right    ; ball on right-most part
+
+pong_hit_paddle:
+  lda   pong_score_cmd
+  sta   @=neg1
+  lea   =1
+  add   =pong_score
+  sta   =pong_score
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   putint
+
+pong_hit_done:
+  lda   =pong_dy
+  nor   =zero
+  add   =one
+  sta   =pong_dy
+
+pong_move_y_done:
+  lda   =pong_y
+  add   =pong_dy
+  sta   =pong_y
+  jmp   @=x9
+
+pong_hit_left:
+  ; ball over left-most pixel
+  lda   pong_neg2
+  sta   =pong_dx
+  jmp   pong_hit_paddle
+
+pong_hit_right:
+  ; ball over right-most pixel
+  lea   =2
+  sta   =pong_dx
+  jmp   pong_hit_paddle
+
+pong_game_over:
+  lea   pong_game_over_str
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   puts
+
+pong_game_over_wait:
+  lda   @=neg1
+  nor   =zero
+  jfc   pong_game_over_wait
+
+  lea   $+3
+  jmp   @$+1
+  .dw   waitkey
+  
+  jmp   @$+1
+  .dw   menu
+
+pong_neg20:
+  .dw   -20
+pong_neg15:
+  .dw   -15
+pong_neg2:
+  .dw   -2
+pong_800:
+  .dw   0x800
+pong_score_cmd:
+  .dw   0x180 + 0x040 + 9
+
+pong_game_over_str:
+  .dw   0x180 + 2
+  .dw   "GAME"
+  .dw   0x1C0 + 2
+  .dw   "OVER"
+  .dw   0
+
