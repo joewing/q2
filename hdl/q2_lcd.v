@@ -9,7 +9,6 @@ module q2_lcd(
   integer i, j;
 
   always @(posedge wr) begin
-    $display("OUTPUT %03x (%d)", dbus, dbus);
     if (dbus[8]) begin
       if (dbus[7]) begin
         // Set address

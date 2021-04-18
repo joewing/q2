@@ -1,0 +1,282 @@
+; Floating-point functions.
+; The floating point format is two words. The first word holds
+; the sign and significand (note that the 1 is explicit).
+; The second word holds the exponent with 2047 bias.
+; These functions use a floating point stack.
+;
+; The following functions are available:
+;   fpush   - Push floating point value in x0/x1 on to the stack
+;   fpop    - Pop floating point value off the stack, storing into x0/x1
+;   fadd    - Add the top two items on the stack
+;   fmul    - Multiply the top two items on the stack
+;
+; The zero-page values in x0 through x13 are used by these functions.
+
+; Assign names to a few locations in the zero page.
+.def  signx   x6
+.def  absx    x7
+.def  expx    x8
+.def  signy   x9
+.def  absy    x10
+.def  expy    x11
+.def  ftemp   x12
+
+; Set asside some space for a floating-point stack.
+  .align  128
+  .bss  127
+fpstack:
+
+; Floating point stack pointer.
+  .align 128
+fsp:
+  .dw   fpstack
+
+; Push floating point value x0/x1 on to the stack.
+; Destroys x2
+fpush:
+  sta   =x2
+  lda   =x1
+  sta   @fsp
+  lda   fsp
+  add   =neg1
+  sta   fsp
+  lda   =x0
+  sta   @fsp
+  lda   fsp
+  add   =neg1
+  sta   fsp
+  jmp   @=x2
+
+; Pop floating point value x0/x1 off the stack.
+; Destroys x2
+fpop:
+  sta   =x2
+  lea   =1
+  add   fsp
+  sta   fsp
+  lda   @fsp
+  sta   =x0
+  lea   =1
+  add   fsp
+  sta   fsp
+  lda   @fsp
+  sta   =x1
+  jmp   @=x2
+
+; Extract sign, significand, and exponent for the top two items on the stack.
+; Destroys x0-x3
+_fextract2:
+  sta   =x3
+  ; y
+  lea   $+2
+  jmp   fpop
+  lda   =x0
+  nor   =zero
+  sta   =x0
+  nor   _sign_nmask
+  sta   =signy
+  lda   =x0
+  nor   _man_nmask
+  sta   =absy
+  lda   =x1
+  sta   =expy
+  ; x
+  lea   $+2
+  jmp   fpop
+  lda   =x0
+  nor   =zero
+  sta   =x0
+  nor   _sign_nmask
+  sta   =signx
+  lda   =x0
+  nor   _man_nmask
+  sta   =absx
+  lda   =x1
+  sta   =expx
+  jmp   @=x3
+
+_sign_nmask:
+  .dw   0x7FF
+_man_nmask:
+  .dw   0x800
+
+; Normalize x.
+; Destroys x0
+_fnorm:
+  sta   =x0
+_fnorm_loop:
+  lda   =absx
+  jfc   $+2
+  jmp   @=x0
+  nor   _man_nmask
+  jfc   @=x0
+  lea   =absx
+  add   =absx
+  sta   =absx
+  lea   =1
+  add   =expx
+  sta   =expx
+  jmp   _fnorm_loop
+
+; Normalized and push x.
+_fpushx:
+  sta   =x2
+  lea   $+2
+  jmp   _fnorm
+  lda   =signx
+  add   =absx
+  sta   =x0
+  lda   =expx
+  sta   =x1
+  lda   =x2
+  jmp   fpush
+
+  .align  128
+
+; Add the top two numbers on the stack.
+; Destroys x0-x12
+fadd:
+  sta   =x4
+
+  ; Load x and y from the stack.
+  lea   $+3
+  jmp   @$+1
+  .dw   _fextract2
+
+  ; Align exponents.
+fadd_align_expx:
+  lda   =expx
+  nor   =zero
+  add   =expy
+  jfc   fadd_align_expy
+  lea   =1
+  add   =expx
+  sta   =expx
+  shr   =absx
+  sta   =absx
+  jmp   fadd_align_expx
+fadd_align_expy:
+  lda   =expy
+  nor   =zero
+  add   =expx
+  jfc   fadd_align_done
+  lea   =1
+  add   =expy
+  sta   =expy
+  shr   =absy
+  sta   =absy
+  jmp   fadd_align_expy
+fadd_align_done:
+
+  ; Determine output sign (store it in =ftemp).
+  lda   =signx
+  sta   =ftemp
+  lda   =absx
+  nor   =zero
+  add   =absy
+  jfc   fadd_sign_set
+  lda   =signy
+  sta   =ftemp
+fadd_sign_set:
+
+  ; Convert to 2s complement.
+  lda   =signx
+  jfc   $+2
+  jmp   fadd_x_converted
+  lea   =0
+  nor   =absx
+  add   =one
+  sta   =absx
+fadd_x_converted:
+  lda   =signy
+  jfc   $+2
+  jmp   fadd_y_converted
+  lea   =0
+  nor   =absy
+  add   =one
+  sta   =absy
+fadd_y_converted:
+
+  ; Add signed significands.
+  lda   =absx
+  add   =absy
+  sta   =absx
+  jfc   fadd_no_carry
+  shr   =absx
+  sta   =absx
+  lea   =1
+  add   =expx
+  sta   =expx
+fadd_no_carry:
+
+  ; Fix sign.
+  lda   =ftemp
+  sta   =signx
+  jfc   $+2
+  jmp   fadd_sign_fixed
+  lea   =0
+  nor   =absx
+  add   =one
+  sta   =absx
+fadd_sign_fixed:
+
+  ; Push result and return.
+  lda   =x4
+  jmp   @$+1
+  .dw   _fpushx
+
+; Multiply the top two numbers on the stack.
+; Destroys x0-x13
+fmul:
+  sta   =x13
+
+  ; Load x and y from the stack.
+  lea   $+3
+  jmp   @$+1
+  .dw   _fextract2
+
+  ; Add exponents.
+  lda   =expx
+  add   =expy
+  add   fmul_exp_offset
+  sta   =expx
+
+  ; Fix sign
+  lda   =signy
+  nor   fmul_sign_nmask
+  jfc   fmul_sign_fixed
+  lda   =signx
+  nor   fmul_sign_nmask
+  jfc   $+2
+  jmp   fmul_sign_fixed
+  lda   fmul_neg_sign
+  sta   =signx
+fmul_sign_fixed:
+
+  ; Multiply
+  ; Shift both x and y left by 1 so we can use the high
+  ; word only for the result.
+  lda   =absx
+  add   =absx
+  sta   =x0
+  lda   =absy
+  add   =absy
+  sta   =x1
+  lea   $+3
+  jmp   @$+1
+  .dw   mult24
+  lda   =x3
+  sta   =absx
+
+  ; Push result and return.
+  lda   =x13
+  jmp   @$+1
+  .dw   _fpushx
+
+fmul_exp_offset:
+  .dw   -2047
+fmul_sign_nmask:
+  .dw   0x7FF
+fmul_neg_sign:
+  .dw   0x800
+

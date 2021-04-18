@@ -1,0 +1,53 @@
+
+.include examples/zeropage.q2
+
+  .org    0x800
+
+; 5.25 [540 801] + -8.5 [c40 802] = -3.25 [9a0 802]
+
+  ; Push A
+  lda   input_a + 0
+  sta   =x0
+  lda   input_a + 1
+  sta   =x1
+  lea   $+3
+  jmp   @$+1
+  .dw   fpush
+
+  ; Push B
+  lda   input_b + 0
+  sta   =x0
+  lda   input_b + 1
+  sta   =x1
+  lea   $+3
+  jmp   @$+1
+  .dw   fpush
+
+  ; Add
+  lea   $+3
+  jmp   @$+1
+  .dw   fadd
+
+  ; Pop the result
+  lea   $+3
+  jmp   @$+1
+  .dw   fpop
+
+  ; Output the result
+  lda   =x0
+  sta   @=neg1
+  lda   =x1
+  sta   @=neg1
+
+  jmp   $
+
+input_a:
+  .dw   0x540, 0x801    ; 5.25
+input_b:
+  .dw   0xC40, 0x802    ; -8.5
+
+  .align  128
+.include examples/mult24.q2
+
+.include examples/fp.q2
+

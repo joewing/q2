@@ -1,0 +1,28 @@
+
+; mult24 function test
+
+.include  examples/zeropage.q2
+
+  .org  0x800
+
+  lda   value1
+  sta   =x0
+  lda   value2
+  sta   =x1
+  lea   $+3
+  jmp   @$+1
+  .dw   mult24
+  lda   =x2
+  sta   @=neg1
+  lda   =x3
+  sta   @=neg1
+  jmp   $
+
+value1:
+  .dw   350
+value2:
+  .dw   150
+
+.include examples/mult24.q2
+
+

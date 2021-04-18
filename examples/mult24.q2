@@ -1,0 +1,48 @@
+
+; 24-bit multiply x3:x2 = x0 * x1
+; Destroys x0-x5
+mult24:
+  sta   =x5
+  lea   =0
+  sta   =x2   ; low bits of result
+  sta   =x3   ; high bits of result
+  sta   =x4   ; high bits of x1
+mult24_loop:
+  lda   =x0
+  jfc   mult24_cont
+
+  ; done when =x0 is 0.
+  jmp  @=x5
+
+mult24_cont:
+  shr   =x0
+  sta   =x0
+  jfc   mult24_next
+
+  ; bit is set, update x3:x2
+  lda   =x4
+  add   =x3
+  sta   =x3   ; x3 += x4
+  lda   =x1
+  add   =x2
+  sta   =x2   ; x2 += x1
+  jfc   mult24_next
+  lea   =1    ; carry from x2
+  add   =x3
+  sta   =x3
+
+mult24_next:
+
+  ; shift x4:x1 left
+  lda   =x4
+  add   =x4
+  sta   =x4   ; x4 <<= 1
+  lda   =x1
+  add   =x1
+  sta   =x1   ; x1 <<= 1
+  jfc   mult24_loop
+  lea   =1    ; x4 |= carry from x1
+  add   =x4
+  sta   =x4
+  jmp   mult24_loop
+

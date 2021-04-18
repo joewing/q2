@@ -75,6 +75,11 @@ module q2(
   wire ram_ce = ~io;
   wire rdm = ~rda;
 
+  // Show writes to output for debugging.
+  always @(posedge wrm) begin
+    if (io) $display("OUTPUT: %03x (%d)", dbus, dbus);
+  end
+
   q2_lcd lcd(
     .wr(lcd_wr),
     .dbus(dbus)

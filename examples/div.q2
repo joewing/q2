@@ -1,5 +1,6 @@
 
 ; Divide x2 = x0 / x1, remainder in x3
+; Destroys x0-x5
 div:
   sta   =x5
   lea   =0
