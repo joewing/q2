@@ -1001,6 +1001,11 @@
     (uuid b3c31de2-036d-4d30-ade6-5826e6714190)
   )
 
+  (text "Max DBUS fanout is 5\nMax ABUS fanout is 3" (at 315.722 225.298 0)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 557052fc-53c3-4b4f-94a3-4faddc5da744)
+  )
+
   (global_label "ALU_OUT" (shape input) (at 57.15 36.83 180)
     (effects (font (size 1.27 1.27)) (justify right))
     (uuid ece1fd57-7d5f-41e9-a514-061f8e0742d4)
@@ -4487,18 +4492,6 @@
     )
     (path "/00000000-0000-0000-0000-0000603478d8/00000000-0000-0000-0000-00005f5ca2e8"
       (reference "#PWR0137") (unit 1) (value "GND") (footprint "")
-    )
-    (path "/00000000-0000-0000-0000-0000603478d8/00000000-0000-0000-0000-00005f5ba2b7"
-      (reference "#PWR0138") (unit 1) (value "GND") (footprint "")
-    )
-    (path "/00000000-0000-0000-0000-0000603478d8/00000000-0000-0000-0000-00005f5a3f04"
-      (reference "#PWR0139") (unit 1) (value "GND") (footprint "")
-    )
-    (path "/00000000-0000-0000-0000-0000603478d8/00000000-0000-0000-0000-00005f5af81b"
-      (reference "#PWR0140") (unit 1) (value "GND") (footprint "")
-    )
-    (path "/00000000-0000-0000-0000-0000603478d8/00000000-0000-0000-0000-00005f5fb34c"
-      (reference "#PWR0141") (unit 1) (value "GND") (footprint "")
     )
     (path "/00000000-0000-0000-0000-0000603478d8/00000000-0000-0000-0000-00005f56bf94"
       (reference "#PWR0142") (unit 1) (value "GND") (footprint "")
@@ -10866,8 +10859,8 @@
     (path "/b6cba801-f9e8-4397-ba60-79d2dfc4f2fd/9427ccfc-13f0-4221-b649-e19e3ec665d3"
       (reference "D93") (unit 1) (value "BAT43W") (footprint "Diode_SMD:D_SOD-123")
     )
-    (path "/b6cba801-f9e8-4397-ba60-79d2dfc4f2fd/084ccc96-c10d-4d06-b9b8-187b1d86ea62"
-      (reference "J3") (unit 1) (value "I2C") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical")
+    (path "/b6cba801-f9e8-4397-ba60-79d2dfc4f2fd/53605f00-ea57-4aed-b459-193276ff4d66"
+      (reference "J3") (unit 1) (value "I2C") (footprint "Connector_IDC:IDC-Header_2x03_P2.54mm_Vertical")
     )
     (path "/b6cba801-f9e8-4397-ba60-79d2dfc4f2fd/1a6bbbf0-e700-4e74-a699-8a653905397a"
       (reference "Q854") (unit 1) (value "2N7002K") (footprint "Package_TO_SOT_SMD:SOT-23")
