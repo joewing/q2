@@ -40,24 +40,27 @@ module q2(
   wire s2in;
 
   // State bits
+  wire ni2c_sda_out;
+  wire ni2c_scl_out;
   wire cdiv;
   wire s0;
   wire s1;
   wire s2;
   wire s3;
   wire f;
-  wire f_in;
+  wire deref;
   wire o2;
   wire o1;
   wire o0;
-  wire deref;
+
 
   // ALU connections.
   wire alu_cout;
+  wire f_in;
 
   // Clock generation.
-  wire sc = ~(clk | ~cdiv);
   wire ws = ~(clk | cdiv);
+  wire sc = ~(clk | ~cdiv);
 
   // Halt condition for simulation.
   // Halt when executing "jmp $".
@@ -68,16 +71,17 @@ module q2(
 
   // Memory and I/O.
   wire wrm;
-  wire io = &abus;
-  assign io_rd  = ~(~io | rda);
+  wire io;
+  wire io_rd  = ~(~io | rda);
   wire lcd_wr = ~(~wrm | dbus[11] | ~io);
   wire i2c_wr = ~(~dbus[11] | ~wrm | ~io);
   wire ram_ce = ~io;
   wire rdm = ~rda;
 
   // Show writes to output for debugging.
-  always @(posedge wrm) begin
-    if (io) $display("OUTPUT: %03x (%d)", dbus, dbus);
+  wire show_output = ~(~wrm | ~io);
+  always @(posedge show_output) begin
+    $display("OUTPUT: %03x (%d)", dbus, dbus);
   end
 
   q2_lcd lcd(
@@ -87,8 +91,9 @@ module q2(
 
   q2_i2c i2c(
     .rst(rst),
-    .wr(i2c_wr),
     .rd(io_rd),
+    .i2c_scl_out(~ni2c_scl_out),
+    .i2c_sda_out(~ni2c_sda_out),
     .dbus(dbus)
   );
 
@@ -139,7 +144,8 @@ module q2(
     .wrm(wrm),
     .wrf(wrf),
     .fout(f_in),
-    .s2in(s2in)
+    .s2in(s2in),
+    .io(io)
   );
 
   wire [11:0] a;
@@ -177,13 +183,14 @@ module q2(
     .xin_shift(xlin_shift),
     .xin_p(1'b0),
     .xin_dbus(xlin_dbus),
-    .wrs(clk),
+    .wrs(i2c_wr),
     .rsts(rst),
-    .sin(~cdiv),
-    .sout(cdiv),
+    .sin(dbus[9]),
+    .sout(ni2c_sda_out),
     .aout(a[0]),
     .xout(x[0]),
-    .pout(p[0])
+    .pout(p[0]),
+    .io(io)
   );
 
   q2_slice slice1(
@@ -205,13 +212,14 @@ module q2(
     .xin_shift(xlin_shift),
     .xin_p(1'b0),
     .xin_dbus(xlin_dbus),
-    .wrs(sc),
+    .wrs(i2c_wr),
     .rsts(rst),
-    .sin(~s0),
-    .sout(s0),
+    .sin(dbus[10]),
+    .sout(ni2c_scl_out),
     .aout(a[1]),
     .xout(x[1]),
-    .pout(p[1])
+    .pout(p[1]),
+    .io(io)
   );
 
   q2_slice slice2(
@@ -233,13 +241,14 @@ module q2(
     .xin_shift(xlin_shift),
     .xin_p(1'b0),
     .xin_dbus(xlin_dbus),
-    .wrs(~s0),
+    .wrs(clk),
     .rsts(rst),
-    .sin(~s1),
-    .sout(s1),
+    .sin(~cdiv),
+    .sout(cdiv),
     .aout(a[2]),
     .xout(x[2]),
-    .pout(p[2])
+    .pout(p[2]),
+    .io(io)
   );
 
   q2_slice slice3(
@@ -261,13 +270,14 @@ module q2(
     .xin_shift(xlin_shift),
     .xin_p(1'b0),
     .xin_dbus(xlin_dbus),
-    .wrs(~s1),
+    .wrs(~sc),
     .rsts(rst),
-    .sin(s2in),
-    .sout(s2),
+    .sin(~s0),
+    .sout(s0),
     .aout(a[3]),
     .xout(x[3]),
-    .pout(p[3])
+    .pout(p[3]),
+    .io(io)
   );
 
   q2_slice slice4(
@@ -289,13 +299,14 @@ module q2(
     .xin_shift(xlin_shift),
     .xin_p(1'b0),
     .xin_dbus(xlin_dbus),
-    .wrs(~s2),
+    .wrs(~s0),
     .rsts(rst),
-    .sin(~s3),
-    .sout(s3),
+    .sin(~s1),
+    .sout(s1),
     .aout(a[4]),
     .xout(x[4]),
-    .pout(p[4])
+    .pout(p[4]),
+    .io(io)
   );
 
   q2_slice slice5(
@@ -317,13 +328,14 @@ module q2(
     .xin_shift(xlin_shift),
     .xin_p(1'b0),
     .xin_dbus(xlin_dbus),
-    .wrs(1'b0),
-    .rsts(1'b0),
-    .sin(1'b0),
-    .sout(),
+    .wrs(~s1),
+    .rsts(rst),
+    .sin(s2in),
+    .sout(s2),
     .aout(a[5]),
     .xout(x[5]),
-    .pout(p[5])
+    .pout(p[5]),
+    .io(io)
   );
 
   q2_slice slice6(
@@ -345,15 +357,16 @@ module q2(
     .xin_shift(xlin_shift),
     .xin_p(1'b0),
     .xin_dbus(xlin_dbus),
-    .wrs(1'b0),
-    .sin(1'b0),
-    .sout(),
+    .wrs(~s2),
+    .rsts(rst),
+    .sin(~s3),
+    .sout(s3),
     .aout(a[6]),
     .xout(x[6]),
-    .pout(p[6])
+    .pout(p[6]),
+    .io(io)
   );
 
-  wire unused7;
   q2_slice slice7(
     .rst(rst),
     .dep(dep_sw),
@@ -379,7 +392,8 @@ module q2(
     .sin(f_in),
     .sout(f),
     .xout(x[7]),
-    .pout(p[7])
+    .pout(p[7]),
+    .io(io)
   );
 
   q2_slice slice8(
@@ -407,7 +421,8 @@ module q2(
     .sout(deref),
     .aout(a[8]),
     .xout(x[8]),
-    .pout(p[8])
+    .pout(p[8]),
+    .io(io)
   );
 
   q2_slice slice9(
@@ -435,7 +450,8 @@ module q2(
     .sout(o0),
     .aout(a[9]),
     .xout(x[9]),
-    .pout(p[9])
+    .pout(p[9]),
+    .io(io)
   );
 
   q2_slice slice10(
@@ -463,7 +479,8 @@ module q2(
     .sout(o1),
     .aout(a[10]),
     .xout(x[10]),
-    .pout(p[10])
+    .pout(p[10]),
+    .io(io)
   );
 
   q2_slice slice11(
@@ -491,7 +508,8 @@ module q2(
     .sout(o2),
     .aout(a[11]),
     .xout(x[11]),
-    .pout(p[11])
+    .pout(p[11]),
+    .io(io)
   );
 
 endmodule

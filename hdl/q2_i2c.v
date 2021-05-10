@@ -1,8 +1,9 @@
 
 module q2_i2c(
   input wire rst,
-  input wire wr,
   input wire rd,
+  input wire i2c_scl_out,
+  input wire i2c_sda_out,
   inout wire [11:0] dbus
 );
 
@@ -11,14 +12,10 @@ module q2_i2c(
   reg last_scl;
   reg last_sda;
 
-  reg scl;
-  reg sda;
-  always @(rst or negedge wr) begin
-    scl <= ~dbus[10];
-    sda <= ~dbus[9];
-  end
+  wire scl = i2c_scl_out;
+  wire sda = i2c_sda_out;
 
-  assign dbus[9] = rd ? 1'b0 : 1'bz;
+  assign dbus[11:9] = rd ? 3'b111 : 3'bzzz;
 
   always @(scl or sda or rst) begin
     if (rst) begin

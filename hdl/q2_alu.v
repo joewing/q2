@@ -10,19 +10,18 @@ module q2_alu(
   output wire alu_cout
 );
 
-  wire alu_nor = ~(a0 | x0);
+  wire t0 = ~(a0 | x0);
+  wire t1 = ~(t0 | a0);
+  wire t2 = ~(t0 | x0);
+  wire t3 = ~(t1 | t2);
+  wire alu_nor = t0;
 
-  wire t0 = ~(a0 & x0);
-  wire t1 = ~(t0 & a0);
-  wire t2 = ~(t0 & x0);
-  wire t3 = ~(t1 & t2);
+  wire t4 = ~(t3 | f);
+  wire t6 = ~(t3 | t4);
+  wire t7 = ~(f | t4);
+  wire alu_sum = ~(t6 | t7);
 
-  wire t4 = ~(t3 & f);
-  wire t6 = ~(t3 & t4);
-  wire t7 = ~(f & t4);
-  wire alu_sum = ~(t6 & t7);
-
-  wire alu_carry = ~(t4 & t0);
+  wire alu_carry = ~(t4 | t0);
 
   assign alu_out = (
       (x0 & ~o0 & ~o1)

@@ -1,0 +1,621 @@
+EESchema Schematic File Version 4
+EELAYER 30 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 107
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Sheet
+S 1000 1100 1050 1300
+U 608D9BDD
+F0 "Bit 11" 50
+F1 "slice-high.sch" 50
+F2 "SIN" I R 2050 2000 50 
+F3 "WRS" I R 2050 2100 50 
+F4 "SOUT" I R 2050 1900 50 
+F5 "~SOUT" I R 2050 1750 50 
+F6 "ABUS" I R 2050 2300 50 
+F7 "DBUS" I R 2050 2200 50 
+F8 "~SW" I L 1000 2300 50 
+F9 "INCP" I R 2050 1200 50 
+F10 "AIN" I L 1000 1300 50 
+F11 "AOUT" I R 2050 1300 50 
+F12 "~XIN" I L 1000 1550 50 
+F13 "~P" I L 1000 1200 50 
+F14 "~XOUT" I R 2050 1550 50 
+F15 "XOUT" I R 2050 1400 50 
+$EndSheet
+$Sheet
+S 2700 1100 1050 1300
+U 609A143E
+F0 "Bit 10" 50
+F1 "slice-high.sch" 50
+F2 "SIN" I R 3750 2000 50 
+F3 "WRS" I R 3750 2100 50 
+F4 "SOUT" I R 3750 1900 50 
+F5 "~SOUT" I R 3750 1800 50 
+F6 "ABUS" I R 3750 2300 50 
+F7 "DBUS" I R 3750 2200 50 
+F8 "~SW" I L 2700 2300 50 
+F9 "INCP" I R 3750 1200 50 
+F10 "AIN" I L 2700 1300 50 
+F11 "AOUT" I R 3750 1300 50 
+F12 "~XIN" I L 2700 1550 50 
+F13 "~P" I L 2700 1200 50 
+F14 "~XOUT" I R 3750 1550 50 
+F15 "XOUT" I R 3750 1400 50 
+$EndSheet
+Text GLabel 2050 2200 2    50   Input ~ 0
+DBUS11
+Text GLabel 2050 2300 2    50   Input ~ 0
+ABUS11
+Text GLabel 2050 2000 2    50   Input ~ 0
+DBUS11
+Text GLabel 2050 1900 2    50   Input ~ 0
+O2
+Text GLabel 2050 2100 2    50   Input ~ 0
+WRO
+Text GLabel 2700 2300 0    50   Input ~ 0
+~SW10
+Text GLabel 1000 2300 0    50   Input ~ 0
+~SW11
+$Sheet
+S 4400 1100 1050 1300
+U 609D71FD
+F0 "Bit 9" 50
+F1 "slice-high.sch" 50
+F2 "SIN" I R 5450 2000 50 
+F3 "WRS" I R 5450 2100 50 
+F4 "SOUT" I R 5450 1900 50 
+F5 "~SOUT" I R 5450 1800 50 
+F6 "ABUS" I R 5450 2300 50 
+F7 "DBUS" I R 5450 2200 50 
+F8 "~SW" I L 4400 2300 50 
+F9 "INCP" I R 5450 1200 50 
+F10 "AIN" I L 4400 1300 50 
+F11 "AOUT" I R 5450 1300 50 
+F12 "~XIN" I L 4400 1550 50 
+F13 "~P" I L 4400 1200 50 
+F14 "~XOUT" I R 5450 1550 50 
+F15 "XOUT" I R 5450 1400 50 
+$EndSheet
+$Sheet
+S 6100 1100 1050 1300
+U 609D7793
+F0 "Bit 8" 50
+F1 "slice-high.sch" 50
+F2 "SIN" I R 7150 2000 50 
+F3 "WRS" I R 7150 2100 50 
+F4 "SOUT" I R 7150 1900 50 
+F5 "~SOUT" I R 7150 1800 50 
+F6 "ABUS" I R 7150 2300 50 
+F7 "DBUS" I R 7150 2200 50 
+F8 "~SW" I L 6100 2300 50 
+F9 "INCP" I R 7150 1200 50 
+F10 "AIN" I L 6100 1300 50 
+F11 "AOUT" I R 7150 1300 50 
+F12 "~XIN" I L 6100 1550 50 
+F13 "~P" I L 6100 1200 50 
+F14 "~XOUT" I R 7150 1550 50 
+F15 "XOUT" I R 7150 1400 50 
+$EndSheet
+$Sheet
+S 7800 1100 1050 1300
+U 609D7D1E
+F0 "Bit 7" 50
+F1 "slice-high.sch" 50
+F2 "SIN" I R 8850 2000 50 
+F3 "WRS" I R 8850 2100 50 
+F4 "SOUT" I R 8850 1900 50 
+F5 "~SOUT" I R 8850 1800 50 
+F6 "ABUS" I R 8850 2300 50 
+F7 "DBUS" I R 8850 2200 50 
+F8 "~SW" I L 7800 2300 50 
+F9 "INCP" I R 8850 1200 50 
+F10 "AIN" I L 7800 1300 50 
+F11 "AOUT" I R 8850 1300 50 
+F12 "~XIN" I L 7800 1550 50 
+F13 "~P" I L 7800 1200 50 
+F14 "~XOUT" I R 8850 1550 50 
+F15 "XOUT" I R 8850 1400 50 
+$EndSheet
+Text GLabel 3750 2300 2    50   Input ~ 0
+ABUS10
+Text GLabel 4400 2300 0    50   Input ~ 0
+~SW9
+Text GLabel 3750 2200 2    50   Input ~ 0
+DBUS10
+Text GLabel 2050 1750 2    50   Input ~ 0
+~O2
+Text GLabel 3750 2000 2    50   Input ~ 0
+DBUS10
+Text GLabel 3750 2100 2    50   Input ~ 0
+WRO
+Text GLabel 3750 1900 2    50   Input ~ 0
+O1
+Text GLabel 3750 1800 2    50   Input ~ 0
+~O1
+Wire Wire Line
+	2050 1200 2700 1200
+Wire Wire Line
+	2700 1300 2050 1300
+Wire Wire Line
+	3750 1200 4400 1200
+Wire Wire Line
+	4400 1300 3750 1300
+Wire Wire Line
+	9500 1200 8850 1200
+Wire Wire Line
+	8850 1300 9500 1300
+$Sheet
+S 2700 3100 1050 1300
+U 609EDBE1
+F0 "Bit 4" 50
+F1 "slice-low.sch" 50
+F2 "ABUS" I R 3750 4300 50 
+F3 "DBUS" I R 3750 4200 50 
+F4 "~SW" I L 2700 4300 50 
+F5 "INCP" I R 3750 3200 50 
+F6 "AIN" I L 2700 3300 50 
+F7 "AOUT" I R 3750 3300 50 
+F8 "~XIN" I L 2700 3550 50 
+F9 "~P" I L 2700 3200 50 
+F10 "~XOUT" I R 3750 3550 50 
+F11 "XOUT" I R 3750 3400 50 
+F12 "SIN" I R 3750 4000 50 
+F13 "WRS" I R 3750 4100 50 
+F14 "SOUT" I R 3750 3900 50 
+F15 "~SOUT" I R 3750 3800 50 
+$EndSheet
+Wire Wire Line
+	2700 3200 2050 3200
+Wire Wire Line
+	2050 3300 2700 3300
+Text GLabel 2050 4300 2    50   Input ~ 0
+ABUS5
+Text GLabel 2050 4200 2    50   Input ~ 0
+DBUS5
+Text GLabel 1000 4300 0    50   Input ~ 0
+~SW5
+Text GLabel 2700 4300 0    50   Input ~ 0
+~SW4
+$Sheet
+S 4400 3100 1050 1300
+U 609FBC79
+F0 "Bit 3" 50
+F1 "slice-low.sch" 50
+F2 "ABUS" I R 5450 4300 50 
+F3 "DBUS" I R 5450 4200 50 
+F4 "~SW" I L 4400 4300 50 
+F5 "INCP" I R 5450 3200 50 
+F6 "AIN" I L 4400 3300 50 
+F7 "AOUT" I R 5450 3300 50 
+F8 "~XIN" I L 4400 3550 50 
+F9 "~P" I L 4400 3200 50 
+F10 "~XOUT" I R 5450 3550 50 
+F11 "XOUT" I R 5450 3400 50 
+F12 "SIN" I R 5450 4000 50 
+F13 "WRS" I R 5450 4100 50 
+F14 "SOUT" I R 5450 3900 50 
+F15 "~SOUT" I R 5450 3800 50 
+$EndSheet
+$Sheet
+S 7800 3100 1050 1300
+U 609FC502
+F0 "Bit 1" 50
+F1 "slice-low.sch" 50
+F2 "ABUS" I R 8850 4300 50 
+F3 "DBUS" I R 8850 4200 50 
+F4 "~SW" I L 7800 4300 50 
+F5 "INCP" I R 8850 3200 50 
+F6 "AIN" I L 7800 3300 50 
+F7 "AOUT" I R 8850 3300 50 
+F8 "~XIN" I L 7800 3550 50 
+F9 "~P" I L 7800 3200 50 
+F10 "~XOUT" I R 8850 3550 50 
+F11 "XOUT" I R 8850 3400 50 
+F12 "SIN" I R 8850 4000 50 
+F13 "WRS" I R 8850 4100 50 
+F14 "SOUT" I R 8850 3900 50 
+F15 "~SOUT" I R 8850 3800 50 
+$EndSheet
+$Sheet
+S 9500 3100 1050 1300
+U 609FCA98
+F0 "Bit 0" 50
+F1 "slice-low.sch" 50
+F2 "ABUS" I R 10550 4300 50 
+F3 "DBUS" I R 10550 4200 50 
+F4 "~SW" I L 9500 4300 50 
+F5 "INCP" I R 10550 3200 50 
+F6 "AIN" I L 9500 3300 50 
+F7 "AOUT" I R 10550 3300 50 
+F8 "~XIN" I L 9500 3550 50 
+F9 "~P" I L 9500 3200 50 
+F10 "~XOUT" I R 10550 3550 50 
+F11 "XOUT" I R 10550 3400 50 
+F12 "SIN" I R 10550 4000 50 
+F13 "WRS" I R 10550 4100 50 
+F14 "SOUT" I R 10550 3900 50 
+F15 "~SOUT" I R 10550 3800 50 
+$EndSheet
+Wire Wire Line
+	6100 1200 5450 1200
+Wire Wire Line
+	5450 1300 6100 1300
+Wire Wire Line
+	7150 1200 7800 1200
+Wire Wire Line
+	7800 1300 7150 1300
+Wire Wire Line
+	3750 3200 4400 3200
+Wire Wire Line
+	4400 3300 3750 3300
+Wire Wire Line
+	5450 3200 6100 3200
+Wire Wire Line
+	6100 3300 5450 3300
+Wire Wire Line
+	7150 3200 7800 3200
+Wire Wire Line
+	7800 3300 7150 3300
+Wire Wire Line
+	8850 3200 9500 3200
+Wire Wire Line
+	9500 3300 8850 3300
+Wire Wire Line
+	1000 3200 850  3200
+Wire Wire Line
+	850  3200 850  2650
+Wire Wire Line
+	1000 3300 750  3300
+Wire Wire Line
+	750  3300 750  2750
+$Sheet
+S 1100 4900 1100 1000
+U 60A0BC91
+F0 "Clock" 50
+F1 "clock.sch" 50
+$EndSheet
+$Sheet
+S 3650 4900 1200 1000
+U 60A44A82
+F0 "Memory" 50
+F1 "memory.sch" 50
+$EndSheet
+$Sheet
+S 2350 4900 1150 1000
+U 60AE7F64
+F0 "Address Decoder" 50
+F1 "address.sch" 50
+$EndSheet
+$Sheet
+S 1100 6150 1100 950 
+U 60B749FD
+F0 "Decoder" 50
+F1 "decoder.sch" 50
+$EndSheet
+$Sheet
+S 2350 6150 1150 950 
+U 60BC7BD0
+F0 "Control" 50
+F1 "control.sch" 50
+$EndSheet
+Text GLabel 5450 2000 2    50   Input ~ 0
+DBUS9
+Text GLabel 5450 2100 2    50   Input ~ 0
+WRO
+Text GLabel 5450 1900 2    50   Input ~ 0
+O0
+Text GLabel 5450 1800 2    50   Input ~ 0
+~O0
+Text GLabel 5450 2200 2    50   Input ~ 0
+DBUS9
+Text GLabel 5450 2300 2    50   Input ~ 0
+ABUS9
+Text GLabel 7150 4100 2    50   Input ~ 0
+CLK
+Text GLabel 7400 4000 2    50   Input ~ 0
+~CDIV
+Wire Wire Line
+	7400 4000 7150 4000
+Text GLabel 7400 3800 2    50   Input ~ 0
+~CDIV
+Wire Wire Line
+	7400 3800 7150 3800
+Text GLabel 10550 4200 2    50   Input ~ 0
+DBUS0
+Text GLabel 10550 4300 2    50   Input ~ 0
+ABUS0
+Text GLabel 9500 4300 0    50   Input ~ 0
+~SW0
+Text GLabel 5450 4100 2    50   Input ~ 0
+SC
+Text GLabel 5650 4000 2    50   Input ~ 0
+~S0
+Text GLabel 5650 3800 2    50   Input ~ 0
+~S0
+Wire Wire Line
+	5650 3800 5450 3800
+Wire Wire Line
+	5650 4000 5450 4000
+Text GLabel 5450 3900 2    50   Input ~ 0
+S0
+Text GLabel 8850 4200 2    50   Input ~ 0
+DBUS1
+Text GLabel 8850 4300 2    50   Input ~ 0
+ABUS1
+Text GLabel 3950 4000 2    50   Input ~ 0
+~S1
+Text GLabel 3950 3800 2    50   Input ~ 0
+~S1
+Wire Wire Line
+	3950 3800 3750 3800
+Wire Wire Line
+	3950 4000 3750 4000
+Text GLabel 3750 3900 2    50   Input ~ 0
+S1
+Text GLabel 7150 4200 2    50   Input ~ 0
+DBUS2
+Text GLabel 7150 4300 2    50   Input ~ 0
+ABUS2
+Text GLabel 4150 4100 2    50   Input ~ 0
+~S0
+Wire Wire Line
+	4150 4100 3750 4100
+Text GLabel 2050 4000 2    50   Input ~ 0
+S2IN
+Text GLabel 2250 3800 2    50   Input ~ 0
+~S2
+Wire Wire Line
+	2250 3800 2050 3800
+Text GLabel 2050 3900 2    50   Input ~ 0
+S2
+Text GLabel 5450 4200 2    50   Input ~ 0
+DBUS3
+Text GLabel 5450 4300 2    50   Input ~ 0
+ABUS3
+Text GLabel 2450 4100 2    50   Input ~ 0
+~S1
+Wire Wire Line
+	2450 4100 2050 4100
+Text GLabel 10750 2000 2    50   Input ~ 0
+~S3
+Text GLabel 10750 1800 2    50   Input ~ 0
+~S3
+Wire Wire Line
+	10750 1800 10550 1800
+Wire Wire Line
+	10750 2000 10550 2000
+Text GLabel 3750 4200 2    50   Input ~ 0
+DBUS4
+Text GLabel 3750 4300 2    50   Input ~ 0
+ABUS4
+Text GLabel 10550 2100 2    50   Input ~ 0
+~S2
+Text GLabel 4400 4300 0    50   Input ~ 0
+~SW3
+Text GLabel 6100 4300 0    50   Input ~ 0
+~SW2
+Text GLabel 7800 4300 0    50   Input ~ 0
+~SW1
+Text GLabel 7150 2000 2    50   Input ~ 0
+DBUS8
+Text GLabel 7150 2100 2    50   Input ~ 0
+WRO
+Text GLabel 7150 2200 2    50   Input ~ 0
+DBUS8
+Text GLabel 7150 2300 2    50   Input ~ 0
+ABUS8
+Text GLabel 8850 2100 2    50   Input ~ 0
+WRF
+Text GLabel 8850 2200 2    50   Input ~ 0
+DBUS7
+Text GLabel 8850 2300 2    50   Input ~ 0
+ABUS7
+Text GLabel 8850 2000 2    50   Input ~ 0
+NEXTF
+Text GLabel 8850 1900 2    50   Input ~ 0
+F
+Text GLabel 9000 1800 2    50   Input ~ 0
+~F
+Wire Wire Line
+	9000 1800 8850 1800
+Text GLabel 10550 3200 2    50   Input ~ 0
+INCP
+Text GLabel 10550 3300 2    50   Input ~ 0
+A0
+Text GLabel 10550 3400 2    50   Input ~ 0
+X0
+Text GLabel 1000 1300 0    50   Input ~ 0
+ALU_OUT
+$Sheet
+S 3650 6150 1200 950 
+U 60C3DB0A
+F0 "ALU" 50
+F1 "alu.sch" 50
+$EndSheet
+$Sheet
+S 5000 4900 1200 1000
+U 6090BB51
+F0 "Programmer" 50
+F1 "programmer.sch" 50
+$EndSheet
+Text GLabel 9500 2300 0    50   Input ~ 0
+~SW6
+Text GLabel 7800 2300 0    50   Input ~ 0
+~SW7
+Text GLabel 6100 2300 0    50   Input ~ 0
+~SW8
+Text GLabel 10550 3550 2    50   Input ~ 0
+~X0
+Text GLabel 8850 3400 2    50   Input ~ 0
+X1
+$Sheet
+S 6100 3100 1050 1300
+U 609FC03E
+F0 "Bit 2" 50
+F1 "slice-low.sch" 50
+F2 "ABUS" I R 7150 4300 50 
+F3 "DBUS" I R 7150 4200 50 
+F4 "~SW" I L 6100 4300 50 
+F5 "INCP" I R 7150 3200 50 
+F6 "AIN" I L 6100 3300 50 
+F7 "AOUT" I R 7150 3300 50 
+F8 "~XIN" I L 6100 3550 50 
+F9 "~P" I L 6100 3200 50 
+F10 "~XOUT" I R 7150 3550 50 
+F11 "XOUT" I R 7150 3400 50 
+F12 "SIN" I R 7150 4000 50 
+F13 "WRS" I R 7150 4100 50 
+F14 "SOUT" I R 7150 3900 50 
+F15 "~SOUT" I R 7150 3800 50 
+$EndSheet
+$Sheet
+S 6350 4900 1200 1000
+U 60A72A52
+F0 "Power" 50
+F1 "power.sch" 50
+$EndSheet
+Text GLabel 10550 2300 2    50   Input ~ 0
+ABUS6
+Text GLabel 10550 2200 2    50   Input ~ 0
+DBUS6
+Wire Wire Line
+	850  2650 10900 2650
+Wire Wire Line
+	10550 1200 10900 1200
+Wire Wire Line
+	10900 1200 10900 2650
+Wire Wire Line
+	11000 1300 11000 2750
+Wire Wire Line
+	750  2750 11000 2750
+Wire Wire Line
+	10550 1300 11000 1300
+Wire Wire Line
+	11100 2850 11100 1550
+Wire Wire Line
+	650  2850 11100 2850
+$Sheet
+S 5000 6150 1200 950 
+U 609C40CC
+F0 "UI" 50
+F1 "ui.sch" 50
+$EndSheet
+$Sheet
+S 7700 4900 1200 1000
+U 60B6F292
+F0 "I2C" 50
+F1 "i2c.sch" 50
+$EndSheet
+$Sheet
+S 1000 3100 1050 1300
+U 60D38EA9
+F0 "Bit 5" 50
+F1 "slice-low.sch" 50
+F2 "ABUS" I R 2050 4300 50 
+F3 "DBUS" I R 2050 4200 50 
+F4 "~SW" I L 1000 4300 50 
+F5 "INCP" I R 2050 3200 50 
+F6 "AIN" I L 1000 3300 50 
+F7 "AOUT" I R 2050 3300 50 
+F8 "~XIN" I L 1000 3550 50 
+F9 "~P" I L 1000 3200 50 
+F10 "~XOUT" I R 2050 3550 50 
+F11 "XOUT" I R 2050 3400 50 
+F12 "SIN" I R 2050 4000 50 
+F13 "WRS" I R 2050 4100 50 
+F14 "SOUT" I R 2050 3900 50 
+F15 "~SOUT" I R 2050 3800 50 
+$EndSheet
+$Sheet
+S 9500 1100 1050 1300
+U 60D3B051
+F0 "Bit 6" 50
+F1 "slice-low.sch" 50
+F2 "ABUS" I R 10550 2300 50 
+F3 "DBUS" I R 10550 2200 50 
+F4 "~SW" I L 9500 2300 50 
+F5 "INCP" I R 10550 1200 50 
+F6 "AIN" I L 9500 1300 50 
+F7 "AOUT" I R 10550 1300 50 
+F8 "~XIN" I L 9500 1550 50 
+F9 "~P" I L 9500 1200 50 
+F10 "~XOUT" I R 10550 1550 50 
+F11 "XOUT" I R 10550 1400 50 
+F12 "SIN" I R 10550 2000 50 
+F13 "WRS" I R 10550 2100 50 
+F14 "SOUT" I R 10550 1900 50 
+F15 "~SOUT" I R 10550 1800 50 
+$EndSheet
+Text GLabel 8850 4100 2    50   Input ~ 0
+I2C_WR
+Text GLabel 10550 4100 2    50   Input ~ 0
+I2C_WR
+Text GLabel 8850 4000 2    50   Input ~ 0
+DBUS10
+Text GLabel 8850 3800 2    50   Input ~ 0
+I2C_SCL_OUT
+Text GLabel 10550 4000 2    50   Input ~ 0
+DBUS9
+Text GLabel 10550 3800 2    50   Input ~ 0
+I2C_SDA_OUT
+Text GLabel 7150 1900 2    50   Input ~ 0
+DEREF
+Wire Wire Line
+	2700 1550 2050 1550
+Wire Wire Line
+	4400 1550 3750 1550
+Wire Wire Line
+	6100 1550 5450 1550
+Wire Wire Line
+	7800 1550 7150 1550
+$Comp
+L power:VCC #PWR?
+U 1 1 612B2905
+P 1000 1550
+AR Path="/608D9BDD/612B2905" Ref="#PWR?"  Part="1" 
+AR Path="/609A143E/612B2905" Ref="#PWR?"  Part="1" 
+AR Path="/609D71FD/612B2905" Ref="#PWR?"  Part="1" 
+AR Path="/609D7793/612B2905" Ref="#PWR?"  Part="1" 
+AR Path="/609D7D1E/612B2905" Ref="#PWR?"  Part="1" 
+AR Path="/612B2905" Ref="#PWR01"  Part="1" 
+F 0 "#PWR01" H 1000 1400 50  0001 C CNN
+F 1 "VCC" H 1015 1723 50  0000 C CNN
+F 2 "" H 1000 1550 50  0001 C CNN
+F 3 "" H 1000 1550 50  0001 C CNN
+	1    1000 1550
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	9500 1550 8850 1550
+Wire Wire Line
+	10550 1550 11100 1550
+Wire Wire Line
+	1000 3550 650  3550
+Wire Wire Line
+	650  2850 650  3550
+Wire Wire Line
+	2700 3550 2050 3550
+Wire Wire Line
+	4400 3550 3750 3550
+Wire Wire Line
+	7800 3550 7150 3550
+Wire Wire Line
+	9500 3550 8850 3550
+Wire Wire Line
+	6100 3550 5450 3550
+Text GLabel 10550 1900 2    50   Input ~ 0
+S3
+Text GLabel 7150 3900 2    50   Input ~ 0
+CDIV
+$EndSCHEMATC
