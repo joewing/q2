@@ -3,6 +3,11 @@
 
   .org  0x800
 
+  lea   =100
+loop:
+  add   =neg1
+  sta   =x9
+
   lea   $+3
   jmp   @$+1
   .dw   i2c_start
@@ -32,6 +37,9 @@
   lea   $+3
   jmp   @$+1
   .dw   i2c_stop
+
+  lda   =x9
+  jfc   loop
 
   jmp   $
 

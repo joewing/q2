@@ -1,0 +1,625 @@
+
+.def  ip    2   ; Instruction pointer
+.def  dsp   3   ; Data stack pointer
+.def  rsp   4   ; Return stack pointer
+.def  dp    5   ; Dictionary pointer.
+.def  last  6   ; Last word
+.def  state 7   ; State (1-compiling)
+.def  base  8   ; Number base
+.def  x0    16
+.def  x1    17
+.def  x2    18
+.def  x3    19
+.def  x4    20
+
+  .org  0
+  jmp   @$+1
+  .dw   init
+
+  .org  32
+zero:
+  .dw   0
+one:
+  .dw   1
+neg1:
+  .dw   -1
+rsp_init:
+  .dw   0x100
+dsp_init:
+  .dw   0x200
+
+; Dictionary layout:
+;   prev-ptr
+;   length / flags
+;   name
+;   codeword
+;   code
+
+  .org  0x800
+init:
+
+  lea   =0
+  sta   =state
+  lea   =10
+  sta   =base
+  lda   =rsp_init
+  sta   =rsp
+  lda   =dsp_init
+  sta   =dsp
+  lda   dp_init_ptr
+  sta   =dp
+  lda   last_init_ptr
+  sta   =last
+
+  lea   cold_start
+  sta   =ip
+  jmp   @$+1
+  .dw   next
+cold_start:
+  .dw   test
+dp_init_ptr:
+  .dw   dp_init
+last_init_ptr:
+  .dw   last_init
+
+
+; Jump here to execute the next instruction
+; Before:
+;         prev-ptr
+;         length
+;         name            prev-ptr
+;         codeword        length
+;         ...             name
+;   ip -> instr1      ->  codeword
+;         instr2          code
+;         ...             ...
+;
+; After:
+;         prev-ptr
+;         length
+;         name
+;         codeword
+;         ...
+;         instr1 (executing)
+;   ip -> instr2
+;         ...
+;
+; On entry, ip -> instruction to execute
+; This will update ip to point to the next
+; instruction and execute the current instruction
+; by jumping to the interpreter with A -> code
+next:
+  lda   @=ip
+  sta   =x0
+  lea   =1
+  add   =ip
+  sta   =ip
+  lda   @=x0
+  sta   =x1
+  jmp   @=x1
+
+; Interpreter
+;   - Push ip to the return stack.
+;   - Set ip to the first instruction (x0 + 1).
+;   - Jump to "next" to begin executing it.
+docol:
+  lda   =ip
+  sta   @=rsp
+  lda   =rsp
+  add   =neg1
+  sta   =rsp
+  lea   =1
+  add   =x0
+  sta   =ip
+  jmp   next
+
+; Word to create an entry in the dictionary.
+; create ( n a -- )
+_create:
+  .dw   0
+  .dw   6
+  .dw   "create"
+create:
+  .dw   $+1
+  lda   =last
+  sta   @=dp      ; Set link
+  lda   =dp
+  sta   =last     ; Update last
+  add   =one      ; Pointer to length field
+  sta   =dp
+  lea   =1
+  add   =dsp
+  sta   =dsp
+  lda   @=dsp
+  sta   =x0       ; x0 = length
+  lea   =1
+  add   =dsp
+  sta   =dsp
+  lda   @=dsp
+  sta   =x1       ; x1 = address
+  sta   @=dp      ; Save length
+  lea   =1
+  add   =dp
+  sta   =dp
+  lda   =x0
+create_loop:
+  add   =neg1
+  sta   =x0
+  lda   @=x1
+  sta   @=dp      ; Save name
+  lea   =1
+  add   =dp
+  sta   =dp
+  lea   =1
+  add   =x1
+  sta   =x1
+  lda   =x0
+  jfc   create_loop
+  jmp   next
+
+_comma:
+  .dw   _create
+  .dw   1
+  .dw   ","
+comma:
+  .dw   $+1
+  lea   =1
+  add   =dsp
+  sta   =dsp
+  lda   @=dsp
+  sta   @=dp
+  lea   =1
+  add   =dp
+  sta   =dp
+  jmp   @$+1
+  .dw   next
+
+_lbrack:
+  .dw   _comma
+  .dw   1
+  .dw   "["
+lbrack:
+  .dw   $+1
+  lea   =0
+  sta   =state
+  jmp   @$+1
+  .dw   next
+
+_rbrack:
+  .dw   _lbrack
+  .dw   1
+  .dw   "]"
+rbrack:
+  .dw   $+1
+  lea   =1
+  sta   =state
+  jmp   @$+1
+  .dw   next
+
+_colon:
+  .dw   _rbrack
+  .dw   1
+  .dw   ":"
+colon:
+  .dw   docol
+  .dw   word
+  .dw   create
+  .dw   lit, docol, comma
+  .dw   rbrack
+  .dw   exit
+
+_semicolon:
+  .dw   _colon
+  .dw   1 | 0x800
+  .dw   ";"
+semicolon:
+  .dw   docol
+  .dw   lit, exit, comma
+  .dw   lbrack
+  .dw   exit
+
+_immediate:
+  .dw   _semicolon
+  .dw   9 | 0x800
+  .dw   "immediate"
+immediate:
+  .dw   $+1
+  lea   =1      ; Skip link
+  add   =last
+  sta   =x0
+  lda   @=x0    ; Load length/flags
+  add   immediate_mask
+  sta   @=x0
+  jmp   @$+1
+  .dw   next
+immediate_mask:
+  .dw   0x800
+
+_tick:
+  .dw   _immediate
+  .dw   1
+  .dw   "'"
+tick:
+  .dw   $+1
+  lda   =state
+  jfc   tick_not_compiling
+
+  ; Compiling, just push the next word.
+  lda   @=ip
+  sta   @=dsp
+  lea   =1
+  add   =dsp
+  sta   =dsp
+  lea   =1
+  add   =ip
+  sta   =ip
+  jmp   @$+1
+  .dw   next
+
+tick_not_compiling:
+
+  ; Not compiling, read, look up, and push the next word.
+  ; TODO
+
+  jmp   @$+1
+  .dw   next
+
+  .align 128
+
+; Word to lookup an entry in the dictionary.
+; We assume the word to find is counted and stoerd at =dp.
+_find:
+  .dw   _tick
+  .dw   4
+  .dw   "find"
+  .dw   $+1
+find:
+  lda   =last
+find_outer_loop:
+  sta   =x1             ; x1 -> start of dictionary entry (link)
+  add   =one
+  sta   =x0             ; x0 -> flags/length word
+  lda   @=x0            ; A = flags/length
+  nor   =zero
+  nor   find_len_mask 
+  sta   =x2             ; x2 = word length
+  nor   =zero
+  add   @=dp
+  nor   =zero
+  jfc   find_next       ; Length matches?
+  lea   =1
+  add   =x0
+  sta   =x0             ; x0 -> first character of haystack
+  lea   =1
+  add   =dp
+  sta   =x3             ; x3 -> first character of needle
+  lda   =x2
+find_inner_loop:
+  add   =neg1
+  sta   =x2
+  lda   @=x0
+  nor   =zero
+  add   @=x3
+  nor   =zero
+  jfc   find_next       ; Characters match?
+  lea   =1
+  add   =x3
+  sta   =x3
+  lea   =1
+  add   =x0
+  sta   =x0
+  lda   =x2
+  jfc   find_inner_loop
+
+  ; Found
+  lda   =x1
+  sta   @=dsp
+  lda   =dsp
+  add   =neg1
+  sta   =dsp
+  jmp   @$+1
+  .dw   next
+
+find_next:
+
+  ; Not a match; follow the link.
+  lda   @=x1
+  jfc   find_outer_loop
+
+  ; Not found.
+  lea   =0
+  sta   @=dsp
+  lda   =dsp
+  add   =neg1
+  sta   =dsp
+  jmp   @$+1
+  .dw   next
+
+find_len_mask:
+  .dw   0x800
+
+_exit:
+  .dw   _find
+  .dw   4
+  .dw   "exit"
+exit:
+  .dw   $+1
+  lda   =rsp
+  add   =neg1
+  sta   =rsp
+  lda   @=rsp
+  sta   =ip
+
+_emit:
+  .dw   _exit
+  .dw   4
+  .dw   "emit"
+emit:
+  .dw   $+1
+  lea   =1
+  add   =dsp
+  sta   =dsp
+  lda   @=dsp
+  sta   @=neg1
+  jmp   @$+1
+  .dw   next
+
+_key:
+  .dw   _emit
+  .dw   3
+  .dw   "key"
+key:
+  .dw   $+1
+key_loop:
+  lda   @=neg1
+  jfc   $+2
+  jmp   key_loop
+  sta   @=dsp
+  lda   =dsp
+  add   =neg1
+  sta   =dsp
+  jmp   @$+1
+  .dw   next
+
+_word:
+  .dw   _key
+  .dw   4
+  .dw   "word"
+word:
+  .dw   $+1
+  lea   $+2
+  jmp   do_word
+  jmp   @$+1
+  .dw   next
+
+do_word:
+  sta   =x4
+  ; TODO
+  jmp   @=x4
+
+_number:
+  .dw   _word
+  .dw   6
+  .dw   "number"
+number:
+  .dw   $+1
+; TODO
+  jmp   @$+1
+  .dw   next
+
+; Get pointer to code word from start of dictionary entry.
+_tcfa:
+  .dw   _number
+  .dw   4
+  .dw   ">cfa"
+tcfa:
+  .dw   $+1
+  lea   =1
+  add   =dsp
+  sta   =x1
+  lea   =1
+  add   @=x1              ; A -> flags/length 
+  sta   =x0               ; x0 -> flags/length
+  lda   @=x0              ; A = flags/length
+  nor   =zero
+  nor   tcfa_length_mask  ; A = length
+  add   =one              ; Skip flags/length
+  add   =x0               ; Skip to codeword
+  sta   @=x1
+  jmp   @$+1
+  .dw   next
+tcfa_length_mask:
+  .dw   0x800
+
+_lit:
+  .dw   _tcfa
+  .dw   3 | 0x800
+  .dw   "lit"
+lit:
+  .dw   $+1
+  lda   @=ip
+  sta   @=dsp
+  lea   =1
+  add   =ip
+  sta   =ip
+  lda   =dsp
+  add   =neg1
+  sta   =dsp
+  jmp   @$+1
+  .dw   next
+
+_lits:
+  .dw   _lit
+  .dw   4 | 0x800
+  .dw   "lits"
+lits:
+  .dw   $+1
+  lda   @=ip
+  sta   @=dsp   ; Length
+  lea   =1
+  add   =ip
+  sta   =ip
+  lda   =dsp
+  add   =neg1
+  sta   =dsp
+  lda   @=ip
+  sta   @=dsp   ; Address
+  lea   =1
+  add   =ip
+  sta   =ip
+  lda   =dsp
+  add   =neg1
+  sta   =dsp
+  jmp   @$+1
+  .dw   next
+
+_quit:
+  .dw   _lits
+  .dw   4
+  .dw   "quit"
+quit:
+  .dw   $+1
+  jmp   $   ; TODO
+
+_test:
+  .dw   _quit
+  .dw   4
+  .dw   "test"
+test:
+  .dw   docol
+  .dw   lit   
+  .dw   65
+  .dw   lit   
+  .dw   4
+  .dw   plus
+  .dw   emit
+  .dw   quit
+  .dw   exit
+
+  .align 128    ; TODO: rearrange/make sure this is in the right place
+
+_branch:
+  .dw   _test
+  .dw   6
+  .dw   "branch"
+branch:
+  .dw   $+1
+  lda   @=ip
+  add   =ip
+  sta   =ip
+  jmp   @$+1
+  .dw   next
+
+_zbranch:
+  .dw   _branch
+  .dw   7
+  .dw   "0branch"
+zbranch:
+  .dw   $+1
+  lea   =1
+  add   =dsp
+  sta   =dsp
+  lda   @=dsp
+  jfc   zbranch_not_zero
+  jmp   branch + 1
+zbranch_not_zero:
+  lea   =1
+  add   =ip
+  sta   =ip
+  jmp   @$+1
+  .dw   next
+
+_interpret:
+  .dw   _zbranch
+  .dw   9
+  .dw   "interpret"
+interpret:
+  .dw   $+1
+
+  ; Read the next word
+  lea   $+3
+  jmp   @$+1
+  .dw   do_word
+
+  ; Check dictionary
+
+  ; Parse number
+
+  jmp   @$+1
+  .dw   next
+
+_plus:
+  .dw   _interpret
+  .dw   1
+  .dw   "+"
+plus:
+  .dw   $+1
+  lea   =1
+  add   =dsp
+  sta   =dsp
+  lda   @=dsp
+  sta   =x0
+  lea   =1
+  add   =dsp
+  sta   =x1
+  lda   @=x1
+  add   =x0
+  sta   @=x1
+  jmp   @$+1
+  .dw   next
+
+_dup:
+  .dw   _plus
+  .dw   3
+  .dw   "dup"
+dup:
+  .dw   $+1
+  lea   =1
+  add   =dsp
+  sta   =x0
+  lda   @=x0
+  sta   @=dsp
+  lda   =dsp
+  add   =neg1
+  sta   =dsp
+  jmp   @$+1
+  .dw   next
+
+_swap:
+  .dw   _dup
+  .dw   4
+  .dw   "swap"
+swap:
+  .dw   $+1
+  lea   =1
+  add   =dsp
+  sta   =x0
+  lda   @=x0
+  sta   =x2
+  lea   =2
+  add   =dsp
+  sta   =x1
+  lda   @=x1
+  sta   @=x0
+  lda   =x2
+  sta   @=x1
+  jmp   @$+1
+  .dw   next
+
+; Word to drop the top of the data stack.
+last_init:
+_drop:
+  .dw   _dup
+  .dw   4
+  .dw   "drop"
+  .dw   $+1
+  lea   =1
+  add   =dsp
+  sta   =dsp
+  jmp   @$+1
+  .dw   next
+dp_init:
+
+  .dw   4
+  .dw   "test"
+

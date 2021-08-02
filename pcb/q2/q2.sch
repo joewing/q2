@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 1 107
+Sheet 1 108
 Title ""
 Date ""
 Rev ""
@@ -618,4 +618,10 @@ Text GLabel 10550 1900 2    50   Input ~ 0
 S3
 Text GLabel 7150 3900 2    50   Input ~ 0
 CDIV
+$Sheet
+S 9100 4900 1150 1000
+U 60C20C19
+F0 "Front Panel" 50
+F1 "frontpanel.sch" 50
+$EndSheet
 $EndSCHEMATC

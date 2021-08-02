@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 89 107
+Sheet 89 108
 Title ""
 Date ""
 Rev ""
@@ -225,4 +225,94 @@ F 3 "" H 7450 2800 50  0001 C CNN
 	1    7450 2800
 	1    0    0    -1  
 $EndComp
+$Comp
+L Mechanical:MountingHole_Pad H1
+U 1 1 60BDEB4A
+P 1550 2000
+F 0 "H1" V 1504 2150 50  0000 L CNN
+F 1 "MountingHole_Pad" V 1595 2150 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3_Pad_Via" H 1550 2000 50  0001 C CNN
+F 3 "~" H 1550 2000 50  0001 C CNN
+	1    1550 2000
+	0    1    1    0   
+$EndComp
+$Comp
+L Mechanical:MountingHole_Pad H2
+U 1 1 60BDF659
+P 1550 2250
+F 0 "H2" V 1504 2400 50  0000 L CNN
+F 1 "MountingHole_Pad" V 1595 2400 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3_Pad_Via" H 1550 2250 50  0001 C CNN
+F 3 "~" H 1550 2250 50  0001 C CNN
+	1    1550 2250
+	0    1    1    0   
+$EndComp
+$Comp
+L Mechanical:MountingHole_Pad H3
+U 1 1 60BDFB05
+P 1550 2500
+F 0 "H3" V 1504 2650 50  0000 L CNN
+F 1 "MountingHole_Pad" V 1595 2650 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3_Pad_Via" H 1550 2500 50  0001 C CNN
+F 3 "~" H 1550 2500 50  0001 C CNN
+	1    1550 2500
+	0    1    1    0   
+$EndComp
+$Comp
+L Mechanical:MountingHole_Pad H4
+U 1 1 60BDFE84
+P 1550 2750
+F 0 "H4" V 1504 2900 50  0000 L CNN
+F 1 "MountingHole_Pad" V 1595 2900 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3_Pad_Via" H 1550 2750 50  0001 C CNN
+F 3 "~" H 1550 2750 50  0001 C CNN
+	1    1550 2750
+	0    1    1    0   
+$EndComp
+$Comp
+L power:GND #PWR0831
+U 1 1 60BE0152
+P 1350 2900
+F 0 "#PWR0831" H 1350 2650 50  0001 C CNN
+F 1 "GND" H 1355 2727 50  0000 C CNN
+F 2 "" H 1350 2900 50  0001 C CNN
+F 3 "" H 1350 2900 50  0001 C CNN
+	1    1350 2900
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1350 2000 1450 2000
+Wire Wire Line
+	1350 2000 1350 2250
+Wire Wire Line
+	1450 2250 1350 2250
+Connection ~ 1350 2250
+Wire Wire Line
+	1350 2250 1350 2500
+Wire Wire Line
+	1450 2500 1350 2500
+Connection ~ 1350 2500
+Wire Wire Line
+	1350 2500 1350 2750
+Wire Wire Line
+	1450 2750 1350 2750
+Connection ~ 1350 2750
+Wire Wire Line
+	1350 2750 1350 2900
+$Comp
+L Mechanical:MountingHole_Pad H5
+U 1 1 609C8CF7
+P 1550 1750
+F 0 "H5" V 1504 1900 50  0000 L CNN
+F 1 "MountingHole_Pad" V 1595 1900 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3_Pad_Via" H 1550 1750 50  0001 C CNN
+F 3 "~" H 1550 1750 50  0001 C CNN
+	1    1550 1750
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	1450 1750 1350 1750
+Wire Wire Line
+	1350 1750 1350 2000
+Connection ~ 1350 2000
 $EndSCHEMATC

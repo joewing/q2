@@ -1,4 +1,6 @@
 
+`include "nfet.v"
+`include "dff.v"
 `include "q2_control.v"
 `include "q2_alu.v"
 `include "q2_slice.v"

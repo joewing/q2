@@ -5,15 +5,14 @@
 
   .align 128
 
-; Note I2C signals are inverted.
 i2c_zero:
-  .dw   I2C_EN | I2C_SDA | I2C_SCL
-i2c_zero_clk:
-  .dw   I2C_EN | I2C_SDA
-i2c_one:
-  .dw   I2C_EN | I2C_SCL
-i2c_one_clk:
   .dw   I2C_EN
+i2c_zero_clk:
+  .dw   I2C_EN | I2C_SCL
+i2c_one:
+  .dw   I2C_EN | I2C_SDA
+i2c_one_clk:
+  .dw   I2C_EN | I2C_SDA | I2C_SCL
 i2c_input_mask:
   .dw   ~I2C_SDA
 

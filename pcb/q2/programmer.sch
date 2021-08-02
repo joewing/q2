@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 80 107
+Sheet 80 108
 Title ""
 Date ""
 Rev ""
@@ -94,377 +94,37 @@ Wire Wire Line
 	2950 1400 2950 2100
 Wire Wire Line
 	2950 2100 5050 2100
-Text GLabel 4450 1400 1    50   Input ~ 0
+Text GLabel 4450 1100 1    50   Input ~ 0
 ~SW8
-Text GLabel 3900 1400 1    50   Input ~ 0
+Text GLabel 3900 1100 1    50   Input ~ 0
 ~SW9
-Text GLabel 3400 1400 1    50   Input ~ 0
+Text GLabel 3400 1100 1    50   Input ~ 0
 ~SW10
-Text GLabel 2950 1400 1    50   Input ~ 0
+Text GLabel 2950 1100 1    50   Input ~ 0
 ~SW11
-Text Label 4900 1900 2    50   ~ 0
-~DOUT4
 Wire Wire Line
 	4900 1900 5050 1900
 NoConn ~ 6650 1600
 NoConn ~ 6650 1700
-$Comp
-L power:GND #PWR?
-U 1 1 60929AB2
-P 3150 5100
-AR Path="/608D9BDD/608D9C42/608D9C9B/60929AB2" Ref="#PWR?"  Part="1" 
-AR Path="/608D9BDD/608D9C42/60929AB2" Ref="#PWR?"  Part="1" 
-AR Path="/608D9BDD/60929AB2" Ref="#PWR?"  Part="1" 
-AR Path="/609A143E/60929AB2" Ref="#PWR?"  Part="1" 
-AR Path="/609A36A9/60929AB2" Ref="#PWR?"  Part="1" 
-AR Path="/609E7D64/60929AB2" Ref="#PWR?"  Part="1" 
-AR Path="/609EDBE1/60929AB2" Ref="#PWR?"  Part="1" 
-AR Path="/609FBC79/60929AB2" Ref="#PWR?"  Part="1" 
-AR Path="/609FC03E/60929AB2" Ref="#PWR?"  Part="1" 
-AR Path="/609FC502/60929AB2" Ref="#PWR?"  Part="1" 
-AR Path="/609FCA98/60929AB2" Ref="#PWR?"  Part="1" 
-AR Path="/6090BB51/60929AB2" Ref="#PWR0620"  Part="1" 
-F 0 "#PWR0620" H 3150 4850 50  0001 C CNN
-F 1 "GND" H 3155 4927 50  0000 C CNN
-F 2 "" H 3150 5100 50  0001 C CNN
-F 3 "" H 3150 5100 50  0001 C CNN
-	1    3150 5100
-	1    0    0    -1  
-$EndComp
-Text GLabel 2850 4900 0    50   Input ~ 0
-DBUS0
-Text Label 3150 4700 0    50   ~ 0
-~DOUT0
-$Comp
-L power:GND #PWR?
-U 1 1 6092B0E6
-P 4250 5100
-AR Path="/608D9BDD/608D9C42/608D9C9B/6092B0E6" Ref="#PWR?"  Part="1" 
-AR Path="/608D9BDD/608D9C42/6092B0E6" Ref="#PWR?"  Part="1" 
-AR Path="/608D9BDD/6092B0E6" Ref="#PWR?"  Part="1" 
-AR Path="/609A143E/6092B0E6" Ref="#PWR?"  Part="1" 
-AR Path="/609A36A9/6092B0E6" Ref="#PWR?"  Part="1" 
-AR Path="/609E7D64/6092B0E6" Ref="#PWR?"  Part="1" 
-AR Path="/609EDBE1/6092B0E6" Ref="#PWR?"  Part="1" 
-AR Path="/609FBC79/6092B0E6" Ref="#PWR?"  Part="1" 
-AR Path="/609FC03E/6092B0E6" Ref="#PWR?"  Part="1" 
-AR Path="/609FC502/6092B0E6" Ref="#PWR?"  Part="1" 
-AR Path="/609FCA98/6092B0E6" Ref="#PWR?"  Part="1" 
-AR Path="/6090BB51/6092B0E6" Ref="#PWR0621"  Part="1" 
-F 0 "#PWR0621" H 4250 4850 50  0001 C CNN
-F 1 "GND" H 4255 4927 50  0000 C CNN
-F 2 "" H 4250 5100 50  0001 C CNN
-F 3 "" H 4250 5100 50  0001 C CNN
-	1    4250 5100
-	1    0    0    -1  
-$EndComp
-Text GLabel 3950 4900 0    50   Input ~ 0
-DBUS1
-Text Label 4250 4700 0    50   ~ 0
-~DOUT1
-$Comp
-L power:GND #PWR?
-U 1 1 6092C781
-P 5350 5100
-AR Path="/608D9BDD/608D9C42/608D9C9B/6092C781" Ref="#PWR?"  Part="1" 
-AR Path="/608D9BDD/608D9C42/6092C781" Ref="#PWR?"  Part="1" 
-AR Path="/608D9BDD/6092C781" Ref="#PWR?"  Part="1" 
-AR Path="/609A143E/6092C781" Ref="#PWR?"  Part="1" 
-AR Path="/609A36A9/6092C781" Ref="#PWR?"  Part="1" 
-AR Path="/609E7D64/6092C781" Ref="#PWR?"  Part="1" 
-AR Path="/609EDBE1/6092C781" Ref="#PWR?"  Part="1" 
-AR Path="/609FBC79/6092C781" Ref="#PWR?"  Part="1" 
-AR Path="/609FC03E/6092C781" Ref="#PWR?"  Part="1" 
-AR Path="/609FC502/6092C781" Ref="#PWR?"  Part="1" 
-AR Path="/609FCA98/6092C781" Ref="#PWR?"  Part="1" 
-AR Path="/6090BB51/6092C781" Ref="#PWR0622"  Part="1" 
-F 0 "#PWR0622" H 5350 4850 50  0001 C CNN
-F 1 "GND" H 5355 4927 50  0000 C CNN
-F 2 "" H 5350 5100 50  0001 C CNN
-F 3 "" H 5350 5100 50  0001 C CNN
-	1    5350 5100
-	1    0    0    -1  
-$EndComp
-Text GLabel 5050 4900 0    50   Input ~ 0
-DBUS2
-Text Label 5350 4700 0    50   ~ 0
-~DOUT2
-$Comp
-L power:GND #PWR?
-U 1 1 6092D578
-P 6450 5100
-AR Path="/608D9BDD/608D9C42/608D9C9B/6092D578" Ref="#PWR?"  Part="1" 
-AR Path="/608D9BDD/608D9C42/6092D578" Ref="#PWR?"  Part="1" 
-AR Path="/608D9BDD/6092D578" Ref="#PWR?"  Part="1" 
-AR Path="/609A143E/6092D578" Ref="#PWR?"  Part="1" 
-AR Path="/609A36A9/6092D578" Ref="#PWR?"  Part="1" 
-AR Path="/609E7D64/6092D578" Ref="#PWR?"  Part="1" 
-AR Path="/609EDBE1/6092D578" Ref="#PWR?"  Part="1" 
-AR Path="/609FBC79/6092D578" Ref="#PWR?"  Part="1" 
-AR Path="/609FC03E/6092D578" Ref="#PWR?"  Part="1" 
-AR Path="/609FC502/6092D578" Ref="#PWR?"  Part="1" 
-AR Path="/609FCA98/6092D578" Ref="#PWR?"  Part="1" 
-AR Path="/6090BB51/6092D578" Ref="#PWR0623"  Part="1" 
-F 0 "#PWR0623" H 6450 4850 50  0001 C CNN
-F 1 "GND" H 6455 4927 50  0000 C CNN
-F 2 "" H 6450 5100 50  0001 C CNN
-F 3 "" H 6450 5100 50  0001 C CNN
-	1    6450 5100
-	1    0    0    -1  
-$EndComp
-Text GLabel 6150 4900 0    50   Input ~ 0
-DBUS3
-Text Label 6450 4700 0    50   ~ 0
-~DOUT3
-$Comp
-L power:GND #PWR?
-U 1 1 6092EE8F
-P 7550 5100
-AR Path="/608D9BDD/608D9C42/608D9C9B/6092EE8F" Ref="#PWR?"  Part="1" 
-AR Path="/608D9BDD/608D9C42/6092EE8F" Ref="#PWR?"  Part="1" 
-AR Path="/608D9BDD/6092EE8F" Ref="#PWR?"  Part="1" 
-AR Path="/609A143E/6092EE8F" Ref="#PWR?"  Part="1" 
-AR Path="/609A36A9/6092EE8F" Ref="#PWR?"  Part="1" 
-AR Path="/609E7D64/6092EE8F" Ref="#PWR?"  Part="1" 
-AR Path="/609EDBE1/6092EE8F" Ref="#PWR?"  Part="1" 
-AR Path="/609FBC79/6092EE8F" Ref="#PWR?"  Part="1" 
-AR Path="/609FC03E/6092EE8F" Ref="#PWR?"  Part="1" 
-AR Path="/609FC502/6092EE8F" Ref="#PWR?"  Part="1" 
-AR Path="/609FCA98/6092EE8F" Ref="#PWR?"  Part="1" 
-AR Path="/6090BB51/6092EE8F" Ref="#PWR0624"  Part="1" 
-F 0 "#PWR0624" H 7550 4850 50  0001 C CNN
-F 1 "GND" H 7555 4927 50  0000 C CNN
-F 2 "" H 7550 5100 50  0001 C CNN
-F 3 "" H 7550 5100 50  0001 C CNN
-	1    7550 5100
-	1    0    0    -1  
-$EndComp
-Text GLabel 7250 4900 0    50   Input ~ 0
-DBUS4
-Text Label 7550 4700 0    50   ~ 0
-~DOUT4
-$Comp
-L power:GND #PWR?
-U 1 1 609301A6
-P 8650 5100
-AR Path="/608D9BDD/608D9C42/608D9C9B/609301A6" Ref="#PWR?"  Part="1" 
-AR Path="/608D9BDD/608D9C42/609301A6" Ref="#PWR?"  Part="1" 
-AR Path="/608D9BDD/609301A6" Ref="#PWR?"  Part="1" 
-AR Path="/609A143E/609301A6" Ref="#PWR?"  Part="1" 
-AR Path="/609A36A9/609301A6" Ref="#PWR?"  Part="1" 
-AR Path="/609E7D64/609301A6" Ref="#PWR?"  Part="1" 
-AR Path="/609EDBE1/609301A6" Ref="#PWR?"  Part="1" 
-AR Path="/609FBC79/609301A6" Ref="#PWR?"  Part="1" 
-AR Path="/609FC03E/609301A6" Ref="#PWR?"  Part="1" 
-AR Path="/609FC502/609301A6" Ref="#PWR?"  Part="1" 
-AR Path="/609FCA98/609301A6" Ref="#PWR?"  Part="1" 
-AR Path="/6090BB51/609301A6" Ref="#PWR0625"  Part="1" 
-F 0 "#PWR0625" H 8650 4850 50  0001 C CNN
-F 1 "GND" H 8655 4927 50  0000 C CNN
-F 2 "" H 8650 5100 50  0001 C CNN
-F 3 "" H 8650 5100 50  0001 C CNN
-	1    8650 5100
-	1    0    0    -1  
-$EndComp
-Text GLabel 8350 4900 0    50   Input ~ 0
-DBUS5
-Text Label 8650 4700 0    50   ~ 0
-~DOUT5
-$Comp
-L power:GND #PWR?
-U 1 1 6093C999
-P 3150 5900
-AR Path="/608D9BDD/608D9C42/608D9C9B/6093C999" Ref="#PWR?"  Part="1" 
-AR Path="/608D9BDD/608D9C42/6093C999" Ref="#PWR?"  Part="1" 
-AR Path="/608D9BDD/6093C999" Ref="#PWR?"  Part="1" 
-AR Path="/609A143E/6093C999" Ref="#PWR?"  Part="1" 
-AR Path="/609A36A9/6093C999" Ref="#PWR?"  Part="1" 
-AR Path="/609E7D64/6093C999" Ref="#PWR?"  Part="1" 
-AR Path="/609EDBE1/6093C999" Ref="#PWR?"  Part="1" 
-AR Path="/609FBC79/6093C999" Ref="#PWR?"  Part="1" 
-AR Path="/609FC03E/6093C999" Ref="#PWR?"  Part="1" 
-AR Path="/609FC502/6093C999" Ref="#PWR?"  Part="1" 
-AR Path="/609FCA98/6093C999" Ref="#PWR?"  Part="1" 
-AR Path="/6090BB51/6093C999" Ref="#PWR0626"  Part="1" 
-F 0 "#PWR0626" H 3150 5650 50  0001 C CNN
-F 1 "GND" H 3155 5727 50  0000 C CNN
-F 2 "" H 3150 5900 50  0001 C CNN
-F 3 "" H 3150 5900 50  0001 C CNN
-	1    3150 5900
-	1    0    0    -1  
-$EndComp
-Text GLabel 2850 5700 0    50   Input ~ 0
-DBUS6
-Text Label 3150 5500 0    50   ~ 0
-~DOUT6
-$Comp
-L power:GND #PWR?
-U 1 1 6093C9A7
-P 4250 5900
-AR Path="/608D9BDD/608D9C42/608D9C9B/6093C9A7" Ref="#PWR?"  Part="1" 
-AR Path="/608D9BDD/608D9C42/6093C9A7" Ref="#PWR?"  Part="1" 
-AR Path="/608D9BDD/6093C9A7" Ref="#PWR?"  Part="1" 
-AR Path="/609A143E/6093C9A7" Ref="#PWR?"  Part="1" 
-AR Path="/609A36A9/6093C9A7" Ref="#PWR?"  Part="1" 
-AR Path="/609E7D64/6093C9A7" Ref="#PWR?"  Part="1" 
-AR Path="/609EDBE1/6093C9A7" Ref="#PWR?"  Part="1" 
-AR Path="/609FBC79/6093C9A7" Ref="#PWR?"  Part="1" 
-AR Path="/609FC03E/6093C9A7" Ref="#PWR?"  Part="1" 
-AR Path="/609FC502/6093C9A7" Ref="#PWR?"  Part="1" 
-AR Path="/609FCA98/6093C9A7" Ref="#PWR?"  Part="1" 
-AR Path="/6090BB51/6093C9A7" Ref="#PWR0627"  Part="1" 
-F 0 "#PWR0627" H 4250 5650 50  0001 C CNN
-F 1 "GND" H 4255 5727 50  0000 C CNN
-F 2 "" H 4250 5900 50  0001 C CNN
-F 3 "" H 4250 5900 50  0001 C CNN
-	1    4250 5900
-	1    0    0    -1  
-$EndComp
-Text GLabel 3950 5700 0    50   Input ~ 0
-DBUS7
-Text Label 4250 5500 0    50   ~ 0
-~DOUT7
-$Comp
-L power:GND #PWR?
-U 1 1 6093C9B5
-P 5350 5900
-AR Path="/608D9BDD/608D9C42/608D9C9B/6093C9B5" Ref="#PWR?"  Part="1" 
-AR Path="/608D9BDD/608D9C42/6093C9B5" Ref="#PWR?"  Part="1" 
-AR Path="/608D9BDD/6093C9B5" Ref="#PWR?"  Part="1" 
-AR Path="/609A143E/6093C9B5" Ref="#PWR?"  Part="1" 
-AR Path="/609A36A9/6093C9B5" Ref="#PWR?"  Part="1" 
-AR Path="/609E7D64/6093C9B5" Ref="#PWR?"  Part="1" 
-AR Path="/609EDBE1/6093C9B5" Ref="#PWR?"  Part="1" 
-AR Path="/609FBC79/6093C9B5" Ref="#PWR?"  Part="1" 
-AR Path="/609FC03E/6093C9B5" Ref="#PWR?"  Part="1" 
-AR Path="/609FC502/6093C9B5" Ref="#PWR?"  Part="1" 
-AR Path="/609FCA98/6093C9B5" Ref="#PWR?"  Part="1" 
-AR Path="/6090BB51/6093C9B5" Ref="#PWR0628"  Part="1" 
-F 0 "#PWR0628" H 5350 5650 50  0001 C CNN
-F 1 "GND" H 5355 5727 50  0000 C CNN
-F 2 "" H 5350 5900 50  0001 C CNN
-F 3 "" H 5350 5900 50  0001 C CNN
-	1    5350 5900
-	1    0    0    -1  
-$EndComp
-Text GLabel 5050 5700 0    50   Input ~ 0
-DBUS8
-Text Label 5350 5500 0    50   ~ 0
-~DOUT8
-$Comp
-L power:GND #PWR?
-U 1 1 6093C9C3
-P 6450 5900
-AR Path="/608D9BDD/608D9C42/608D9C9B/6093C9C3" Ref="#PWR?"  Part="1" 
-AR Path="/608D9BDD/608D9C42/6093C9C3" Ref="#PWR?"  Part="1" 
-AR Path="/608D9BDD/6093C9C3" Ref="#PWR?"  Part="1" 
-AR Path="/609A143E/6093C9C3" Ref="#PWR?"  Part="1" 
-AR Path="/609A36A9/6093C9C3" Ref="#PWR?"  Part="1" 
-AR Path="/609E7D64/6093C9C3" Ref="#PWR?"  Part="1" 
-AR Path="/609EDBE1/6093C9C3" Ref="#PWR?"  Part="1" 
-AR Path="/609FBC79/6093C9C3" Ref="#PWR?"  Part="1" 
-AR Path="/609FC03E/6093C9C3" Ref="#PWR?"  Part="1" 
-AR Path="/609FC502/6093C9C3" Ref="#PWR?"  Part="1" 
-AR Path="/609FCA98/6093C9C3" Ref="#PWR?"  Part="1" 
-AR Path="/6090BB51/6093C9C3" Ref="#PWR0629"  Part="1" 
-F 0 "#PWR0629" H 6450 5650 50  0001 C CNN
-F 1 "GND" H 6455 5727 50  0000 C CNN
-F 2 "" H 6450 5900 50  0001 C CNN
-F 3 "" H 6450 5900 50  0001 C CNN
-	1    6450 5900
-	1    0    0    -1  
-$EndComp
-Text GLabel 6150 5700 0    50   Input ~ 0
-DBUS9
-Text Label 6450 5500 0    50   ~ 0
-~DOUT9
-$Comp
-L power:GND #PWR?
-U 1 1 6093C9D1
-P 7550 5900
-AR Path="/608D9BDD/608D9C42/608D9C9B/6093C9D1" Ref="#PWR?"  Part="1" 
-AR Path="/608D9BDD/608D9C42/6093C9D1" Ref="#PWR?"  Part="1" 
-AR Path="/608D9BDD/6093C9D1" Ref="#PWR?"  Part="1" 
-AR Path="/609A143E/6093C9D1" Ref="#PWR?"  Part="1" 
-AR Path="/609A36A9/6093C9D1" Ref="#PWR?"  Part="1" 
-AR Path="/609E7D64/6093C9D1" Ref="#PWR?"  Part="1" 
-AR Path="/609EDBE1/6093C9D1" Ref="#PWR?"  Part="1" 
-AR Path="/609FBC79/6093C9D1" Ref="#PWR?"  Part="1" 
-AR Path="/609FC03E/6093C9D1" Ref="#PWR?"  Part="1" 
-AR Path="/609FC502/6093C9D1" Ref="#PWR?"  Part="1" 
-AR Path="/609FCA98/6093C9D1" Ref="#PWR?"  Part="1" 
-AR Path="/6090BB51/6093C9D1" Ref="#PWR0630"  Part="1" 
-F 0 "#PWR0630" H 7550 5650 50  0001 C CNN
-F 1 "GND" H 7555 5727 50  0000 C CNN
-F 2 "" H 7550 5900 50  0001 C CNN
-F 3 "" H 7550 5900 50  0001 C CNN
-	1    7550 5900
-	1    0    0    -1  
-$EndComp
-Text GLabel 7250 5700 0    50   Input ~ 0
-DBUS10
-Text Label 7550 5500 0    50   ~ 0
-~DOUT10
-$Comp
-L power:GND #PWR?
-U 1 1 6093C9DF
-P 8650 5900
-AR Path="/608D9BDD/608D9C42/608D9C9B/6093C9DF" Ref="#PWR?"  Part="1" 
-AR Path="/608D9BDD/608D9C42/6093C9DF" Ref="#PWR?"  Part="1" 
-AR Path="/608D9BDD/6093C9DF" Ref="#PWR?"  Part="1" 
-AR Path="/609A143E/6093C9DF" Ref="#PWR?"  Part="1" 
-AR Path="/609A36A9/6093C9DF" Ref="#PWR?"  Part="1" 
-AR Path="/609E7D64/6093C9DF" Ref="#PWR?"  Part="1" 
-AR Path="/609EDBE1/6093C9DF" Ref="#PWR?"  Part="1" 
-AR Path="/609FBC79/6093C9DF" Ref="#PWR?"  Part="1" 
-AR Path="/609FC03E/6093C9DF" Ref="#PWR?"  Part="1" 
-AR Path="/609FC502/6093C9DF" Ref="#PWR?"  Part="1" 
-AR Path="/609FCA98/6093C9DF" Ref="#PWR?"  Part="1" 
-AR Path="/6090BB51/6093C9DF" Ref="#PWR0631"  Part="1" 
-F 0 "#PWR0631" H 8650 5650 50  0001 C CNN
-F 1 "GND" H 8655 5727 50  0000 C CNN
-F 2 "" H 8650 5900 50  0001 C CNN
-F 3 "" H 8650 5900 50  0001 C CNN
-	1    8650 5900
-	1    0    0    -1  
-$EndComp
-Text GLabel 8350 5700 0    50   Input ~ 0
-DBUS11
-Text Label 8650 5500 0    50   ~ 0
-~DOUT11
-Text Label 4700 2400 2    50   ~ 0
-~DOUT6
-Text Label 4950 2300 2    50   ~ 0
-~DOUT5
 Wire Wire Line
 	4950 2300 5050 2300
 Wire Wire Line
-	4700 2400 5050 2400
-Text Label 4950 2500 2    50   ~ 0
-~DOUT7
-Wire Wire Line
 	4950 2500 5050 2500
-Text Label 4950 3100 2    50   ~ 0
-~DOUT10
 Wire Wire Line
 	4950 3100 5050 3100
-Text Label 4650 3200 2    50   ~ 0
-~DOUT8
-Wire Wire Line
-	4650 3200 5050 3200
 Wire Wire Line
 	4150 3300 4150 3000
 Wire Wire Line
 	4150 3000 5050 3000
-Text GLabel 4150 3300 3    50   Input ~ 0
+Text GLabel 4150 3600 3    50   Input ~ 0
 ~SW1
-Text GLabel 3700 3300 3    50   Input ~ 0
+Text GLabel 3700 3600 3    50   Input ~ 0
 ~SW0
 Wire Wire Line
 	3700 3300 3700 2900
 Wire Wire Line
 	3700 2900 5050 2900
-Text GLabel 3300 3300 3    50   Input ~ 0
+Text GLabel 3300 3600 3    50   Input ~ 0
 ~DEP_SW
 Wire Wire Line
 	3300 3300 3300 2800
@@ -490,232 +150,262 @@ F 4 "C19167" H 2850 3450 50  0001 C CNN "LCSC"
 $EndComp
 Wire Wire Line
 	2850 2700 5050 2700
-Text Label 6700 1900 0    50   ~ 0
-~DOUT9
-Text Label 7000 2000 0    50   ~ 0
-~DOUT11
 Wire Wire Line
 	6700 1900 6650 1900
 Wire Wire Line
 	6650 2000 7000 2000
-Text Label 6750 2300 0    50   ~ 0
-~DOUT0
 Wire Wire Line
 	6750 2300 6650 2300
-Text Label 7000 2400 0    50   ~ 0
-~DOUT1
-Wire Wire Line
-	7000 2400 6650 2400
-Text GLabel 7500 1500 1    50   Input ~ 0
+Text GLabel 7500 1200 1    50   Input ~ 0
 ~SW2
 Wire Wire Line
 	7500 1500 7500 2200
 Wire Wire Line
 	7500 2200 6650 2200
-Text GLabel 7900 1500 1    50   Input ~ 0
+Text GLabel 7900 1200 1    50   Input ~ 0
 ~SW3
 Wire Wire Line
 	7900 1500 7900 2600
 Wire Wire Line
 	7900 2600 6650 2600
-Text GLabel 8350 1500 1    50   Input ~ 0
+Text GLabel 8350 1200 1    50   Input ~ 0
 ~SW4
 Wire Wire Line
 	8350 1500 8350 2700
 Wire Wire Line
 	8350 2700 6650 2700
-Text GLabel 8800 1500 1    50   Input ~ 0
+Text GLabel 8800 1200 1    50   Input ~ 0
 ~SW5
 Wire Wire Line
 	8800 1500 8800 2800
 Wire Wire Line
 	8800 2800 6650 2800
-Text Label 6750 3200 0    50   ~ 0
-~DOUT2
-Text Label 7100 3300 0    50   ~ 0
-~DOUT3
 Wire Wire Line
 	7100 3300 6650 3300
 Wire Wire Line
 	6650 3200 6750 3200
-Text GLabel 7550 3600 3    50   Input ~ 0
+Text GLabel 7550 3900 3    50   Input ~ 0
 ~SW7
 Wire Wire Line
 	7550 3600 7550 3000
 Wire Wire Line
 	7550 3000 6650 3000
-Text GLabel 8000 3600 3    50   Input ~ 0
+Text GLabel 8000 3900 3    50   Input ~ 0
 ~SW6
 Wire Wire Line
 	8000 3600 8000 2900
 Wire Wire Line
 	8000 2900 6650 2900
+Text GLabel 7000 2000 2    50   Input ~ 0
+~DOUT11
+Text GLabel 6700 1900 2    50   Input ~ 0
+~DOUT9
+Text GLabel 6750 2300 2    50   Input ~ 0
+~DOUT0
+Text GLabel 7100 2400 2    50   Input ~ 0
+~DOUT1
+Wire Wire Line
+	6650 2400 7100 2400
+Text GLabel 6750 3200 2    50   Input ~ 0
+~DOUT2
+Text GLabel 7100 3300 2    50   Input ~ 0
+~DOUT3
+Text GLabel 4950 3100 0    50   Input ~ 0
+~DOUT10
+Text GLabel 4550 3200 0    50   Input ~ 0
+~DOUT8
+Wire Wire Line
+	4550 3200 5050 3200
+Text GLabel 4900 1900 0    50   Input ~ 0
+~DOUT4
+Text GLabel 4950 2300 0    50   Input ~ 0
+~DOUT5
+Text GLabel 4950 2500 0    50   Input ~ 0
+~DOUT7
+Text GLabel 4550 2400 0    50   Input ~ 0
+~DOUT6
+Wire Wire Line
+	4550 2400 5050 2400
 $Comp
-L Transistor_FET:2N7002 Q?
-U 1 1 61359B6A
-P 3050 4900
-AR Path="/60C3DB0A/61359B6A" Ref="Q?"  Part="1" 
-AR Path="/6090BB51/61359B6A" Ref="Q746"  Part="1" 
-F 0 "Q746" H 3254 4946 50  0000 L CNN
-F 1 "2N7002" H 3254 4855 50  0000 L CNN
-F 2 "Package_TO_SOT_SMD:SOT-23" H 3250 4825 50  0001 L CIN
-F 3 "https://www.onsemi.com/pub/Collateral/NDS7002A-D.PDF" H 3050 4900 50  0001 L CNN
-F 4 "C8545" H 3050 4900 50  0001 C CNN "LCSC"
-	1    3050 4900
-	1    0    0    -1  
+L Diode:BAT43W-V D?
+U 1 1 60C4E6FD
+P 3700 3450
+AR Path="/60A44A82/60C4E6FD" Ref="D?"  Part="1" 
+AR Path="/6090BB51/60C4E6FD" Ref="D69"  Part="1" 
+F 0 "D69" V 3654 3530 50  0000 L CNN
+F 1 "BAT43W" V 3745 3530 50  0000 L CNN
+F 2 "Diode_SMD:D_SOD-123" H 3700 3275 50  0001 C CNN
+F 3 "http://www.vishay.com/docs/85660/bat42.pdf" H 3700 3450 50  0001 C CNN
+F 4 "C19167" H 3700 3450 50  0001 C CNN "LCSC"
+	1    3700 3450
+	0    1    1    0   
 $EndComp
 $Comp
-L Transistor_FET:2N7002 Q?
-U 1 1 6135D938
-P 3050 5700
-AR Path="/60C3DB0A/6135D938" Ref="Q?"  Part="1" 
-AR Path="/6090BB51/6135D938" Ref="Q752"  Part="1" 
-F 0 "Q752" H 3254 5746 50  0000 L CNN
-F 1 "2N7002" H 3254 5655 50  0000 L CNN
-F 2 "Package_TO_SOT_SMD:SOT-23" H 3250 5625 50  0001 L CIN
-F 3 "https://www.onsemi.com/pub/Collateral/NDS7002A-D.PDF" H 3050 5700 50  0001 L CNN
-F 4 "C8545" H 3050 5700 50  0001 C CNN "LCSC"
-	1    3050 5700
-	1    0    0    -1  
+L Diode:BAT43W-V D?
+U 1 1 60C4F234
+P 3300 3450
+AR Path="/60A44A82/60C4F234" Ref="D?"  Part="1" 
+AR Path="/6090BB51/60C4F234" Ref="D68"  Part="1" 
+F 0 "D68" V 3254 3530 50  0000 L CNN
+F 1 "BAT43W" V 3345 3530 50  0000 L CNN
+F 2 "Diode_SMD:D_SOD-123" H 3300 3275 50  0001 C CNN
+F 3 "http://www.vishay.com/docs/85660/bat42.pdf" H 3300 3450 50  0001 C CNN
+F 4 "C19167" H 3300 3450 50  0001 C CNN "LCSC"
+	1    3300 3450
+	0    1    1    0   
 $EndComp
 $Comp
-L Transistor_FET:2N7002 Q?
-U 1 1 6135FA67
-P 4150 4900
-AR Path="/60C3DB0A/6135FA67" Ref="Q?"  Part="1" 
-AR Path="/6090BB51/6135FA67" Ref="Q747"  Part="1" 
-F 0 "Q747" H 4354 4946 50  0000 L CNN
-F 1 "2N7002" H 4354 4855 50  0000 L CNN
-F 2 "Package_TO_SOT_SMD:SOT-23" H 4350 4825 50  0001 L CIN
-F 3 "https://www.onsemi.com/pub/Collateral/NDS7002A-D.PDF" H 4150 4900 50  0001 L CNN
-F 4 "C8545" H 4150 4900 50  0001 C CNN "LCSC"
-	1    4150 4900
-	1    0    0    -1  
+L Diode:BAT43W-V D?
+U 1 1 60C4FFDF
+P 4150 3450
+AR Path="/60A44A82/60C4FFDF" Ref="D?"  Part="1" 
+AR Path="/6090BB51/60C4FFDF" Ref="D70"  Part="1" 
+F 0 "D70" V 4104 3530 50  0000 L CNN
+F 1 "BAT43W" V 4195 3530 50  0000 L CNN
+F 2 "Diode_SMD:D_SOD-123" H 4150 3275 50  0001 C CNN
+F 3 "http://www.vishay.com/docs/85660/bat42.pdf" H 4150 3450 50  0001 C CNN
+F 4 "C19167" H 4150 3450 50  0001 C CNN "LCSC"
+	1    4150 3450
+	0    1    1    0   
 $EndComp
 $Comp
-L Transistor_FET:2N7002 Q?
-U 1 1 6136205B
-P 4150 5700
-AR Path="/60C3DB0A/6136205B" Ref="Q?"  Part="1" 
-AR Path="/6090BB51/6136205B" Ref="Q753"  Part="1" 
-F 0 "Q753" H 4354 5746 50  0000 L CNN
-F 1 "2N7002" H 4354 5655 50  0000 L CNN
-F 2 "Package_TO_SOT_SMD:SOT-23" H 4350 5625 50  0001 L CIN
-F 3 "https://www.onsemi.com/pub/Collateral/NDS7002A-D.PDF" H 4150 5700 50  0001 L CNN
-F 4 "C8545" H 4150 5700 50  0001 C CNN "LCSC"
-	1    4150 5700
-	1    0    0    -1  
+L Diode:BAT43W-V D?
+U 1 1 60C508CB
+P 7550 3750
+AR Path="/60A44A82/60C508CB" Ref="D?"  Part="1" 
+AR Path="/6090BB51/60C508CB" Ref="D71"  Part="1" 
+F 0 "D71" V 7504 3830 50  0000 L CNN
+F 1 "BAT43W" V 7595 3830 50  0000 L CNN
+F 2 "Diode_SMD:D_SOD-123" H 7550 3575 50  0001 C CNN
+F 3 "http://www.vishay.com/docs/85660/bat42.pdf" H 7550 3750 50  0001 C CNN
+F 4 "C19167" H 7550 3750 50  0001 C CNN "LCSC"
+	1    7550 3750
+	0    1    1    0   
 $EndComp
 $Comp
-L Transistor_FET:2N7002 Q?
-U 1 1 613656A2
-P 5250 5700
-AR Path="/60C3DB0A/613656A2" Ref="Q?"  Part="1" 
-AR Path="/6090BB51/613656A2" Ref="Q754"  Part="1" 
-F 0 "Q754" H 5454 5746 50  0000 L CNN
-F 1 "2N7002" H 5454 5655 50  0000 L CNN
-F 2 "Package_TO_SOT_SMD:SOT-23" H 5450 5625 50  0001 L CIN
-F 3 "https://www.onsemi.com/pub/Collateral/NDS7002A-D.PDF" H 5250 5700 50  0001 L CNN
-F 4 "C8545" H 5250 5700 50  0001 C CNN "LCSC"
-	1    5250 5700
-	1    0    0    -1  
+L Diode:BAT43W-V D?
+U 1 1 60C540DC
+P 8000 3750
+AR Path="/60A44A82/60C540DC" Ref="D?"  Part="1" 
+AR Path="/6090BB51/60C540DC" Ref="D72"  Part="1" 
+F 0 "D72" V 7954 3830 50  0000 L CNN
+F 1 "BAT43W" V 8045 3830 50  0000 L CNN
+F 2 "Diode_SMD:D_SOD-123" H 8000 3575 50  0001 C CNN
+F 3 "http://www.vishay.com/docs/85660/bat42.pdf" H 8000 3750 50  0001 C CNN
+F 4 "C19167" H 8000 3750 50  0001 C CNN "LCSC"
+	1    8000 3750
+	0    1    1    0   
 $EndComp
 $Comp
-L Transistor_FET:2N7002 Q?
-U 1 1 61367513
-P 5250 4900
-AR Path="/60C3DB0A/61367513" Ref="Q?"  Part="1" 
-AR Path="/6090BB51/61367513" Ref="Q748"  Part="1" 
-F 0 "Q748" H 5454 4946 50  0000 L CNN
-F 1 "2N7002" H 5454 4855 50  0000 L CNN
-F 2 "Package_TO_SOT_SMD:SOT-23" H 5450 4825 50  0001 L CIN
-F 3 "https://www.onsemi.com/pub/Collateral/NDS7002A-D.PDF" H 5250 4900 50  0001 L CNN
-F 4 "C8545" H 5250 4900 50  0001 C CNN "LCSC"
-	1    5250 4900
-	1    0    0    -1  
+L Diode:BAT43W-V D?
+U 1 1 60C54A3B
+P 7500 1350
+AR Path="/60A44A82/60C54A3B" Ref="D?"  Part="1" 
+AR Path="/6090BB51/60C54A3B" Ref="D64"  Part="1" 
+F 0 "D64" V 7454 1430 50  0000 L CNN
+F 1 "BAT43W" V 7545 1430 50  0000 L CNN
+F 2 "Diode_SMD:D_SOD-123" H 7500 1175 50  0001 C CNN
+F 3 "http://www.vishay.com/docs/85660/bat42.pdf" H 7500 1350 50  0001 C CNN
+F 4 "C19167" H 7500 1350 50  0001 C CNN "LCSC"
+	1    7500 1350
+	0    -1   -1   0   
 $EndComp
 $Comp
-L Transistor_FET:2N7002 Q?
-U 1 1 61369B16
-P 6350 4900
-AR Path="/60C3DB0A/61369B16" Ref="Q?"  Part="1" 
-AR Path="/6090BB51/61369B16" Ref="Q749"  Part="1" 
-F 0 "Q749" H 6554 4946 50  0000 L CNN
-F 1 "2N7002" H 6554 4855 50  0000 L CNN
-F 2 "Package_TO_SOT_SMD:SOT-23" H 6550 4825 50  0001 L CIN
-F 3 "https://www.onsemi.com/pub/Collateral/NDS7002A-D.PDF" H 6350 4900 50  0001 L CNN
-F 4 "C8545" H 6350 4900 50  0001 C CNN "LCSC"
-	1    6350 4900
-	1    0    0    -1  
+L Diode:BAT43W-V D?
+U 1 1 60C57A78
+P 7900 1350
+AR Path="/60A44A82/60C57A78" Ref="D?"  Part="1" 
+AR Path="/6090BB51/60C57A78" Ref="D65"  Part="1" 
+F 0 "D65" V 7854 1430 50  0000 L CNN
+F 1 "BAT43W" V 7945 1430 50  0000 L CNN
+F 2 "Diode_SMD:D_SOD-123" H 7900 1175 50  0001 C CNN
+F 3 "http://www.vishay.com/docs/85660/bat42.pdf" H 7900 1350 50  0001 C CNN
+F 4 "C19167" H 7900 1350 50  0001 C CNN "LCSC"
+	1    7900 1350
+	0    -1   -1   0   
 $EndComp
 $Comp
-L Transistor_FET:2N7002 Q?
-U 1 1 6136BEFD
-P 6350 5700
-AR Path="/60C3DB0A/6136BEFD" Ref="Q?"  Part="1" 
-AR Path="/6090BB51/6136BEFD" Ref="Q755"  Part="1" 
-F 0 "Q755" H 6554 5746 50  0000 L CNN
-F 1 "2N7002" H 6554 5655 50  0000 L CNN
-F 2 "Package_TO_SOT_SMD:SOT-23" H 6550 5625 50  0001 L CIN
-F 3 "https://www.onsemi.com/pub/Collateral/NDS7002A-D.PDF" H 6350 5700 50  0001 L CNN
-F 4 "C8545" H 6350 5700 50  0001 C CNN "LCSC"
-	1    6350 5700
-	1    0    0    -1  
+L Diode:BAT43W-V D?
+U 1 1 60C583E5
+P 8350 1350
+AR Path="/60A44A82/60C583E5" Ref="D?"  Part="1" 
+AR Path="/6090BB51/60C583E5" Ref="D66"  Part="1" 
+F 0 "D66" V 8304 1430 50  0000 L CNN
+F 1 "BAT43W" V 8395 1430 50  0000 L CNN
+F 2 "Diode_SMD:D_SOD-123" H 8350 1175 50  0001 C CNN
+F 3 "http://www.vishay.com/docs/85660/bat42.pdf" H 8350 1350 50  0001 C CNN
+F 4 "C19167" H 8350 1350 50  0001 C CNN "LCSC"
+	1    8350 1350
+	0    -1   -1   0   
 $EndComp
 $Comp
-L Transistor_FET:2N7002 Q?
-U 1 1 6136E7A6
-P 7450 4900
-AR Path="/60C3DB0A/6136E7A6" Ref="Q?"  Part="1" 
-AR Path="/6090BB51/6136E7A6" Ref="Q750"  Part="1" 
-F 0 "Q750" H 7654 4946 50  0000 L CNN
-F 1 "2N7002" H 7654 4855 50  0000 L CNN
-F 2 "Package_TO_SOT_SMD:SOT-23" H 7650 4825 50  0001 L CIN
-F 3 "https://www.onsemi.com/pub/Collateral/NDS7002A-D.PDF" H 7450 4900 50  0001 L CNN
-F 4 "C8545" H 7450 4900 50  0001 C CNN "LCSC"
-	1    7450 4900
-	1    0    0    -1  
+L Diode:BAT43W-V D?
+U 1 1 60C58B50
+P 8800 1350
+AR Path="/60A44A82/60C58B50" Ref="D?"  Part="1" 
+AR Path="/6090BB51/60C58B50" Ref="D67"  Part="1" 
+F 0 "D67" V 8754 1430 50  0000 L CNN
+F 1 "BAT43W" V 8845 1430 50  0000 L CNN
+F 2 "Diode_SMD:D_SOD-123" H 8800 1175 50  0001 C CNN
+F 3 "http://www.vishay.com/docs/85660/bat42.pdf" H 8800 1350 50  0001 C CNN
+F 4 "C19167" H 8800 1350 50  0001 C CNN "LCSC"
+	1    8800 1350
+	0    -1   -1   0   
 $EndComp
 $Comp
-L Transistor_FET:2N7002 Q?
-U 1 1 61370767
-P 8550 4900
-AR Path="/60C3DB0A/61370767" Ref="Q?"  Part="1" 
-AR Path="/6090BB51/61370767" Ref="Q751"  Part="1" 
-F 0 "Q751" H 8754 4946 50  0000 L CNN
-F 1 "2N7002" H 8754 4855 50  0000 L CNN
-F 2 "Package_TO_SOT_SMD:SOT-23" H 8750 4825 50  0001 L CIN
-F 3 "https://www.onsemi.com/pub/Collateral/NDS7002A-D.PDF" H 8550 4900 50  0001 L CNN
-F 4 "C8545" H 8550 4900 50  0001 C CNN "LCSC"
-	1    8550 4900
-	1    0    0    -1  
+L Diode:BAT43W-V D?
+U 1 1 60C5AFA1
+P 4450 1250
+AR Path="/60A44A82/60C5AFA1" Ref="D?"  Part="1" 
+AR Path="/6090BB51/60C5AFA1" Ref="D63"  Part="1" 
+F 0 "D63" V 4404 1330 50  0000 L CNN
+F 1 "BAT43W" V 4495 1330 50  0000 L CNN
+F 2 "Diode_SMD:D_SOD-123" H 4450 1075 50  0001 C CNN
+F 3 "http://www.vishay.com/docs/85660/bat42.pdf" H 4450 1250 50  0001 C CNN
+F 4 "C19167" H 4450 1250 50  0001 C CNN "LCSC"
+	1    4450 1250
+	0    -1   -1   0   
 $EndComp
 $Comp
-L Transistor_FET:2N7002 Q?
-U 1 1 613739BE
-P 8550 5700
-AR Path="/60C3DB0A/613739BE" Ref="Q?"  Part="1" 
-AR Path="/6090BB51/613739BE" Ref="Q757"  Part="1" 
-F 0 "Q757" H 8754 5746 50  0000 L CNN
-F 1 "2N7002" H 8754 5655 50  0000 L CNN
-F 2 "Package_TO_SOT_SMD:SOT-23" H 8750 5625 50  0001 L CIN
-F 3 "https://www.onsemi.com/pub/Collateral/NDS7002A-D.PDF" H 8550 5700 50  0001 L CNN
-F 4 "C8545" H 8550 5700 50  0001 C CNN "LCSC"
-	1    8550 5700
-	1    0    0    -1  
+L Diode:BAT43W-V D?
+U 1 1 60C5BCE8
+P 3900 1250
+AR Path="/60A44A82/60C5BCE8" Ref="D?"  Part="1" 
+AR Path="/6090BB51/60C5BCE8" Ref="D62"  Part="1" 
+F 0 "D62" V 3854 1330 50  0000 L CNN
+F 1 "BAT43W" V 3945 1330 50  0000 L CNN
+F 2 "Diode_SMD:D_SOD-123" H 3900 1075 50  0001 C CNN
+F 3 "http://www.vishay.com/docs/85660/bat42.pdf" H 3900 1250 50  0001 C CNN
+F 4 "C19167" H 3900 1250 50  0001 C CNN "LCSC"
+	1    3900 1250
+	0    -1   -1   0   
 $EndComp
 $Comp
-L Transistor_FET:2N7002 Q?
-U 1 1 61375601
-P 7450 5700
-AR Path="/60C3DB0A/61375601" Ref="Q?"  Part="1" 
-AR Path="/6090BB51/61375601" Ref="Q756"  Part="1" 
-F 0 "Q756" H 7654 5746 50  0000 L CNN
-F 1 "2N7002" H 7654 5655 50  0000 L CNN
-F 2 "Package_TO_SOT_SMD:SOT-23" H 7650 5625 50  0001 L CIN
-F 3 "https://www.onsemi.com/pub/Collateral/NDS7002A-D.PDF" H 7450 5700 50  0001 L CNN
-F 4 "C8545" H 7450 5700 50  0001 C CNN "LCSC"
-	1    7450 5700
-	1    0    0    -1  
+L Diode:BAT43W-V D?
+U 1 1 60C5C763
+P 3400 1250
+AR Path="/60A44A82/60C5C763" Ref="D?"  Part="1" 
+AR Path="/6090BB51/60C5C763" Ref="D61"  Part="1" 
+F 0 "D61" V 3354 1330 50  0000 L CNN
+F 1 "BAT43W" V 3445 1330 50  0000 L CNN
+F 2 "Diode_SMD:D_SOD-123" H 3400 1075 50  0001 C CNN
+F 3 "http://www.vishay.com/docs/85660/bat42.pdf" H 3400 1250 50  0001 C CNN
+F 4 "C19167" H 3400 1250 50  0001 C CNN "LCSC"
+	1    3400 1250
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Diode:BAT43W-V D?
+U 1 1 60C5CF5E
+P 2950 1250
+AR Path="/60A44A82/60C5CF5E" Ref="D?"  Part="1" 
+AR Path="/6090BB51/60C5CF5E" Ref="D60"  Part="1" 
+F 0 "D60" V 2904 1330 50  0000 L CNN
+F 1 "BAT43W" V 2995 1330 50  0000 L CNN
+F 2 "Diode_SMD:D_SOD-123" H 2950 1075 50  0001 C CNN
+F 3 "http://www.vishay.com/docs/85660/bat42.pdf" H 2950 1250 50  0001 C CNN
+F 4 "C19167" H 2950 1250 50  0001 C CNN "LCSC"
+	1    2950 1250
+	0    -1   -1   0   
 $EndComp
 $EndSCHEMATC
