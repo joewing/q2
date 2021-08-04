@@ -1,6 +1,7 @@
 
 `include "nfet.v"
 `include "dff.v"
+`include "q2_clock.v"
 `include "q2_control.v"
 `include "q2_alu.v"
 `include "q2_slice.v"
@@ -36,7 +37,7 @@ module q2(
   wire xlin_shift;
   wire xlin_dbus;
   wire incp_clk;
-  wire wrp;
+  wire nwrp;
   wire rdp;
   wire wrf;
   wire s2in;
@@ -45,8 +46,8 @@ module q2(
   wire ni2c_sda_out;
   wire ni2c_scl_out;
   wire cdiv;
-  wire s0;
-  wire s1;
+  wire s0, ns0;
+  wire s1, ns1;
   wire s2;
   wire s3;
   wire f;
@@ -61,8 +62,16 @@ module q2(
   wire f_in;
 
   // Clock generation.
-  wire ws = ~(clk | cdiv);
-  wire sc = ~(clk | ~cdiv);
+  wire sc, ws;
+  q2_clock clock(
+.clk(clk),
+    .nstart(~start_sw),
+    .nstop(~stop_sw),
+    .cdiv(cdiv),
+    .ncdiv(~cdiv), // TODO
+    .ws(ws),
+    .sc(sc)
+  );
 
   // Halt condition for simulation.
   // Halt when executing "jmp $".
@@ -74,10 +83,11 @@ module q2(
   // Memory and I/O.
   wire wrm;
   wire io;
-  wire io_rd  = ~(~io | rda);
-  wire lcd_wr = ~(~wrm | dbus[11] | ~io);
-  wire i2c_wr = ~(~dbus[11] | ~wrm | ~io);
-  wire ram_ce = ~io;
+  wire nio;
+  wire io_rd  = ~(nio | rda);
+  wire lcd_wr = ~(~wrm | dbus[11] | nio);
+  wire i2c_wr = ~(~dbus[11] | ~wrm | nio);
+  wire ram_ce = nio;
   wire rdm = ~rda;
 
   // Show writes to output for debugging.
@@ -114,9 +124,11 @@ module q2(
   );
 
   q2_control control(
-    .x0(x[0]),
+    .nx0(nx[0]),
     .s0(s0),
+    .ns0(ns0),
     .s1(s1),
+    .ns1(ns1),
     .s2(s2),
     .s3(s3),
     .f(f),
@@ -140,18 +152,20 @@ module q2(
     .xhin_dbus(xhin_dbus),
     .xlin_shift(xlin_shift),
     .xlin_dbus(xlin_dbus),
-    .wrp(wrp),
+    .nwrp(nwrp),
     .incp_clk(incp_clk),
     .rdp(rdp),
     .wrm(wrm),
     .wrf(wrf),
     .fout(f_in),
     .s2in(s2in),
-    .io(io)
+    .io(io),
+    .nio(nio)
   );
 
   wire [11:0] a;
   wire [11:0] x;
+  wire [11:0] nx;
   wire [11:0] p;
 
   wire alu_out;
@@ -176,11 +190,11 @@ module q2(
     .rda(rda),
     .ain(a[1]),
     .incp_clk(incp_clk),
-    .wrp(wrp),
+    .nwrp(nwrp),
     .rdp(rdp),
     .wrx(wrx),
     .rdx(rdx),
-    .xshift(x[1]),
+    .nxin(nx[1]),
     .xin_zero(1'b0),
     .xin_shift(xlin_shift),
     .xin_p(1'b0),
@@ -190,6 +204,7 @@ module q2(
     .sin(dbus[9]),
     .sout(ni2c_sda_out),
     .aout(a[0]),
+    .nxout(nx[0]),
     .xout(x[0]),
     .pout(p[0]),
     .io(io)
@@ -205,11 +220,11 @@ module q2(
     .rda(rda),
     .ain(a[2]),
     .incp_clk(~p[0]),
-    .wrp(wrp),
+    .nwrp(nwrp),
     .rdp(rdp),
     .wrx(wrx),
     .rdx(rdx),
-    .xshift(x[2]),
+    .nxin(nx[2]),
     .xin_zero(1'b0),
     .xin_shift(xlin_shift),
     .xin_p(1'b0),
@@ -219,6 +234,7 @@ module q2(
     .sin(dbus[10]),
     .sout(ni2c_scl_out),
     .aout(a[1]),
+    .nxout(nx[1]),
     .xout(x[1]),
     .pout(p[1]),
     .io(io)
@@ -234,11 +250,11 @@ module q2(
     .rda(rda),
     .ain(a[3]),
     .incp_clk(~p[1]),
-    .wrp(wrp),
+    .nwrp(nwrp),
     .rdp(rdp),
     .wrx(wrx),
     .rdx(rdx),
-    .xshift(x[3]),
+    .nxin(nx[3]),
     .xin_zero(1'b0),
     .xin_shift(xlin_shift),
     .xin_p(1'b0),
@@ -248,6 +264,7 @@ module q2(
     .sin(~cdiv),
     .sout(cdiv),
     .aout(a[2]),
+    .nxout(nx[2]),
     .xout(x[2]),
     .pout(p[2]),
     .io(io)
@@ -263,20 +280,22 @@ module q2(
     .rda(rda),
     .ain(a[4]),
     .incp_clk(~p[2]),
-    .wrp(wrp),
+    .nwrp(nwrp),
     .rdp(rdp),
     .wrx(wrx),
     .rdx(rdx),
-    .xshift(x[4]),
+    .nxin(nx[4]),
     .xin_zero(1'b0),
     .xin_shift(xlin_shift),
     .xin_p(1'b0),
     .xin_dbus(xlin_dbus),
     .wrs(~sc),
     .rsts(rst),
-    .sin(~s0),
+    .sin(ns0),
     .sout(s0),
+    .nsout(ns0),
     .aout(a[3]),
+    .nxout(nx[3]),
     .xout(x[3]),
     .pout(p[3]),
     .io(io)
@@ -292,20 +311,22 @@ module q2(
     .rda(rda),
     .ain(a[5]),
     .incp_clk(~p[3]),
-    .wrp(wrp),
+    .nwrp(nwrp),
     .rdp(rdp),
     .wrx(wrx),
     .rdx(rdx),
-    .xshift(x[5]),
+    .nxin(nx[5]),
     .xin_zero(1'b0),
     .xin_shift(xlin_shift),
     .xin_p(1'b0),
     .xin_dbus(xlin_dbus),
-    .wrs(~s0),
+    .wrs(ns0),
     .rsts(rst),
-    .sin(~s1),
+    .sin(ns1),
     .sout(s1),
+    .nsout(ns1),
     .aout(a[4]),
+    .nxout(nx[4]),
     .xout(x[4]),
     .pout(p[4]),
     .io(io)
@@ -321,20 +342,21 @@ module q2(
     .rda(rda),
     .ain(a[6]),
     .incp_clk(~p[4]),
-    .wrp(wrp),
+    .nwrp(nwrp),
     .rdp(rdp),
     .wrx(wrx),
     .rdx(rdx),
-    .xshift(x[6]),
+    .nxin(nx[6]),
     .xin_zero(1'b0),
     .xin_shift(xlin_shift),
     .xin_p(1'b0),
     .xin_dbus(xlin_dbus),
-    .wrs(~s1),
+    .wrs(ns1),
     .rsts(rst),
     .sin(s2in),
     .sout(s2),
     .aout(a[5]),
+    .nxout(nx[5]),
     .xout(x[5]),
     .pout(p[5]),
     .io(io)
@@ -350,11 +372,11 @@ module q2(
     .rda(rda),
     .ain(a[7]),
     .incp_clk(~p[5]),
-    .wrp(wrp),
+    .nwrp(nwrp),
     .rdp(rdp),
     .wrx(wrx),
     .rdx(rdx),
-    .xshift(x[7]),
+    .nxin(nx[7]),
     .xin_zero(1'b0),
     .xin_shift(xlin_shift),
     .xin_p(1'b0),
@@ -364,6 +386,7 @@ module q2(
     .sin(~s3),
     .sout(s3),
     .aout(a[6]),
+    .nxout(nx[6]),
     .xout(x[6]),
     .pout(p[6]),
     .io(io)
@@ -379,11 +402,11 @@ module q2(
     .rda(rda),
     .ain(a[8]),
     .incp_clk(~p[6]),
-    .wrp(wrp),
+    .nwrp(nwrp),
     .rdp(rdp),
     .wrx(wrx),
     .rdx(rdx),
-    .xshift(x[8]),
+    .nxin(nx[8]),
     .xin_zero(xhin_zero),
     .xin_shift(xhin_shift),
     .xin_p(xhin_p),
@@ -393,6 +416,7 @@ module q2(
     .aout(a[7]),
     .sin(f_in),
     .sout(f),
+    .nxout(nx[7]),
     .xout(x[7]),
     .pout(p[7]),
     .io(io)
@@ -408,11 +432,11 @@ module q2(
     .rda(rda),
     .ain(a[9]),
     .incp_clk(~p[7]),
-    .wrp(wrp),
+    .nwrp(nwrp),
     .rdp(rdp),
     .wrx(wrx),
     .rdx(rdx),
-    .xshift(x[9]),
+    .nxin(nx[9]),
     .xin_zero(xhin_zero),
     .xin_shift(xhin_shift),
     .xin_p(xhin_p),
@@ -422,6 +446,7 @@ module q2(
     .sin(dbus[8]),
     .sout(deref),
     .aout(a[8]),
+    .nxout(nx[8]),
     .xout(x[8]),
     .pout(p[8]),
     .io(io)
@@ -437,11 +462,11 @@ module q2(
     .rda(rda),
     .ain(a[10]),
     .incp_clk(~p[8]),
-    .wrp(wrp),
+    .nwrp(nwrp),
     .rdp(rdp),
     .wrx(wrx),
     .rdx(rdx),
-    .xshift(x[10]),
+    .nxin(nx[10]),
     .xin_zero(xhin_zero),
     .xin_shift(xhin_shift),
     .xin_p(xhin_p),
@@ -451,6 +476,7 @@ module q2(
     .sin(dbus[9]),
     .sout(o0),
     .aout(a[9]),
+    .nxout(nx[9]),
     .xout(x[9]),
     .pout(p[9]),
     .io(io)
@@ -466,11 +492,11 @@ module q2(
     .rda(rda),
     .ain(a[11]),
     .incp_clk(~p[9]),
-    .wrp(wrp),
+    .nwrp(nwrp),
     .rdp(rdp),
     .wrx(wrx),
     .rdx(rdx),
-    .xshift(x[11]),
+    .nxin(nx[11]),
     .xin_zero(xhin_zero),
     .xin_shift(xhin_shift),
     .xin_p(xhin_p),
@@ -480,6 +506,7 @@ module q2(
     .sin(dbus[10]),
     .sout(o1),
     .aout(a[10]),
+    .nxout(nx[10]),
     .xout(x[10]),
     .pout(p[10]),
     .io(io)
@@ -495,11 +522,11 @@ module q2(
     .rda(rda),
     .ain(alu_out),
     .incp_clk(~p[10]),
-    .wrp(wrp),
+    .nwrp(nwrp),
     .rdp(rdp),
     .wrx(wrx),
     .rdx(rdx),
-    .xshift(1'b0),
+    .nxin(1'b1),
     .xin_zero(xhin_zero),
     .xin_shift(xhin_shift),
     .xin_p(xhin_p),
@@ -509,6 +536,7 @@ module q2(
     .sin(dbus[11]),
     .sout(o2),
     .aout(a[11]),
+    .nxout(nx[11]),
     .xout(x[11]),
     .pout(p[11]),
     .io(io)

@@ -9,11 +9,11 @@ module q2_slice(
   input wire rda,
   input wire ain,
   input wire incp_clk,
-  input wire wrp,
+  input wire nwrp,
   input wire rdp,
   input wire wrx,
   input wire rdx,
-  input wire xshift,
+  input wire nxin,
   input wire xin_zero,
   input wire xin_shift,
   input wire xin_p,
@@ -23,7 +23,9 @@ module q2_slice(
   input wire sin,
   output wire aout,
   output wire sout,
+  output wire nsout,
   output wire xout,
+  output wire nxout,
   output wire pout,
   inout wire io
 );
@@ -41,13 +43,12 @@ module q2_slice(
   nfet aq1(at1, naout, dbus);
   nfet aq2(1'b0, rda, at1);
 
-  wire nxout;
   wire nextx, xt1, xt2, xt3, xt4, xt5;
   nfet xq1(1'b0, xin_zero, nextx);
   nfet xq2(xt1, xin_p, nextx);
   nfet xq3(1'b0, npout, xt1);
   nfet xq4(xt2, xin_shift, nextx);
-  nfet xq5(1'b0, ~xshift, xt2);   // TODO: remove not
+  nfet xq5(1'b0, nxin, xt2);
   nfet xq6(xt3, xin_dbus, nextx);
   nfet xq7(1'b0, xt4, xt3);
   nfet xq8(1'b0, dbus, xt4);
@@ -66,11 +67,11 @@ module q2_slice(
   wire npout;
   wire pset, pclr;
   wire pt1, pt2, pt3, pt4;
-  nfet pq1(pt1, ~wrp, pset);  // TODO
+  nfet pq1(pt1, nwrp, pset);
   nfet pq2(pt1, nxout, pset);
   nfet pq3(1'b0, ~rst, pt1);  // TODO
   nfet pq4(1'b0, ~sw, pt1);   // TODO
-  nfet pq5(pt2, ~wrp, pclr);  // TODO
+  nfet pq5(pt2, nwrp, pclr);
   nfet pq6(pt2, xout, pclr);
   nfet pq7(1'b0, ~rst, pt2);  // TODO
   nfet pq8(1'b0, pt3, pt2);
@@ -91,7 +92,8 @@ module q2_slice(
     .d(sin),
     .set(1'b0),
     .clr(rsts),
-    .q(sout)
+    .q(sout),
+    .nq(nsout)
   );
 
   wire dt1;
