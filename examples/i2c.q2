@@ -6,13 +6,13 @@
   .align 128
 
 i2c_zero:
-  .dw   I2C_EN
+  .dw   I2C_EN | I2C_SCL | I2C_SDA
 i2c_zero_clk:
-  .dw   I2C_EN | I2C_SCL
-i2c_one:
   .dw   I2C_EN | I2C_SDA
+i2c_one:
+  .dw   I2C_EN | I2C_SCL
 i2c_one_clk:
-  .dw   I2C_EN | I2C_SDA | I2C_SCL
+  .dw   I2C_EN
 i2c_input_mask:
   .dw   ~I2C_SDA
 
@@ -68,7 +68,6 @@ i2c_write_loop:
   lda   i2c_one_clk
   sta   @=neg1
   lda   i2c_one
-
   jmp   i2c_write_cont
 i2c_write_zero:
 

@@ -1,4 +1,12 @@
 
+`define VCC 5.0
+
+// FET input capacitance.
+`define CISS_NF   0.04
+
+// FET threshold.
+`define VTH 2.0
+
 `include "nfet.v"
 `include "dff.v"
 `include "q2_clock.v"
@@ -11,7 +19,6 @@
 `include "q2_buttons.v"
 
 module q2(
-  input wire clk,
   input wire [11:0] sw,
   input wire incp_sw,
   input wire dep_sw,
@@ -45,7 +52,7 @@ module q2(
   // State bits
   wire ni2c_sda_out;
   wire ni2c_scl_out;
-  wire cdiv;
+  wire cdiv, ncdiv;
   wire s0, ns0;
   wire s1, ns1;
   wire s2;
@@ -64,11 +71,11 @@ module q2(
   // Clock generation.
   wire sc, ws;
   q2_clock clock(
-.clk(clk),
+    .clk(clk),
     .nstart(~start_sw),
     .nstop(~stop_sw),
     .cdiv(cdiv),
-    .ncdiv(~cdiv), // TODO
+    .ncdiv(ncdiv),
     .ws(ws),
     .sc(sc)
   );
@@ -81,17 +88,31 @@ module q2(
   end
 
   // Memory and I/O.
-  wire wrm;
+  wire nwrm;
   wire io;
   wire nio;
-  wire io_rd  = ~(nio | rda);
-  wire lcd_wr = ~(~wrm | dbus[11] | nio);
-  wire i2c_wr = ~(~dbus[11] | ~wrm | nio);
-  wire ram_ce = nio;
-  wire rdm = ~rda;
+
+  nfet adq1(1'b0, nio, io_rd);
+  nfet adq2(1'b0, rda, io_rd);
+
+  wire adt1, adt2;
+  nfet adq3(1'b0, dbus[11], adt1);
+  nfet adq4(1'b0, adt1, adt2);
+  nfet adq5(1'b0, adt2, lcd_wr);
+  nfet adq6(1'b0, nio, lcd_wr);
+  nfet adq7(1'b0, nwrm, lcd_wr);
+  nfet adq8(1'b0, adt1, i2c_wr);
+  nfet adq9(1'b0, nio, i2c_wr);
+  nfet adq10(1'b0, nwrm, i2c_wr);
+
+  wire ram_nce;
+  nfet rq1(1'b0, nio, ram_nce);
+
+  wire ram_noe;
+  nfet rq2(1'b0, nstate_exec, ram_noe);
 
   // Show writes to output for debugging.
-  wire show_output = ~(~wrm | ~io);
+  wire show_output = ~(nwrm | nio) & ~dbus[11];
   always @(posedge show_output) begin
     $display("OUTPUT: %03x (%d)", dbus, dbus);
   end
@@ -104,15 +125,15 @@ module q2(
   q2_i2c i2c(
     .rst(rst),
     .rd(io_rd),
-    .i2c_scl_out(~ni2c_scl_out),
-    .i2c_sda_out(~ni2c_sda_out),
+    .i2c_scl_out(i2c_scl_out),
+    .i2c_sda_out(i2c_sda_out),
     .dbus(dbus)
   );
 
   q2_ram ram(
-    .ce(ram_ce),
-    .oe(rdm),
-    .we(wrm),
+    .nce(ram_nce),
+    .noe(ram_noe),
+    .nwe(nwrm),
     .abus(abus),
     .dbus(dbus)
   );
@@ -155,12 +176,13 @@ module q2(
     .nwrp(nwrp),
     .incp_clk(incp_clk),
     .rdp(rdp),
-    .wrm(wrm),
+    .nwrm(nwrm),
     .wrf(wrf),
     .fout(f_in),
     .s2in(s2in),
     .io(io),
-    .nio(nio)
+    .nio(nio),
+    .nstate_exec(nstate_exec)
   );
 
   wire [11:0] a;
@@ -180,12 +202,15 @@ module q2(
     .alu_cout(alu_cout)
   );
 
+  wire nrst = ~rst; // TODO
+  wire [11:0] nsw = ~sw;    // TODO
+
   q2_slice slice0(
-    .rst(rst),
+    .nrst(nrst),
     .dep(dep_sw),
     .dbus(dbus[0]),
     .abus(abus[0]),
-    .sw(sw[0]),
+    .nsw(nsw[0]),
     .wra(wra),
     .rda(rda),
     .ain(a[1]),
@@ -200,9 +225,8 @@ module q2(
     .xin_p(1'b0),
     .xin_dbus(xlin_dbus),
     .wrs(i2c_wr),
-    .rsts(rst),
     .sin(dbus[9]),
-    .sout(ni2c_sda_out),
+    .nsout(i2c_sda_out),
     .aout(a[0]),
     .nxout(nx[0]),
     .xout(x[0]),
@@ -211,11 +235,11 @@ module q2(
   );
 
   q2_slice slice1(
-    .rst(rst),
+    .nrst(nrst),
     .dep(dep_sw),
     .dbus(dbus[1]),
     .abus(abus[1]),
-    .sw(sw[1]),
+    .nsw(nsw[1]),
     .wra(wra),
     .rda(rda),
     .ain(a[2]),
@@ -230,9 +254,8 @@ module q2(
     .xin_p(1'b0),
     .xin_dbus(xlin_dbus),
     .wrs(i2c_wr),
-    .rsts(rst),
     .sin(dbus[10]),
-    .sout(ni2c_scl_out),
+    .nsout(i2c_scl_out),
     .aout(a[1]),
     .nxout(nx[1]),
     .xout(x[1]),
@@ -241,11 +264,11 @@ module q2(
   );
 
   q2_slice slice2(
-    .rst(rst),
+    .nrst(nrst),
     .dep(dep_sw),
     .dbus(dbus[2]),
     .abus(abus[2]),
-    .sw(sw[2]),
+    .nsw(nsw[2]),
     .wra(wra),
     .rda(rda),
     .ain(a[3]),
@@ -260,9 +283,9 @@ module q2(
     .xin_p(1'b0),
     .xin_dbus(xlin_dbus),
     .wrs(clk),
-    .rsts(rst),
-    .sin(~cdiv),
+    .sin(ncdiv),
     .sout(cdiv),
+    .nsout(ncdiv),
     .aout(a[2]),
     .nxout(nx[2]),
     .xout(x[2]),
@@ -271,11 +294,11 @@ module q2(
   );
 
   q2_slice slice3(
-    .rst(rst),
+    .nrst(nrst),
     .dep(dep_sw),
     .dbus(dbus[3]),
     .abus(abus[3]),
-    .sw(sw[3]),
+    .nsw(nsw[3]),
     .wra(wra),
     .rda(rda),
     .ain(a[4]),
@@ -290,7 +313,6 @@ module q2(
     .xin_p(1'b0),
     .xin_dbus(xlin_dbus),
     .wrs(~sc),
-    .rsts(rst),
     .sin(ns0),
     .sout(s0),
     .nsout(ns0),
@@ -302,11 +324,11 @@ module q2(
   );
 
   q2_slice slice4(
-    .rst(rst),
+    .nrst(nrst),
     .dep(dep_sw),
     .dbus(dbus[4]),
     .abus(abus[4]),
-    .sw(sw[4]),
+    .nsw(nsw[4]),
     .wra(wra),
     .rda(rda),
     .ain(a[5]),
@@ -321,7 +343,6 @@ module q2(
     .xin_p(1'b0),
     .xin_dbus(xlin_dbus),
     .wrs(ns0),
-    .rsts(rst),
     .sin(ns1),
     .sout(s1),
     .nsout(ns1),
@@ -333,11 +354,11 @@ module q2(
   );
 
   q2_slice slice5(
-    .rst(rst),
+    .nrst(nrst),
     .dep(dep_sw),
     .dbus(dbus[5]),
     .abus(abus[5]),
-    .sw(sw[5]),
+    .nsw(nsw[5]),
     .wra(wra),
     .rda(rda),
     .ain(a[6]),
@@ -352,7 +373,6 @@ module q2(
     .xin_p(1'b0),
     .xin_dbus(xlin_dbus),
     .wrs(ns1),
-    .rsts(rst),
     .sin(s2in),
     .sout(s2),
     .aout(a[5]),
@@ -363,11 +383,11 @@ module q2(
   );
 
   q2_slice slice6(
-    .rst(rst),
+    .nrst(nrst),
     .dep(dep_sw),
     .dbus(dbus[6]),
     .abus(abus[6]),
-    .sw(sw[6]),
+    .nsw(nsw[6]),
     .wra(wra),
     .rda(rda),
     .ain(a[7]),
@@ -382,7 +402,6 @@ module q2(
     .xin_p(1'b0),
     .xin_dbus(xlin_dbus),
     .wrs(~s2),
-    .rsts(rst),
     .sin(~s3),
     .sout(s3),
     .aout(a[6]),
@@ -393,11 +412,11 @@ module q2(
   );
 
   q2_slice slice7(
-    .rst(rst),
+    .nrst(nrst),
     .dep(dep_sw),
     .dbus(dbus[7]),
     .abus(abus[7]),
-    .sw(sw[7]),
+    .nsw(nsw[7]),
     .wra(wra),
     .rda(rda),
     .ain(a[8]),
@@ -412,7 +431,6 @@ module q2(
     .xin_p(xhin_p),
     .xin_dbus(xhin_dbus),
     .wrs(wrf),
-    .rsts(1'b0),
     .aout(a[7]),
     .sin(f_in),
     .sout(f),
@@ -423,11 +441,11 @@ module q2(
   );
 
   q2_slice slice8(
-    .rst(rst),
+    .nrst(nrst),
     .dep(dep_sw),
     .dbus(dbus[8]),
     .abus(abus[8]),
-    .sw(sw[8]),
+    .nsw(nsw[8]),
     .wra(wra),
     .rda(rda),
     .ain(a[9]),
@@ -442,7 +460,6 @@ module q2(
     .xin_p(xhin_p),
     .xin_dbus(xhin_dbus),
     .wrs(wro),
-    .rsts(1'b0),
     .sin(dbus[8]),
     .sout(deref),
     .aout(a[8]),
@@ -453,11 +470,11 @@ module q2(
   );
 
   q2_slice slice9(
-    .rst(rst),
+    .nrst(nrst),
     .dep(dep_sw),
     .dbus(dbus[9]),
     .abus(abus[9]),
-    .sw(sw[9]),
+    .nsw(nsw[9]),
     .wra(wra),
     .rda(rda),
     .ain(a[10]),
@@ -472,7 +489,6 @@ module q2(
     .xin_p(xhin_p),
     .xin_dbus(xhin_dbus),
     .wrs(wro),
-    .rsts(1'b0),
     .sin(dbus[9]),
     .sout(o0),
     .aout(a[9]),
@@ -483,11 +499,11 @@ module q2(
   );
 
   q2_slice slice10(
-    .rst(rst),
+    .nrst(nrst),
     .dep(dep_sw),
     .dbus(dbus[10]),
     .abus(abus[10]),
-    .sw(sw[10]),
+    .nsw(nsw[10]),
     .wra(wra),
     .rda(rda),
     .ain(a[11]),
@@ -502,7 +518,6 @@ module q2(
     .xin_p(xhin_p),
     .xin_dbus(xhin_dbus),
     .wrs(wro),
-    .rsts(1'b0),
     .sin(dbus[10]),
     .sout(o1),
     .aout(a[10]),
@@ -513,11 +528,11 @@ module q2(
   );
 
   q2_slice slice11(
-    .rst(rst),
+    .nrst(nrst),
     .dep(dep_sw),
     .dbus(dbus[11]),
     .abus(abus[11]),
-    .sw(sw[11]),
+    .nsw(nsw[11]),
     .wra(wra),
     .rda(rda),
     .ain(alu_out),
@@ -532,7 +547,6 @@ module q2(
     .xin_p(xhin_p),
     .xin_dbus(xhin_dbus),
     .wrs(wro),
-    .rsts(1'b0),
     .sin(dbus[11]),
     .sout(o2),
     .aout(a[11]),

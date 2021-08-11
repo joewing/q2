@@ -24,7 +24,7 @@ loop:
   jmp   @$+1
   .dw   i2c_write
 
-  lea   =3
+  lda   =x9
   sta   =x0
   lea   $+3
   jmp   @$+1
