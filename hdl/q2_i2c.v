@@ -21,7 +21,7 @@ module q2_i2c(
   nfet q3(1'b0, 1'b0, t2);
   nfet q4(t2, rd, dbus[10]);
 
-  assign dbus[11] = rd ? 1'b1 : 1'bz;
+  assign dbus[11:10] = rd ? 2'b11 : 2'bzz;
 
   always @(scl or sda or rst) begin
     if (rst) begin

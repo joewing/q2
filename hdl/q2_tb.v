@@ -20,11 +20,11 @@ module q2_tb;
 
     //$dumpvars;
 
-    #5000 rst = 1; stop_sw = 0;
-    #5000 rst = 0; stop_sw = 0;
-    #5000 start_sw = 1;
-    #5000 start_sw = 0;
-    for (i = 0; i < 10000000; i = i + 1) begin
+    #20000 rst = 1; stop_sw = 0;
+    #20000 rst = 0; stop_sw = 0;
+    #20000 start_sw = 1;
+    #20000 start_sw = 0;
+    for (i = 0; i < 100000000; i = i + 1) begin
       #100
       if (!run) begin
         $display("halted after %t", $realtime);

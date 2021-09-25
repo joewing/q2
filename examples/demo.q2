@@ -1,8 +1,6 @@
 
 .include examples/zeropage.q2
 
-.def  buf     63  ; Last word of the first page.
-
   .org  0x800
 
 menu:

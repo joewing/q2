@@ -144,9 +144,9 @@ F 3 "" H 4800 3700 50  0001 C CNN
 	1    4800 3700
 	1    0    0    -1  
 $EndComp
-Text GLabel 6950 3750 0    50   Input ~ 0
+Text GLabel 7400 4050 0    50   Input ~ 0
 I2C_SCL
-Text GLabel 6950 3850 0    50   Input ~ 0
+Text GLabel 7400 3850 0    50   Input ~ 0
 I2C_SDA
 Text GLabel 4400 4100 0    50   Input ~ 0
 I2C_SCL_OUT
@@ -326,7 +326,7 @@ Connection ~ 4800 4100
 $Comp
 L power:GND #PWR?
 U 1 1 610ED952
-P 6950 4050
+P 6950 4150
 AR Path="/608D9BDD/608D9C42/608D9C9B/610ED952" Ref="#PWR?"  Part="1" 
 AR Path="/608D9BDD/608D9C42/610ED952" Ref="#PWR?"  Part="1" 
 AR Path="/608D9BDD/610ED952" Ref="#PWR?"  Part="1" 
@@ -337,35 +337,24 @@ AR Path="/60A0BC91/610ED952" Ref="#PWR?"  Part="1"
 AR Path="/60A44A82/610ED952" Ref="#PWR?"  Part="1" 
 AR Path="/60AE7F64/610ED952" Ref="#PWR?"  Part="1" 
 AR Path="/60B6F292/610ED952" Ref="#PWR0718"  Part="1" 
-F 0 "#PWR0718" H 6950 3800 50  0001 C CNN
-F 1 "GND" H 6955 3877 50  0000 C CNN
-F 2 "" H 6950 4050 50  0001 C CNN
-F 3 "" H 6950 4050 50  0001 C CNN
-	1    6950 4050
+F 0 "#PWR0718" H 6950 3900 50  0001 C CNN
+F 1 "GND" H 6955 3977 50  0000 C CNN
+F 2 "" H 6950 4150 50  0001 C CNN
+F 3 "" H 6950 4150 50  0001 C CNN
+	1    6950 4150
 	1    0    0    -1  
 $EndComp
 $Comp
 L power:VCC #PWR?
 U 1 1 610EE188
-P 6950 3950
+P 6800 3450
 AR Path="/60A44A82/610EE188" Ref="#PWR?"  Part="1" 
 AR Path="/60B6F292/610EE188" Ref="#PWR0719"  Part="1" 
-F 0 "#PWR0719" H 6950 3800 50  0001 C CNN
-F 1 "VCC" H 6965 4123 50  0000 C CNN
-F 2 "" H 6950 3950 50  0001 C CNN
-F 3 "" H 6950 3950 50  0001 C CNN
-	1    6950 3950
-	0    -1   -1   0   
-$EndComp
-$Comp
-L Connector_Generic:Conn_01x04 J3
-U 1 1 610F831C
-P 7150 3850
-F 0 "J3" H 7230 3842 50  0000 L CNN
-F 1 "I2C" H 7230 3751 50  0000 L CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical" H 7150 3850 50  0001 C CNN
-F 3 "~" H 7150 3850 50  0001 C CNN
-	1    7150 3850
+F 0 "#PWR0719" H 6800 3300 50  0001 C CNN
+F 1 "VCC" H 6815 3623 50  0000 C CNN
+F 2 "" H 6800 3450 50  0001 C CNN
+F 3 "" H 6800 3450 50  0001 C CNN
+	1    6800 3450
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
@@ -556,4 +545,23 @@ Wire Wire Line
 Wire Wire Line
 	5500 3700 5500 3900
 Connection ~ 4800 4500
+Wire Wire Line
+	6800 3450 6800 3750
+Wire Wire Line
+	7400 3750 6800 3750
+$Comp
+L Connector_Generic:Conn_01x04 J3
+U 1 1 610F831C
+P 7600 3850
+F 0 "J3" H 7680 3842 50  0000 L CNN
+F 1 "I2C" H 7680 3751 50  0000 L CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Horizontal" H 7600 3850 50  0001 C CNN
+F 3 "~" H 7600 3850 50  0001 C CNN
+	1    7600 3850
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7400 3950 6950 3950
+Wire Wire Line
+	6950 4150 6950 3950
 $EndSCHEMATC

@@ -3,9 +3,9 @@ module nfet #(
   parameter FANOUT  = 1,      // Fanout
   parameter RPU     = 10000,  // Size of the pull-up resistor.
   parameter VCC     = 5.0,    // Pull up voltage.
-  parameter VTH     = 2.4,    // Output level required to be considered 1.
-  parameter CISS_PF = 50.0,   // FET input capacitance.
-  parameter RDS     = 3.0     // Drain-source resistance.
+  parameter VTH     = 1.5,    // Output level required to be considered 1.
+  parameter CISS_PF = 13.0,   // FET input capacitance.
+  parameter RDS     = 13.0    // Drain-source resistance.
 ) (
   input wire  source,
   input wire  gate,

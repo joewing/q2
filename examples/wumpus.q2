@@ -1,0 +1,586 @@
+
+.include examples/zeropage.q2
+
+  .org  0x800
+
+.def    wumpus_pos          x9
+.def    wumpus_monster_pos  x10
+
+.def    wumpus_monster    1
+.def    wumpus_pit        2
+.def    wumpus_bat        3
+.def    wumpus_cave_addr  0x080
+
+
+; 20 rooms
+;   3 with pits
+;   2 with bats
+;   1 with wumpus
+
+; 0123456789012345
+;  Room A - S D N
+;  Move?  B C D S
+;  Shoot? B C D M
+
+wumpus:
+
+  ; Initialize the LCD.
+  lea   wumpus_sprites
+  sta   =x0
+  lea   =wumpus_sprites_end - wumpus_sprites
+wumpus_sprite_loop:
+  add   =neg1
+  sta   =x1
+  lda   @=x0
+  sta   @=neg1
+  lea   =1
+  add   =x0
+  sta   =x0
+  lda   =x1
+  jfc   wumpus_sprite_loop
+
+  ; Initialize the cave
+  lda   wumpus_init_cave_ptr
+  sta   =x0
+  lea   =20
+wumpus_init_loop:
+  add   =neg1
+  sta   =x1
+  lea   =0
+  sta   @=x0
+  lea   =1
+  add   =x0
+  sta   =x0
+  lda   =x1
+  jfc   wumpus_init_loop
+
+  ; Place the monster.
+  lea   =wumpus_monster
+  sta   =x7
+  lea   $+2
+  jmp   wumpus_place_hazard
+  lda   =x0
+  sta   =wumpus_monster_pos
+
+  ; Place pits.
+  lea   =wumpus_pit
+  sta   =x7
+  lea   $+2
+  jmp   wumpus_place_hazard
+  lea   $+2
+  jmp   wumpus_place_hazard
+  lea   $+2
+  jmp   wumpus_place_hazard
+
+  ; Place bats.
+  lea   =wumpus_bat
+  sta   =x7
+  lea   $+2
+  jmp   wumpus_place_hazard
+  lea   $+2
+  jmp   wumpus_place_hazard
+
+  ; Get initial position.
+  lea   $+2
+  jmp   wumpus_find_open_room
+  lda   =x0
+  sta   =wumpus_pos
+
+  jmp   @$+1
+  .dw   wumpus_show_room
+
+wumpus_init_cave_ptr:
+  .dw   wumpus_cave_addr
+
+; Place hazard =x7 at an empty location.
+; Returns address in x1, index in x0
+; Destroys =x0..x6
+wumpus_place_hazard:
+  sta   =x6
+  lea   $+2
+  jmp   wumpus_find_open_room
+  lda   =x7
+  sta   @=x1
+  jmp   @=x6
+
+; Find an open room.
+; Returns open room index in =x0, ptr in =x1
+; Destroys =x0 through =x5
+wumpus_find_open_room:
+  sta   =x5
+wumpus_find_open_room_loop:
+  lea   $+3
+  jmp   @$+1
+  .dw   rand
+  nor   wumpus_rand_mask
+  sta   =x0
+  lda   wumpus_neg_room_count
+  add   =x0
+  jfc   $+2
+  jmp   wumpus_find_open_room_loop
+  lda   wumpus_init_cave_ptr
+  add   =x0
+  sta   =x1
+  lda   @=x1
+  jfc   wumpus_find_open_room_loop
+  jmp   @=x5
+wumpus_rand_mask:
+  .dw   0xFC0
+wumpus_neg_room_count:
+  .dw   -20
+
+wumpus_sprites:
+  .dw   0x138   ; Function set (8-bits, 2-lines, 5x8)
+  .dw   0x10C   ; Display on, cursor off, blink off
+  .dw   0x106   ; Entry mode, increment, no shift
+  .dw   0x101
+  .dw   "Hunt the Wumpus!"
+  .dw   0x180 + 0x40
+  .dw   "Creating map... "
+  .dw   0x140 + 0
+  .dw   0b00001110    ; 0 - monster
+  .dw   0b00010101
+  .dw   0b00011111
+  .dw   0b00010001
+  .dw   0b00001110
+  .dw   0b00010001
+  .dw   0b00010001
+  .dw   0b00000000
+  .dw   0b00000000    ; 1 - pit
+  .dw   0b00000000
+  .dw   0b00010001
+  .dw   0b00001010
+  .dw   0b00001010
+  .dw   0b00001010
+  .dw   0b00001010
+  .dw   0b00000000
+  .dw   0b00001010    ; 2 - bat
+  .dw   0b00011111
+  .dw   0b00010101
+  .dw   0b00000000
+  .dw   0b00000000
+  .dw   0b00000000
+  .dw   0b00000000
+  .dw   0b00000000
+wumpus_sprites_end:
+
+  .align 128
+
+wumpus_show_room:
+
+  lda   wumpus_room_str_ptr
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   puts
+
+  lea   wumpus_rooms
+  add   =wumpus_pos
+  sta   =x0
+  lda   @=x0
+  sta   @=neg1
+
+  lea   =wumpus_monster
+  sta   =x2
+  lea   $+3
+  jmp   @$+1
+  .dw   wumpus_check_hazard
+  jfc   $+2
+  jmp   wumpus_no_monster
+  lea   wumpus_monster_string
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   puts
+wumpus_no_monster:
+  lea   =wumpus_pit
+  sta   =x2
+  lea   $+3
+  jmp   @$+1
+  .dw   wumpus_check_hazard
+  jfc   $+2
+  jmp   wumpus_no_pit
+  lea   wumpus_pit_string
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   puts
+wumpus_no_pit:
+  lea   =wumpus_bat
+  sta   =x2
+  lea   $+3
+  jmp   @$+1
+  .dw   wumpus_check_hazard
+  jfc   $+2
+  jmp   wumpus_no_bat
+  lea   wumpus_bat_string
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   puts
+wumpus_no_bat:
+  lda   wumpus_show_room_cave_ptr
+  add   =wumpus_pos
+  sta   =x0
+  lda   @=x0
+  add   =neg1
+  jfc   wumpus_show_room_done   ; 0 - empty
+  add   =neg1
+  jfc   wumpus_eaten            ; 1 - eaten
+  add   =neg1
+  jfc   wumpus_fell_in_pit      ; 2 - fell in pit
+
+  ; 3 - bats
+  lda   wumpus_bats_str_ptr
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   puts
+
+  lea   $+3
+  jmp   @$+1
+  .dw   wumpus_find_open_room
+  lda   =x0
+  sta   =wumpus_pos
+
+  lea   wumpus_show_room
+  jmp   @$+1
+  .dw   waitkey
+
+wumpus_show_room_done:
+  jmp   @$+1
+  .dw   wumpus_move_menu
+
+wumpus_room_str_ptr:
+  .dw   wumpus_room_string
+wumpus_bats_str_ptr:
+  .dw   wumpus_bats_string
+wumpus_monster_string:
+  .dw   0x180 + 10
+  .dw   0x008, 0
+wumpus_pit_string:
+  .dw   0x180 + 12
+  .dw   0x009, 0
+wumpus_bat_string:
+  .dw   0x180 + 14
+  .dw   0x00A, 0
+wumpus_rooms:
+  .dw   "ABCDEFGHIJKLMNOPQRST"
+wumpus_show_room_cave_ptr:
+  .dw   wumpus_cave_addr
+
+wumpus_eaten:
+  lda   wumpus_eaten_str_ptr
+  jmp   wumpus_loser
+wumpus_fell_in_pit:
+  lda   wumpus_fell_in_pit_str_ptr
+  jmp   wumpus_loser
+wumpus_eaten_str_ptr:
+  .dw   wumpus_eaten_string
+wumpus_fell_in_pit_str_ptr:
+  .dw   wumpus_fell_in_pit_string
+wumpus_loser:
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   puts
+  jmp   @$+1
+  .dw   wumpus_over
+
+  .align 128
+
+wumpus_room_string:
+  .dw   0x180 + 0
+  .dw   " Room           "
+  .dw   0x180 + 6
+  .dw   0
+wumpus_eaten_string:
+  .dw   0x180 + 0x40
+  .dw   "     Eaten!     "
+  .dw   0
+wumpus_fell_in_pit_string:
+  .dw   0x180 + 0x40
+  .dw   " Fell in a pit! "
+  .dw   0
+wumpus_bats_string:
+  .dw   0x180 + 0x40
+  .dw   "     Bats!      "
+  .dw   0
+wumpus_move_string:
+  .dw   0x180 + 0x40
+  .dw   "  Move?       S "
+  .dw   0x180 + 0x40 + 8
+  .dw   0
+wumpus_win_string:
+  .dw   0x180 + 0x40
+  .dw   "Got the Wumpus! "
+  .dw   0
+wumpus_shoot_string:
+  .dw   0x180 + 0x40
+  .dw   " Shoot?       M "
+  .dw   0x180 + 0x40 + 8
+  .dw   0
+wumpus_miss_string:
+  .dw   0x180 + 0x40
+  .dw   "    Missed!     "
+  .dw   0
+
+  .align  128
+
+; Check for hazard x2
+; Returns F = 0 if found, 1 if not found
+; Destroys x0..x4
+wumpus_check_hazard:
+  sta   =x4
+  lea   wumpus_map
+  add   =wumpus_pos
+  add   =wumpus_pos
+  add   =wumpus_pos
+  sta   =x0
+  lea   =3
+wumpus_check_hazard_loop:
+  add   =neg1
+  sta   =x1
+  lda   @=x0
+  add   wumpus_check_hazard_cave_ptr
+  sta   =x3
+  lda   @=x3
+  add   =neg1
+  nor   =zero
+  add   =x2
+  add   =neg1
+  jfc   @=x4    ; Flag is clear; hazard found.
+  lea   =1
+  add   =x0
+  sta   =x0
+  lda   =x1
+  jfc   wumpus_check_hazard_loop
+  jmp   @=x4    ; Flag is set; hazard not found.
+wumpus_check_hazard_cave_ptr:
+  .dw   wumpus_cave_addr
+
+wumpus_show_directions:
+  sta   =x5
+  lea   wumpus_map
+  add   =wumpus_pos
+  add   =wumpus_pos
+  add   =wumpus_pos
+  sta   =x3
+  lea   =3
+wumpus_show_directions_loop:
+  add   =neg1
+  sta   =x4
+  lea   ='A'
+  add   @=x3
+  sta   @=neg1
+  lea   =' '
+  sta   @=neg1
+  lea   =1
+  add   =x3
+  sta   =x3
+  lda   =x3
+  lda   =x4
+  jfc   wumpus_show_directions_loop
+  jmp   @=x5
+
+wumpus_map:
+  .dw   2,  8,  14    ; 0
+  .dw   7,  13, 19    ; 1
+  .dw   12, 18, 0     ; 2
+  .dw   16, 17, 19    ; 3
+  .dw   11, 14, 18    ; 4
+  .dw   13, 15, 18    ; 5
+  .dw   9,  14, 16    ; 6
+  .dw   1,  15, 17    ; 7
+  .dw   0,  10, 16    ; 8
+  .dw   6,  11, 19    ; 9
+  .dw   8,  12, 17    ; 10
+  .dw   4,  9,  13    ; 11
+  .dw   2,  10, 15    ; 12
+  .dw   1,  5,  11    ; 13
+  .dw   0,  4,  6     ; 14
+  .dw   5,  7,  12    ; 15
+  .dw   3,  6,  8     ; 16
+  .dw   3,  7,  10    ; 17
+  .dw   2,  4,  5     ; 18
+  .dw   1,  3,  9     ; 19
+
+wumpus_winner:
+  lda   wumpus_win_str_ptr
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   puts
+wumpus_over:
+  lea   $+3
+  jmp   @$+1
+  .dw   waitkey
+  jmp   @$+1
+  .dw   wumpus
+wumpus_win_str_ptr:
+  .dw   wumpus_win_string
+
+.align 128
+
+wumpus_move_menu:
+  lda   wumpus_move_str_ptr
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   puts
+  lea   $+3
+  jmp   @$+1
+  .dw   wumpus_show_directions
+  lea   $+3
+  jmp   @$+1
+  .dw   waitkey
+  lda   =x0
+  nor   =zero
+  sta   =x0
+  shr   =x0
+  jfc   wumpus_move1        ; Left
+  sta   =x0
+  shr   =x0
+  jfc   wumpus_move3        ; Right
+  sta   =x0
+  shr   =x0
+  jfc   wumpus_move2        ; Up
+  sta   =x0
+  shr   =x0
+  jfc   wumpus_shoot_menu   ; Down
+  jmp   wumpus_move_menu
+wumpus_move_str_ptr:
+  .dw   wumpus_move_string
+
+wumpus_move1:
+  lea   =0
+  jmp   wumpus_do_move
+wumpus_move2:
+  lea   =1
+  jmp   wumpus_do_move
+wumpus_move3:
+  lea   =2
+wumpus_do_move:
+  add   wumpus_map_ptr
+  add   =wumpus_pos
+  add   =wumpus_pos
+  add   =wumpus_pos
+  sta   =x0
+  lda   @=x0
+  sta   =wumpus_pos
+  jmp   @$+1
+  .dw   wumpus_show_room
+
+wumpus_shoot_menu:
+  lda   wumpus_shoot_str_ptr
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   puts
+  lea   $+3
+  jmp   @$+1
+  .dw   wumpus_show_directions
+  lea   $+3
+  jmp   @$+1
+  .dw   waitkey
+  lda   =x0
+  nor   =zero
+  sta   =x0
+  shr   =x0
+  jfc   wumpus_shoot1       ; Left
+  sta   =x0
+  shr   =x0
+  jfc   wumpus_shoot3       ; Right
+  sta   =x0
+  shr   =x0
+  jfc   wumpus_shoot2       ; Up
+  sta   =x0
+  shr   =x0
+  jfc   wumpus_move_menu   ; Down
+  jmp   wumpus_shoot_menu
+
+wumpus_shoot1:
+  lea   =0
+  jmp   wumpus_do_shoot
+wumpus_shoot2:
+  lea   =1
+  jmp   wumpus_do_shoot
+wumpus_shoot3:
+  lea   =2
+wumpus_do_shoot:
+  add   wumpus_map_ptr
+  add   =wumpus_pos
+  add   =wumpus_pos
+  add   =wumpus_pos
+  sta   =x0
+  lda   wumpus_shoot_cave_ptr
+  add   @=x0
+  sta   =x0
+  lea   =wumpus_monster
+  nor   =zero
+  add   @=x0
+  nor   =zero
+  jfc   wumpus_missed
+  jmp   @$+1
+  .dw   wumpus_winner
+wumpus_missed:
+  lda   wumpus_miss_str_ptr
+  sta   =x0
+  lea   $+3
+  jmp   @$+1
+  .dw   puts
+
+  lea   $+3
+  jmp   @$+1
+  .dw   rand
+  sta   =x0
+  nor   wumpus_not3
+  sta   =x0
+  jfc   wumpus_move_monster
+  jmp   wumpus_missed_done
+wumpus_move_monster:
+
+  lda   =wumpus_monster_pos
+  add   wumpus_shoot_cave_ptr
+  sta   =x1
+  lea   =0
+  sta   @=x1
+
+  lda   wumpus_map_ptr
+  add   =wumpus_monster_pos
+  add   =wumpus_monster_pos
+  add   =wumpus_monster_pos
+  add   =x0
+  sta   =x0
+  lda   @=x0
+  sta   =wumpus_monster_pos
+  add   wumpus_shoot_cave_ptr
+  sta   =x1
+  lea   =wumpus_monster
+  sta   @=x1
+
+wumpus_missed_done:
+  lea   $+3
+  jmp   @$+1
+  .dw   waitkey
+  jmp   @$+1
+  .dw   wumpus_show_room
+
+wumpus_not3:
+  .dw   0xFFC
+wumpus_shoot_str_ptr:
+  .dw   wumpus_shoot_string
+wumpus_miss_str_ptr:
+  .dw   wumpus_miss_string
+wumpus_shoot_cave_ptr:
+  .dw   wumpus_cave_addr
+wumpus_map_ptr:
+  .dw   wumpus_map
+
+
+  .align 128
+.include examples/rand.q2
+.include examples/mult.q2
+.include examples/div.q2
+.include examples/lcd.q2
+

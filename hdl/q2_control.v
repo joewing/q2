@@ -57,17 +57,17 @@ module q2_control(
   nfet #(2, 10000) q7(t4, ns0, t5);
   nfet #(2, 10000) q8(t5, ~o2, nstate_load);
 
-  nfet #(5, 4700) q9(t4, s0, nstate_exec);
+  nfet #(5, 10000) q9(t4, s0, nstate_exec);
 
   wire state_exec;
-  nfet #(14, 1000) q10(1'b0, nstate_exec, state_exec);
+  nfet #(14, 4700) q10(1'b0, nstate_exec, state_exec);
 
   wire state_fetch;
   nfet #(13, 1000) q11(1'b0, nstate_fetch, state_fetch);
 
   wire nstate_alu;
-  nfet #(13, 1000) q12(1'b0, s2, nstate_alu);
-  nfet #(13, 1000) q13(1'b0, s3, nstate_alu);
+  nfet #(13, 4700) q12(1'b0, s2, nstate_alu);
+  nfet #(13, 4700) q13(1'b0, s3, nstate_alu);
 
   wire state_alu;
   nfet #(12, 4700) q14(1'b0, nstate_alu, state_alu);
@@ -101,7 +101,7 @@ module q2_control(
   nfet #(8, 4700) q32(1'b0, nws, wro);
 
   wire nws;
-  nfet #(6, 1000) q33(1'b0, ws, nws);
+  nfet #(6, 4700) q33(1'b0, ws, nws);
 
   wire t9, t10, t11;
   nfet #(24, 1000) q34(1'b0, nstate_alu, t9);

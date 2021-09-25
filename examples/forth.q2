@@ -1,4 +1,8 @@
 
+.def I2C_EN   0x800
+.def I2C_SCL  0x400
+.def I2C_SDA  0x200
+
 .def  ip    2   ; Instruction pointer
 .def  dsp   3   ; Data stack pointer
 .def  rsp   4   ; Return stack pointer
@@ -50,6 +54,11 @@ init:
   sta   =dp
   lda   last_init_ptr
   sta   =last
+  lea   init_cmds
+  sta   =x0
+  lea   $+2
+  jmp   @$+1
+  .dw   puts
 
   lea   cold_start
   sta   =ip
@@ -61,6 +70,27 @@ dp_init_ptr:
   .dw   dp_init
 last_init_ptr:
   .dw   last_init
+init_cmds:
+  .dw   0x138   ; Function set (8-bits, 2-lines, 5x8)
+  .dw   0x10C   ; Display on, cursor off, blink off
+  .dw   0x106   ; Entry mode, increment, no shift
+lcd_clear_cmd:
+  .dw   0x101   ; Clear screen
+  .dw   0x000
+
+; Write the string at x0
+; Uses x0, x1
+puts:
+  sta   =x1
+puts_loop:
+  lda   @=x0
+  jfc   $+2
+  jmp   @=x1
+  sta   @=neg1
+  lea   =1
+  add   =x0
+  sta   =x0
+  jmp   puts_loop
 
 
 ; Jump here to execute the next instruction
@@ -370,10 +400,30 @@ _key:
   .dw   "key"
 key:
   .dw   $+1
+  lea   =' '
+  sta   =x1
 key_loop:
   lda   @=neg1
-  jfc   $+2
-  jmp   key_loop
+  nor   key_mask
+  jfc   key_loop
+key_loop2:
+  lda   @=neg1
+  sta   =x0
+  shr   =x0
+  sta   =x0
+  shr   =x0
+  jfc   key_right
+  sta   =x0
+  shr   =x0
+  jfc   key_up
+  sta   =x0
+  shr   =x0
+  jfc   key_down
+  jmp   key_loop2
+
+key_right:
+  ; Right (accept)
+  lda   =x1
   sta   @=dsp
   lda   =dsp
   add   =neg1
@@ -381,6 +431,21 @@ key_loop:
   jmp   @$+1
   .dw   next
 
+key_up:
+  lea   =1
+  add   =x1
+  sta   =x1
+  jmp   key_loop
+
+key_down:
+  lda   =x1
+  add   =neg1
+  sta   =x1
+  jmp   key_loop
+
+key_mask:
+  .dw   0xFF0
+  
 _word:
   .dw   _key
   .dw   4
@@ -493,6 +558,10 @@ test:
   .dw   4
   .dw   plus
   .dw   emit
+
+  .dw   key
+  .dw   emit
+
   .dw   quit
   .dw   exit
 
@@ -606,12 +675,184 @@ swap:
   jmp   @$+1
   .dw   next
 
+  .align 128
+
+; I2C start
+_i2c_start:
+  .dw   _dup
+  .dw   9
+  .dw   "i2c_start"
+i2c_start:
+  .dw   $+1
+  lda   i2c_one_clk_a   ; SDA=1, CLK=1
+  sta   @=neg1
+  lda   i2c_zero_clk_a  ; SDA=0, CLK=1
+  sta   @=neg1
+  jmp   @$+1
+  .dw   next
+
+; I2C stop
+_i2c_stop:
+  .dw   _i2c_start
+  .dw   8
+  .dw   "i2c_stop"
+i2c_stop:
+  .dw   $+1
+  lda   i2c_zero_clk_a    ; SDA=0, CLK=1
+  sta   @=neg1
+  lda   i2c_one_clk_a     ; SDA=1, CLK=1
+  sta   @=neg1
+  jmp   @$+1
+  .dw   next
+
+i2c_one_clk_a:
+  .dw   I2C_EN
+i2c_zero_clk_a:
+  .dw   I2C_EN | I2C_SDA
+
+  .align  128
+
+_i2c_write:
+  .dw   _i2c_stop
+  .dw   9
+  .dw   "i2c_write"
+i2c_write:
+  .dw   $+1
+
+  lea   =1
+  add   =dsp
+  sta   =dsp
+  lda   @=dsp
+  sta   =x0
+
+  ; Shift out high 4 bits
+  lda   =x0
+  add   =x0
+  sta   =x0   ; x2
+  add   =x0
+  sta   =x0   ; x4
+  add   =x0
+  sta   =x0   ; x8
+  add   =x0
+  sta   =x0   ; x16
+
+  lea   =8
+i2c_write_loop:
+  add   =neg1
+  sta   =x2
+
+  lda   =x0
+  add   =x0
+  sta   =x0
+  jfc   i2c_write_zero
+
+  ; Write 1
+  lda   i2c_one
+  sta   @=neg1
+  lda   i2c_one_clk
+  sta   @=neg1
+  lda   i2c_one
+  jmp   i2c_write_cont
+i2c_write_zero:
+
+  ; Write 0
+  lda   i2c_zero
+  sta   @=neg1
+  lda   i2c_zero_clk
+  sta   @=neg1
+  lda   i2c_zero
+
+i2c_write_cont:
+  sta   @=neg1
+  lda   =x2
+  jfc   i2c_write_loop
+
+  ; Acknowledge
+  lda   i2c_one
+  sta   @=neg1
+  lda   i2c_one_clk
+  sta   @=neg1
+  lda   i2c_one
+  sta   @=neg1
+
+  jmp   @$+1
+  .dw   next
+
+_i2c_read:
+  .dw   _i2c_write
+  .dw   8
+  .dw   "i2c_read"
+i2c_read:
+  .dw   $+1
+
+  lea   =0
+  sta   =x0
+
+  lea   =8
+i2c_read_loop:
+  add   =neg1
+  sta   =x2
+
+  lda   i2c_one
+  sta   @=neg1
+  lda   i2c_one_clk
+  sta   @=neg1
+
+  lda   @=neg1
+  sta   =x1
+  add   =x1   ; 11 (enable)
+  sta   =x1
+  add   =x1   ; 10 (clock)
+  sta   =x1
+  add   =x1   ; 9 (data)
+  lea   =0
+  jfc   $+2
+  lea   =1
+  add   =x0
+  add   =x0
+  sta   =x0
+
+  lda   i2c_one
+  sta   @=neg1
+
+  lda   =x2
+  jfc   i2c_read_loop
+
+  ; Acknowledge
+  lda   i2c_one
+  sta   @=neg1
+  lda   i2c_one_clk
+  sta   @=neg1
+  lda   i2c_one
+  sta   @=neg1
+
+  lda   =x0
+  sta   @=dsp
+  lda   =dsp
+  add   =neg1
+  sta   =dsp
+
+  jmp   @$+1
+  .dw   next
+
+i2c_zero:
+  .dw   I2C_EN | I2C_SCL | I2C_SDA
+i2c_zero_clk:
+  .dw   I2C_EN | I2C_SDA
+i2c_one:
+  .dw   I2C_EN | I2C_SCL
+i2c_one_clk:
+  .dw   I2C_EN
+i2c_input_mask:
+  .dw   ~I2C_SDA
+
 ; Word to drop the top of the data stack.
 last_init:
 _drop:
   .dw   _dup
   .dw   4
   .dw   "drop"
+drop:
   .dw   $+1
   lea   =1
   add   =dsp

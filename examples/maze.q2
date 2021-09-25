@@ -12,6 +12,10 @@ maze_gen:
 
   lda   maze_clear_cmd
   sta   @=neg1
+  lea   =1
+  lea   =1
+  lea   =1
+  lea   =1
   lea   maze_gen_str
   sta   =x0
   lea   $+3

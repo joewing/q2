@@ -2,11 +2,13 @@
 ; Write int in x0
 ; Writes 4 chars
 ; Uses x0, x1, x2, x3, x4, x5, x6, x7
+putint_buf:
+  .dw   0, 0, 0, 0, 0
 putint_chars:
   .dw   4
 putint:
   sta   =x7
-  lea   =buf
+  lea   putint_buf
   add   putint_chars
   sta   =x6   ; Pointer to end of buffer
   lea   =0
@@ -25,12 +27,12 @@ putint_loop1:
   lea   =48
   add   =x3
   sta   @=x6
-  lea   =buf
+  lea   putint_buf
   nor   =zero
   add   =x6
   nor   =zero
   jfc   putint_loop1
-  lea   =buf
+  lea   putint_buf
   sta   =x0
   lda   =x7
   ; fall through
@@ -56,14 +58,16 @@ waitkey:
   sta   =x1
 waitkey_loop:
   lda   @=neg1
-  nor   =zero
+  nor   waitkey_mask
   sta   =x0
   jfc   $+2
   jmp   waitkey_loop
 
 waitkey_loop2:
-  lea   =1
-  add   @=neg1
+  lda   @=neg1
+  nor   waitkey_mask
   jfc   waitkey_loop2
   jmp   @=x1
+waitkey_mask:
+  .dw   0x000
 

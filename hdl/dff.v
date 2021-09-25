@@ -22,8 +22,8 @@ module dff(
   nfet #(1, 10000) q7(t8, d, t1);
   nfet #(1, 10000) q8(clr, t7, t8);
 
-  nfet #(1, 4700) q9(t9, t3, q);
-  nfet #(1, 4700) q10(set, nq, t9);
+  nfet #(1, 10000) q9(t9, t3, q);
+  nfet #(1, 10000) q10(set, nq, t9);
 
   nfet #(1, 1000, 3.0) q11(t8, q, nq);
 

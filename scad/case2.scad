@@ -1,8 +1,8 @@
 
-board_width = 240;
-board_height = 314;
+board_width = 198;
+board_height = 278;
 wall_width = 2;
-board_overlap = 2;
+board_overlap = 2.5;
 tol = 0.2;
 screw_radius = 1.7;
 screw_head_radius = 2.8;
@@ -19,10 +19,9 @@ midpoint = 140;
 standoff_positions = [
     [screw_offset, screw_offset],
     [board_width - screw_offset, screw_offset],
-    [board_width / 2, 30],
+    [board_width / 2, 100],
     [screw_offset, board_height - screw_offset],
     [board_width - screw_offset, board_height - screw_offset],
-    [board_width / 2, 172]
 ];
 
 module meniscus(height, radius) {
@@ -139,5 +138,5 @@ module back_half() {
     }
 }
 
-//front_half();
-back_half();
+front_half();
+//back_half();

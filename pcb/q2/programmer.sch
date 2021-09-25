@@ -19,7 +19,7 @@ U 1 1 6090C11A
 P 5850 2500
 F 0 "J1" H 6500 3900 50  0000 C CNN
 F 1 "Programmer" H 6550 3800 50  0000 C CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_2x20_P2.54mm_Vertical" H 5850 2500 50  0001 C CNN
+F 2 "Connector_IDC:IDC-Header_2x20_P2.54mm_Vertical" H 5850 2500 50  0001 C CNN
 F 3 "https://www.raspberrypi.org/documentation/hardware/raspberrypi/schematics/rpi_SCH_3bplus_1p0_reduced.pdf" H 5850 2500 50  0001 C CNN
 	1    5850 2500
 	1    0    0    -1  

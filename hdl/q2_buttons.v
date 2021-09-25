@@ -5,7 +5,7 @@ module q2_buttons(
   inout wire [11:0] dbus
 );
 
-  localparam KEY = 2;
+  localparam KEY = 1;
 
   assign dbus[8:0] = rd ?
     (key_timer[7] ? (1 << KEY) ^ 9'h1FF : 9'h1FF) : 9'bz;

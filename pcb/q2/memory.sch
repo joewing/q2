@@ -969,4 +969,6 @@ Text GLabel 5100 4450 2    50   Input ~ 0
 ~WRM
 Text GLabel 7750 4450 2    50   Input ~ 0
 ~WRM
+Text Notes 2700 6700 0    50   ~ 0
+At power up, rise time is:\n0.69 * 100000 * 100 * 10^-9\n= 6.9ms
 $EndSCHEMATC

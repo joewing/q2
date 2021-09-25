@@ -82,7 +82,7 @@ module q2(
 
   // Halt condition for simulation.
   // Halt when executing "jmp $".
-  wire halt = s0 & s1 & ~s2 & ~s3 && o2 & o1 & ~o0 & ~deref && (x == p - 1);
+  wire halt = ~s0 & s1 & ~s2 & ~s3 && o2 & o1 & ~o0 & ~deref && (x == p - 1);
   always @(posedge halt or posedge start_sw or posedge stop_sw) begin
     run = start_sw & ~stop_sw & ~halt;
   end
