@@ -63,11 +63,11 @@ module q2_control(
   nfet #(14, 4700) q10(1'b0, nstate_exec, state_exec);
 
   wire state_fetch;
-  nfet #(13, 1000) q11(1'b0, nstate_fetch, state_fetch);
+  nfet #(13, 4700) q11(1'b0, nstate_fetch, state_fetch);
 
   wire nstate_alu;
-  nfet #(13, 4700) q12(1'b0, s2, nstate_alu);
-  nfet #(13, 4700) q13(1'b0, s3, nstate_alu);
+  nfet #(13, 1000) q12(1'b0, s2, nstate_alu);
+  nfet #(13, 1000) q13(1'b0, s3, nstate_alu);
 
   wire state_alu;
   nfet #(12, 4700) q14(1'b0, nstate_alu, state_alu);

@@ -12,7 +12,8 @@ module q2_clock(
   localparam FAST = 1;
 
   // RC delay for clock generation.
-  localparam OSC_RES_FAST = 3300;
+  localparam OSC_RES_FAST = 4100; // ~160 kHz
+  //localparam OSC_RES_FAST = 16000;  // ~90 kHz
   localparam OSC_RES_BASE = 9400;
   localparam OSC_RES      = 1000 +
     (FAST ? (OSC_RES_FAST * OSC_RES_BASE) / (OSC_RES_FAST + OSC_RES_BASE)

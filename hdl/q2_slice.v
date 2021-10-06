@@ -30,7 +30,7 @@ module q2_slice(
 );
 
   wire naout;
-  dff areg(
+  dff #(2, 1) areg(
     .clk(wra),
     .d(ain),
     .set(1'b0),
