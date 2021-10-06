@@ -4,17 +4,15 @@
   .org  0x800
 
 menu:
-  lea   $+3
-  jmp   @$+1
-  .dw   init
+  lea   $+2
+  jmp   @#init
 
   lea   menu_str1
   sta   =x0
-  lea   $+3
-  jmp   @$+1
-  .dw   puts
+  lea   $+2
+  jmp   @#puts
 
-  lea   menu_items
+  lda   #menu_items
   sta   =x9
 
 menu_loop:
@@ -28,38 +26,31 @@ menu_new_seed:
   add   =rseed
   sta   =rseed
 
-  lda   $+3
+  lda   #0x180 + 0x40
   sta   @=neg1
-  jmp   $+2
-  .dw   0x180 + 0x40
 
   lda   =x9
   sta   =x0
-  lea   $+3
-  jmp   @$+1
-  .dw   puts
+  lea   $+2
+  jmp   @#puts
 
-  lda   $+3
+  lda   #0x180 + 0x40 + 11
   sta   @=neg1
-  jmp   $+2
-  .dw   0x180 + 0x40 + 11
 
   lda   =rseed
   sta   =x0
-  lea   $+3
-  jmp   @$+1
-  .dw   putint
+  lea   $+2
+  jmp   @#putint
 
-  lea   $+3
-  jmp   @$+1
-  .dw   waitkey
+  lea   $+2
+  jmp   @#waitkey
 
   lda   =x0
   add   menu_left_mask
   jfc   $+2
   jmp   menu_not_left
 
-  lea   menu_items
+  lda   #menu_items
   nor   =zero
   add   =x9
   jfc   menu_first
@@ -122,6 +113,8 @@ menu_prev:
 menu_last_item:
   .dw   menu_items_end
 
+  .align
+
 menu_items:
   ;      0123456789ABCDEF
   .dw   "< > Life  "
@@ -141,7 +134,7 @@ menu_items:
   .dw   pong
 menu_items_end:
 
-  .align  128
+  .align
 
 ; Initialize the LCD and constants.
 ; Destroys x0, x1
@@ -156,8 +149,7 @@ init:
   lea   init_cmds
   sta   =x0
   lda   =x1
-  jmp   @$+1
-  .dw   puts
+  jmp   @#puts
 init_cmds:
   .dw   0x138   ; Function set (8-bits, 2-lines, 5x8)
   .dw   0x10C   ; Display on, cursor off, blink off

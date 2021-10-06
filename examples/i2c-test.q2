@@ -1,42 +1,39 @@
 
 .include examples/zeropage.q2
 
+; Simulate reading 16 bytes
+
   .org  0x800
 
-  lea   =100
+  lea   =10
 loop:
   add   =neg1
   sta   =x9
 
-  lea   $+3
-  jmp   @$+1
-  .dw   i2c_start
+  jal   @#i2c_start
 
+  ; Control
   lea   =1
   sta   =x0
-  lea   $+3
-  jmp   @$+1
-  .dw   i2c_write
+  jal   @#i2c_write
 
+  ; Address high
   lea   =2
   sta   =x0
-  lea   $+3
-  jmp   @$+1
-  .dw   i2c_write
+  jal   @#i2c_write
 
+  ; Address low
   lda   =x9
   sta   =x0
-  lea   $+3
-  jmp   @$+1
-  .dw   i2c_write
+  jal   @#i2c_write
 
-  lea   $+3
-  jmp   @$+1
-  .dw   i2c_read
+  ; Data high
+  jal   @#i2c_read
 
-  lea   $+3
-  jmp   @$+1
-  .dw   i2c_stop
+  ; Data low
+  jal   @#i2c_read
+
+  jal   @#i2c_stop
 
   lda   =x9
   jfc   loop

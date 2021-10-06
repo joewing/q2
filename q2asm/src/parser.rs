@@ -43,7 +43,7 @@ impl<I> ParseError<I> for CustomError<I> {
 
 type CustomResult<I, O> = IResult<I, O, CustomError<I>>;
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Eq, Hash)]
 pub enum Expression {
     Add(Box<Expression>, Box<Expression>),
     Sub(Box<Expression>, Box<Expression>),
@@ -72,6 +72,8 @@ pub enum InstructionType {
     Sta = 0x05,
     Jmp = 0x06,
     Jfc = 0x07,
+    Jal = 0x80,     // lea / jmp
+    Shl = 0x81,     // lda / add
 }
 
 impl InstructionType {
@@ -84,15 +86,19 @@ impl InstructionType {
         (InstructionType::Sta, "sta"),
         (InstructionType::Jfc, "jfc"),
         (InstructionType::Jmp, "jmp"),
+        (InstructionType::Jal, "jal"),
+        (InstructionType::Shl, "shl")
     ];
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub enum AddressMode {
     Relative,           // x
     ZeroPage,           // =x
     RelativeIndirect,   // @x
     ZeroPageIndirect,   // @=x
+    Immediate,          // #x
+    ImmediateIndirect,  // @#x
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -104,8 +110,7 @@ pub enum Statement {
     Bank(Expression),
     Word(Vec<Expression>),
     Reserve(Expression),
-    Instruction(InstructionType, AddressMode, Expression),
-    Macro(String, Vec<Statement>),
+    Instruction(InstructionType, AddressMode, Expression)
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -158,6 +163,10 @@ fn parse_deref(input: &str) -> CustomResult<&str, bool> {
 
 fn parse_zeropage(input: &str) -> CustomResult<&str, bool> {
     parse_flag('=', input)
+}
+
+fn parse_immediate(input: &str) -> CustomResult<&str, bool> {
+    parse_flag('#', input)
 }
 
 fn parse_current_address(input: &str) -> CustomResult<&str, Expression> {
@@ -344,11 +353,16 @@ fn parse_instruction_type(input: &str) -> CustomResult<&str, InstructionType> {
 fn parse_mode(input: &str) -> CustomResult<&str, AddressMode> {
     let (input, deref) = parse_deref(input)?;
     let (input, zp) = parse_zeropage(input)?;
-    match (deref, zp) {
-        (false, false)  => Ok((input, AddressMode::Relative)),
-        (false, true)  => Ok((input, AddressMode::ZeroPage)),
-        (true, false)  => Ok((input, AddressMode::RelativeIndirect)),
-        (true, true)  => Ok((input, AddressMode::ZeroPageIndirect)),
+    let (input, imm) = parse_immediate(input)?;
+    match (deref, zp, imm) {
+        (false, false, false)   => Ok((input, AddressMode::Relative)),
+        (false, true, false)    => Ok((input, AddressMode::ZeroPage)),
+        (true, false, false)    => Ok((input, AddressMode::RelativeIndirect)),
+        (true, true, false)     => Ok((input, AddressMode::ZeroPageIndirect)),
+        (false, false, true)    => Ok((input, AddressMode::Immediate)),
+        (false, true, true)     => Ok((input, AddressMode::Immediate)),
+        (true, false, true)     => Ok((input, AddressMode::ImmediateIndirect)),
+        (true, true, true)      => Ok((input, AddressMode::ImmediateIndirect)),
     }
 }
 
@@ -375,7 +389,8 @@ fn parse_origin(input: &str) -> CustomResult<&str, Statement> {
 fn parse_align(input: &str) -> CustomResult<&str, Statement> {
     let (input, _) = tag(".align")(input)?;
     let (input, _) = eat_whitespace(input)?;
-    let (input, expr) = parse_expr(input)?;
+    let (input, expr_opt) = opt(parse_expr)(input)?;
+    let expr = expr_opt.unwrap_or(Expression::Constant(128));
     Ok((input, Statement::Align(expr)))
 }
 
@@ -428,6 +443,64 @@ fn parse_define(input: &str) -> CustomResult<&str, Statement> {
     Ok((input, Statement::Define(String::from(name), expr)))
 }
 
+fn expand(statement: Statement, file: &str, line_number: usize, line: &str) -> Vec<StatementWithContext> {
+    match &statement {
+        Statement::Instruction(t, m, e) => match t {
+            InstructionType::Jal => vec![
+                StatementWithContext {
+                    statement: Statement::Instruction(
+                        InstructionType::Lea,
+                        AddressMode::Relative,
+                        Expression::Add(
+                            Box::new(Expression::CurrentAddress),
+                            Box::new(Expression::Constant(2))
+                        )
+                    ),
+                    file: String::from(file),
+                    line_number,
+                    line: String::from(line)
+                },
+                StatementWithContext {
+                    statement: Statement::Instruction(InstructionType::Jmp, *m, e.clone()),
+                    file: String::from(file),
+                    line_number,
+                    line: "".to_string()
+                }
+            ],
+            InstructionType::Shl => vec![
+                StatementWithContext {
+                    statement: Statement::Instruction(InstructionType::Lda, *m, e.clone()),
+                    file: String::from(file),
+                    line_number,
+                    line: String::from(line)
+                },
+                StatementWithContext {
+                    statement: Statement::Instruction(InstructionType::Add, *m, e.clone()),
+                    file: String::from(file),
+                    line_number,
+                    line: "".to_string()
+                }
+            ],
+            _ => vec![
+                StatementWithContext {
+                    statement,
+                    file: String::from(file),
+                    line_number,
+                    line: String::from(line)
+                }
+            ]
+        },
+        _ => vec![
+            StatementWithContext {
+                statement,
+                file: String::from(file),
+                line_number,
+                line: String::from(line)
+            }
+        ]
+    }
+}
+
 fn parse_statement<'a>(file: &'a str, line_number: usize) -> impl Fn(&'a str) -> CustomResult<&'a str, Vec<StatementWithContext>> {
     move |line| {
         let (input, _) = eat_whitespace(line)?;
@@ -444,19 +517,7 @@ fn parse_statement<'a>(file: &'a str, line_number: usize) -> impl Fn(&'a str) ->
             )
         )(input)?;
         let (input, _) = eat_whitespace(input)?;
-        Ok(
-            (
-                input,
-                vec![
-                    StatementWithContext {
-                        file: String::from(file),
-                        line_number,
-                        line: String::from(line),
-                        statement
-                    }
-                ]
-            )
-        )
+        Ok((input, expand(statement, file, line_number, line)))
     }
 }
 
@@ -669,6 +730,8 @@ mod tests {
         assert_eq!(parse_mode("@x"), Ok(("x", AddressMode::RelativeIndirect)));
         assert_eq!(parse_mode("=asdf"), Ok(("asdf", AddressMode::ZeroPage)));
         assert_eq!(parse_mode("@=asdf"), Ok(("asdf", AddressMode::ZeroPageIndirect)));
+        assert_eq!(parse_mode("#asdf"), Ok(("asdf", AddressMode::Immediate)));
+        assert_eq!(parse_mode("@#asdf"), Ok(("asdf", AddressMode::ImmediateIndirect)));
     }
 
     #[test]
@@ -692,12 +755,12 @@ mod tests {
                     file: String::from("file"),
                     line_number: 1,
                     statement: Statement::Label(String::from("label")),
-                    line: String::from("")
+                    line: String::from("label:")
                 },
                 StatementWithContext {
                     file: String::from("file"),
                     line_number: 2,
-                    line: String::from(""),
+                    line: String::from("  add =5"),
                     statement: Statement::Instruction(
                         InstructionType::Add,
                         AddressMode::ZeroPage,

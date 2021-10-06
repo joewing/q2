@@ -172,8 +172,8 @@ fn assemble(
     }
     let content = fs::read_to_string(input_name)?;
     let statements = parser::parse(input_name, &content)?;
-    let symbols = pass1::pass1(&statements);
-    let mut result = pass2::pass2(&statements, &symbols)?;
+    let (symbols, updated_statements) = pass1::pass1(statements)?;
+    let mut result = pass2::pass2(&updated_statements, &symbols)?;
     result.sort_by_key(|s| s.full_addr());
     let mut last_addr: i64 = 0;
     let mut base: u16 = 0xFFFF;

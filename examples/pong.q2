@@ -24,13 +24,8 @@ pong_str:
 pong:
   lea   pong_str
   sta   =x0
-  lea   $+3
-  jmp   @$+1
-  .dw   puts
-
-  lea   $+3
-  jmp   @$+1
-  .dw   raster_clear
+  jal   @#puts
+  jal   @#raster_clear
 
   lea   =0
   sta   =pong_x
@@ -49,22 +44,17 @@ pong_init_loop:
   sta   =x0
   lea   =15
   sta   =x7
-  lea   $+3
-  jmp   @$+1
-  .dw   raster_xor
+  jal   @#raster_xor
   lda   =x8
   jfc   pong_init_loop
 
 pong_loop:
 
   ; Move the ball while the ball is not displayed.
-  lea   $+3
-  jmp   @$+1
-  .dw   pong_move_ball
+  jal   @#pong_move_ball
 
   ; Turn on the ball.
-  lea   $+2
-  jmp   pong_draw_ball
+  jal   pong_draw_ball
 
   ; Check for input/delay.
   lea   =100
@@ -91,8 +81,7 @@ pong_draw_ball:
   lda   =pong_y
   sta   =x7
   lda   =x8
-  jmp   @$+1
-  .dw   raster_xor
+  jmp   @#raster_xor
 
 pong_left:
 
@@ -107,9 +96,7 @@ pong_left:
   sta   =x0
   lea   =15
   sta   =x7
-  lea   $+3
-  jmp   @$+1
-  .dw   raster_xor
+  jal   @#raster_xor
 
   ; Move the paddle.
   lda   =pong_paddle
@@ -134,9 +121,7 @@ pong_right:
   sta   =x0
   lea   =15
   sta   =x7
-  lea   $+3
-  jmp   @$+1
-  .dw   raster_xor
+  jal   @#raster_xor
 
   ; Move the paddle.
   lda   =pong_paddle
@@ -151,8 +136,7 @@ pong_paddle_pixel_on:
   lea   =15
   sta   =x7
   lea   pong_ball_off
-  jmp   @$+1
-  .dw   raster_xor
+  jmp   @#raster_xor
 
   .align  128
 pong_move_ball:
@@ -226,9 +210,7 @@ pong_hit_paddle:
   add   =pong_score
   sta   =pong_score
   sta   =x0
-  lea   $+3
-  jmp   @$+1
-  .dw   putint
+  jal   @#putint
 
 pong_hit_done:
   lda   =pong_dy
@@ -257,21 +239,15 @@ pong_hit_right:
 pong_game_over:
   lea   pong_game_over_str
   sta   =x0
-  lea   $+3
-  jmp   @$+1
-  .dw   puts
+  jal   @#puts
 
 pong_game_over_wait:
   lda   @=neg1
   nor   =zero
   jfc   pong_game_over_wait
 
-  lea   $+3
-  jmp   @$+1
-  .dw   waitkey
-  
-  jmp   @$+1
-  .dw   menu
+  jal   @#waitkey
+  jmp   @#menu
 
 pong_neg20:
   .dw   -20

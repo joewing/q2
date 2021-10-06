@@ -22,6 +22,8 @@ fn mode_bits(mode: &AddressMode) -> u16 {
         AddressMode::ZeroPage         => 0b01,
         AddressMode::RelativeIndirect => 0b10,
         AddressMode::ZeroPageIndirect => 0b11,
+        AddressMode::Immediate        => 0b00,
+        AddressMode::ImmediateIndirect=> 0b10,
     }
 }
 
@@ -42,9 +44,9 @@ fn emit_instruction(
     st: &StatementWithContext
 ) -> Result<u16, String> {
     let opcode = ((*i as u16) << 9) | (mode_bits(mode) << 7);
-    let operand = eval(addr, expr, symbols, 0)?;
+    let operand = eval(addr, expr, symbols)?;
     let offset = match mode {
-        AddressMode::Relative | AddressMode::RelativeIndirect => {
+        AddressMode::Relative | AddressMode::RelativeIndirect | AddressMode::Immediate | AddressMode::ImmediateIndirect => {
             let page = addr & 0xF80;
             check_addr_range(operand - page, st)
         },
@@ -74,20 +76,22 @@ pub fn pass2(
                 CompiledStatement { bank, addr, statement: st.statement.clone(), code: None, line }
             ),
             Statement::Origin(e)            => {
-                addr = eval(addr, &e, symbols, 0)?;
+                addr = eval(addr, &e, symbols)?;
                 result.push(
                     CompiledStatement { bank, addr, statement: st.statement.clone(), code: None, line }
                 );
             },
             Statement::Align(e)             => {
-                let alignment = eval(addr, &e, symbols, 0)?;
-                addr = addr + alignment - addr % alignment;
+                let alignment = eval(addr, &e, symbols)?;
+                if (addr % alignment) != 0 {
+                    addr += alignment - addr % alignment;
+                }
                 result.push(
                     CompiledStatement { bank, addr, statement: st.statement.clone(), code: None, line }
                 );
             },
             Statement::Bank(e) => {
-                bank = eval(addr, &e, symbols, 0)?;
+                bank = eval(addr, &e, symbols)?;
                 result.push(
                     CompiledStatement { bank, addr, statement: st.statement.clone(), code: None, line }
                 );
@@ -102,7 +106,7 @@ pub fn pass2(
             Statement::Word(es)              => {
                 let mut current_line = line;
                 for e in es {
-                    let word = eval(addr, &e, symbols, 0)?;
+                    let word = eval(addr, &e, symbols)?;
                     if word > 0xfff {
                         return st.error(format!("word {} out of range", word));
                     }
@@ -120,13 +124,12 @@ pub fn pass2(
                 }
             },
             Statement::Reserve(e)           => {
-                let count = eval(addr, &e, symbols, 0)?;
+                let count = eval(addr, &e, symbols)?;
                 result.push(
                     CompiledStatement { bank, addr, statement: st.statement.clone(), code: None, line }
                 );
                 addr += count;
-            },
-            Statement::Macro(_, _) => (),
+            }
         }
     }
 

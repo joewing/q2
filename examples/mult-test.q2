@@ -4,21 +4,14 @@
 
   .org  0x800
 
-  lda   value1
+  lda   #35
   sta   =x0
-  lda   value2
+  lda   #15
   sta   =x1
-  lea   $+3
-  jmp   @$+1
-  .dw   mult
+  jal   @#mult
   lda   =x2
   sta   @=neg1
   jmp   $
-
-value1:
-  .dw   35
-value2:
-  .dw   15
 
 .include examples/mult.q2
 
