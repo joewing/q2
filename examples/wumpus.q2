@@ -102,8 +102,7 @@ wumpus_find_open_room_loop:
   sta   =x0
   lda   #-20
   add   =x0
-  jfc   $+2
-  jmp   wumpus_find_open_room_loop
+  jfs   wumpus_find_open_room_loop
   lda   #wumpus_cave_addr
   add   =x0
   sta   =x1
@@ -144,8 +143,7 @@ wumpus_no_pit:
   lea   =wumpus_bat
   sta   =x2
   jal   @#wumpus_check_hazard
-  jfc   $+2
-  jmp   wumpus_no_bat
+  jfs   wumpus_no_bat
   lea   wumpus_bat_string
   sta   =x0
   jal   @#puts
@@ -350,14 +348,6 @@ wumpus_map:
   .dw   2,  4,  5     ; 18
   .dw   1,  3,  9     ; 19
 
-wumpus_winner:
-  lda   #wumpus_win_string
-  sta   =x0
-  jal   @#puts
-wumpus_over:
-  lea   @#wumpus
-  jmp   @#waitkey
-
   .align
 
 wumpus_move_menu:
@@ -479,6 +469,14 @@ wumpus_move_monster:
 
 wumpus_missed_done:
   lea   @#wumpus_show_room
+  jmp   @#waitkey
+
+wumpus_winner:
+  lda   #wumpus_win_string
+  sta   =x0
+  jal   @#puts
+wumpus_over:
+  lea   @#wumpus
   jmp   @#waitkey
 
   .align

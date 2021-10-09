@@ -1,6 +1,6 @@
 
-module q2_i2c(
-  input wire rst,
+module i2c(
+  input wire nrst,
   input wire rd,
   input wire i2c_scl_out,
   input wire i2c_sda_out,
@@ -14,6 +14,7 @@ module q2_i2c(
 
   wire scl = i2c_scl_out;
   wire sda = i2c_sda_out;
+  wire rst = ~nrst;
 
   wire t1, t2;
   nfet q1(1'b0, 1'b0, t1);

@@ -1,7 +1,7 @@
 
 module dff #(
-  parameter FANOUT_Q  = 4,
-  parameter FANOUT_NQ = 4
+  parameter FANOUT_Q  = 3,
+  parameter FANOUT_NQ = 3
 )(
   input wire clk,
   input wire d,
@@ -25,10 +25,10 @@ module dff #(
   nfet #(1, 10000) q7(t8, d, t1);
   nfet #(1, 10000) q8(clr, t7, t8);
 
-  nfet #(4, 10000) q9(t9, t3, q);
-  nfet #(4, 10000) q10(set, nq, t9);
+  nfet #(FANOUT_Q + 1, 10000) q9(t9, t3, q);
+  nfet #(FANOUT_Q + 1, 10000) q10(set, nq, t9);
 
   // LED with 2v drop.
-  nfet #(4, 1000, 3.0) q11(t8, q, nq);
+  nfet #(FANOUT_NQ + 1, 1000, 3.0) q11(t8, q, nq);
 
 endmodule

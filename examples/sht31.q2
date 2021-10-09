@@ -1,0 +1,81 @@
+
+.include examples/zeropage.q2
+
+  .org  0x800
+
+  ; Start measurement
+  jal   @#i2c_start
+  lda   #0x88   ; I2C write address
+  sta   =x0
+  jal   @#i2c_write
+  lda   #0x24   ; clock stretching disabled
+  sta   =x0
+  jal   @#i2c_write
+  lda   #0x00   ; high repeatability
+  sta   =x0
+  jal   @#i2c_write
+  jal   @#i2c_stop
+
+  jal   @#i2c_start
+  lda   #0x89         ; I2C read address
+  sta   =x0
+  jal   @#i2c_write
+
+  lea   disp_string
+  sta   =x0
+  jal   @#puts
+  lda   #0x180 + 10
+  sta   @=neg1
+
+  jal   @#i2c_read    ; temperature MSB
+
+  ; Get temperature in F: 315 * T / 65535 - 49
+  ; Here we use 8 bits to keep it simple.
+  lda   =x0
+  add   =x0 ; x2
+  sta   =x0
+  add   =x0 ; x4
+  sta   =x0
+  add   =x0 ; x8
+  sta   =x0
+  add   =x0 ; x16
+  add   #15
+  sta   =x0
+  lda   #315
+  sta   =x1
+  jal   @#mult24
+  lda   =x3
+  add   #-49
+  sta   =x0
+  jal   @#putint
+
+  lda   #0x180 + 0x40 + 10
+  sta   @=neg1
+
+  jal   @#i2c_read    ; temperature LSB
+  jal   @#i2c_read    ; CRC
+  jal   @#i2c_read    ; humidity MSB
+  jal   @#putint
+
+  jal   @#i2c_read    ; humidity LSB
+  jal   @#i2c_read    ; CRC
+  jal   @#i2c_stop
+
+  jmp   $
+
+disp_string:
+  .dw   0x138   ; Function set (8-bits, 2-lines, 5x8)
+  .dw   0x10C   ; Display on, cursor off, blink off
+  .dw   0x106   ; Entry mode, increment, no shift
+  .dw   0x101
+  .dw   "Temp:     xxxx F"
+  .dw   0x180 + 0x40
+  .dw   "Humidity: xxxx %"
+  .dw   0
+
+.include examples/i2c.q2
+.include examples/div.q2
+.include examples/mult24.q2
+.include examples/lcd.q2
+
+

@@ -1519,7 +1519,7 @@ Wire Wire Line
 Wire Wire Line
 	9500 4700 9500 4800
 Text Notes 9600 4550 0    50   ~ 0
-Fanout 1+1
+Fanout 1
 Wire Wire Line
 	8100 5400 8100 5350
 Wire Wire Line
@@ -2054,11 +2054,11 @@ Fanout 12
 Text Notes 2550 4750 0    50   ~ 0
 Fanout 13
 Text Notes 2400 1750 0    50   ~ 0
-Fanout 18+2
+Fanout 18
 Text Notes 3450 1750 0    50   ~ 0
-Fanout 2+3
+Fanout 2
 Text Notes 5550 1750 0    50   ~ 0
-Fanout 5+2
+Fanout 5
 $Comp
 L Device:R R?
 U 1 1 60B6E9D3
@@ -2132,13 +2132,13 @@ AR Path="/609E7D64/60B91D51" Ref="R?"  Part="1"
 AR Path="/60A0BC91/60B91D51" Ref="R?"  Part="1" 
 AR Path="/60B749FD/60B91D51" Ref="R301"  Part="1" 
 F 0 "R301" H 2120 4946 50  0000 L CNN
-F 1 "1k" H 2120 4855 50  0000 L CNN
+F 1 "4.7k" H 2120 4855 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" V 1980 4900 50  0001 C CNN
 F 3 "~" H 2050 4900 50  0001 C CNN
-F 4 "C21190" H 2050 4900 50  0001 C CNN "LCSC"
+F 4 "C23162" H 2050 4900 50  0001 C CNN "LCSC"
 	1    2050 4900
 	1    0    0    -1  
 $EndComp
 Text Notes 4500 1750 0    50   ~ 0
-Fanout 2+3
+Fanout 2
 $EndSCHEMATC

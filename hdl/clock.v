@@ -1,8 +1,8 @@
 
-module q2_clock(
+module clock(
   output wire clk,
-  input wire nstart,
-  input wire nstop,
+  inout wire nstart,
+  inout wire nstop,
   input wire cdiv,
   input wire ncdiv,
   output wire sc,
@@ -12,7 +12,7 @@ module q2_clock(
   localparam FAST = 1;
 
   // RC delay for clock generation.
-  localparam OSC_RES_FAST = 4100; // ~160 kHz
+  localparam OSC_RES_FAST = 900; // ~340 kHz
   //localparam OSC_RES_FAST = 16000;  // ~90 kHz
   localparam OSC_RES_BASE = 9400;
   localparam OSC_RES      = 1000 +
@@ -48,5 +48,8 @@ module q2_clock(
   wire t3, t4;
   nfet #(1, 10000) q9(1'b0, feedback_out, t4);
   nfet #(2, 4700) q10(1'b0, t4, clk);
+
+  nfet #(1, 10000) q11(1'b0, nstart, nstop);
+  nfet #(2, 1000, 3.0) q12(1'b0, nstop, nstart);
 
 endmodule

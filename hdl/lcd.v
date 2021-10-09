@@ -1,5 +1,5 @@
 
-module q2_lcd(
+module lcd(
   input wire wr,
   input wire [11:0] dbus
 );

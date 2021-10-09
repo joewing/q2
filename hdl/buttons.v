@@ -1,5 +1,5 @@
 
-module q2_buttons(
+module buttons(
   input wire clk,
   input wire rd,
   inout wire [11:0] dbus

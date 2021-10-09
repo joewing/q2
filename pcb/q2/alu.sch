@@ -1713,4 +1713,16 @@ Wire Wire Line
 Connection ~ 10650 6850
 Wire Wire Line
 	10650 6850 11150 6850
+Text Notes 3850 2700 0    50   ~ 0
+Fanout 4
+Text Notes 7200 1850 0    50   ~ 0
+Fanout 2
+Text Notes 9500 2650 0    50   ~ 0
+Fanout 3
+Text Notes 4350 6700 0    50   ~ 0
+Fanout 2
+Text Notes 8300 6900 0    50   ~ 0
+Fanout 1
+Text Notes 11450 6750 0    50   ~ 0
+Fanout 1
 $EndSCHEMATC

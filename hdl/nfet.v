@@ -7,6 +7,7 @@
   parameter RDS     = 5.0    // Drain-source resistance.
 */
 
+// n-channel FET model.
 module nfet #(
   parameter FANOUT  = 1,      // Fanout (to determine load capacitance).
   parameter RPU     = 10000,  // Size of the pull-up resistor.

@@ -74,6 +74,7 @@ pub enum InstructionType {
     Jfc = 0x07,
     Jal = 0x80,     // lea / jmp
     Shl = 0x81,     // lda / add
+    Jfs = 0x82,     // jfc / jmp
 }
 
 impl InstructionType {
@@ -87,7 +88,8 @@ impl InstructionType {
         (InstructionType::Jfc, "jfc"),
         (InstructionType::Jmp, "jmp"),
         (InstructionType::Jal, "jal"),
-        (InstructionType::Shl, "shl")
+        (InstructionType::Shl, "shl"),
+        (InstructionType::Jfs, "jfs"),
     ];
 }
 
@@ -191,43 +193,43 @@ fn parse_binop<'a>(
 }
 
 fn parse_add<'a>(lhs: Expression) -> impl Fn(&'a str) -> CustomResult<&'a str, Expression> {
-    move |input| parse_binop("+", lhs.clone(), parse_expr, move |a, b| Expression::Add(Box::from(a), Box::from(b)))(input)
+    move |input| parse_binop("+", lhs.clone(), parse_term, |a, b| Expression::Add(Box::from(a), Box::from(b)))(input)
 }
 
 fn parse_sub<'a>(lhs: Expression) -> impl Fn(&'a str) -> CustomResult<&'a str, Expression> {
-    move |input| parse_binop("-", lhs.clone(), parse_expr, move |a, b| Expression::Sub(Box::from(a), Box::from(b)))(input)
+    move |input| parse_binop("-", lhs.clone(), parse_term, move |a, b| Expression::Sub(Box::from(a), Box::from(b)))(input)
 }
 
 fn parse_mul<'a>(lhs: Expression) -> impl Fn(&'a str) -> CustomResult<&'a str, Expression> {
-    move |input| parse_binop("*", lhs.clone(), parse_term, move |a, b| Expression::Mul(Box::from(a), Box::from(b)))(input)
+    move |input| parse_binop("*", lhs.clone(), parse_factor, move |a, b| Expression::Mul(Box::from(a), Box::from(b)))(input)
 }
 
 fn parse_div<'a>(lhs: Expression) -> impl Fn(&'a str) -> CustomResult<&'a str, Expression> {
-    move |input| parse_binop("/", lhs.clone(), parse_term, move |a, b| Expression::Div(Box::from(a), Box::from(b)))(input)
+    move |input| parse_binop("/", lhs.clone(), parse_factor, move |a, b| Expression::Div(Box::from(a), Box::from(b)))(input)
 }
 
 fn parse_mod<'a>(lhs: Expression) -> impl Fn(&'a str) -> CustomResult<&'a str, Expression> {
-    move |input| parse_binop("/", lhs.clone(), parse_term, move |a, b| Expression::Mod(Box::from(a), Box::from(b)))(input)
+    move |input| parse_binop("/", lhs.clone(), parse_factor, move |a, b| Expression::Mod(Box::from(a), Box::from(b)))(input)
 }
 
 fn parse_and<'a>(lhs: Expression) -> impl Fn(&'a str) -> CustomResult<&'a str, Expression> {
-    move |input| parse_binop("&", lhs.clone(), parse_expr, move |a, b| Expression::And(Box::from(a), Box::from(b)))(input)
+    move |input| parse_binop("&", lhs.clone(), parse_term, move |a, b| Expression::And(Box::from(a), Box::from(b)))(input)
 }
 
 fn parse_or<'a>(lhs: Expression) -> impl Fn(&'a str) -> CustomResult<&'a str, Expression> {
-    move |input| parse_binop("|", lhs.clone(), parse_expr, move |a, b| Expression::Or(Box::from(a), Box::from(b)))(input)
+    move |input| parse_binop("|", lhs.clone(), parse_term, move |a, b| Expression::Or(Box::from(a), Box::from(b)))(input)
 }
 
 fn parse_xor<'a>(lhs: Expression) -> impl Fn(&'a str) -> CustomResult<&'a str, Expression> {
-    move |input| parse_binop("^", lhs.clone(), parse_expr, move |a, b| Expression::Xor(Box::from(a), Box::from(b)))(input)
+    move |input| parse_binop("^", lhs.clone(), parse_term, move |a, b| Expression::Xor(Box::from(a), Box::from(b)))(input)
 }
 
 fn parse_shr<'a>(lhs: Expression) -> impl Fn(&'a str) -> CustomResult<&'a str, Expression> {
-    move |input| parse_binop(">>", lhs.clone(), parse_expr, move |a, b| Expression::Shr(Box::from(a), Box::from(b)))(input)
+    move |input| parse_binop(">>", lhs.clone(), parse_term, move |a, b| Expression::Shr(Box::from(a), Box::from(b)))(input)
 }
 
 fn parse_shl<'a>(lhs: Expression) -> impl Fn(&'a str) -> CustomResult<&'a str, Expression> {
-    move |input| parse_binop("<<", lhs.clone(), parse_expr, move |a, b| Expression::Shl(Box::from(a), Box::from(b)))(input)
+    move |input| parse_binop("<<", lhs.clone(), parse_term, move |a, b| Expression::Shl(Box::from(a), Box::from(b)))(input)
 }
 
 fn parse_symbol(input: &str) -> CustomResult<&str, Expression> {
@@ -293,8 +295,8 @@ fn parse_nested(input: &str) -> CustomResult<&str, Expression> {
     Ok((input, e))
 }
 
-fn parse_term(input: &str) -> CustomResult<&str, Expression> {
-    let (input, lhs) = alt(
+fn parse_factor(input: &str) -> CustomResult<&str, Expression> {
+    let (input, factor) = alt(
         (
             parse_constant,
             parse_symbol,
@@ -303,6 +305,10 @@ fn parse_term(input: &str) -> CustomResult<&str, Expression> {
             parse_not,
         )
     )(input)?;
+    Ok((input, factor))
+}
+
+fn parse_term_cont<'a>(input: &'a str, lhs: Expression) -> CustomResult<&'a str, Expression> {
     let (input, t_opt) = opt(
         alt(
             (
@@ -313,14 +319,17 @@ fn parse_term(input: &str) -> CustomResult<&str, Expression> {
         )
     )(input)?;
     match t_opt {
-        Some(t) => Ok((input, t)),
+        Some(term) => parse_term_cont(input, term),
         None => Ok((input, lhs.clone()))
     }
 }
 
-fn parse_expr(input: &str) -> CustomResult<&str, Expression> {
-    let (input, _) = eat_whitespace(input)?;
-    let (input, lhs) = parse_term(input)?;
+fn parse_term(input: &str) -> CustomResult<&str, Expression> {
+    let (input, lhs) = parse_factor(input)?;
+    parse_term_cont(input, lhs)
+}
+
+fn parse_expr_cont<'a>(input: &'a str, lhs: Expression) -> CustomResult<&'a str, Expression> {
     let (input, e_opt) = opt(
         alt(
             (
@@ -334,11 +343,16 @@ fn parse_expr(input: &str) -> CustomResult<&str, Expression> {
             )
         )
     )(input)?;
-    if let Some(e) = e_opt {
-        Ok((input, e))
-    } else {
-        Ok((input, lhs.clone()))
+    match e_opt {
+        Some(expr) => parse_expr_cont(input, expr),
+        None => Ok((input, lhs.clone()))
     }
+}
+
+fn parse_expr(input: &str) -> CustomResult<&str, Expression> {
+    let (input, _) = eat_whitespace(input)?;
+    let (input, lhs) = parse_term(input)?;
+    parse_expr_cont(input, lhs)
 }
 
 fn parse_instruction_type(input: &str) -> CustomResult<&str, InstructionType> {
@@ -450,6 +464,27 @@ fn expand(statement: Statement, file: &str, line_number: usize, line: &str) -> V
                 StatementWithContext {
                     statement: Statement::Instruction(
                         InstructionType::Lea,
+                        AddressMode::Relative,
+                        Expression::Add(
+                            Box::new(Expression::CurrentAddress),
+                            Box::new(Expression::Constant(2))
+                        )
+                    ),
+                    file: String::from(file),
+                    line_number,
+                    line: String::from(line)
+                },
+                StatementWithContext {
+                    statement: Statement::Instruction(InstructionType::Jmp, *m, e.clone()),
+                    file: String::from(file),
+                    line_number,
+                    line: "".to_string()
+                }
+            ],
+            InstructionType::Jfs => vec![
+                StatementWithContext {
+                    statement: Statement::Instruction(
+                        InstructionType::Jfc,
                         AddressMode::Relative,
                         Expression::Add(
                             Box::new(Expression::CurrentAddress),
@@ -658,14 +693,14 @@ mod tests {
             Ok(
                 (
                     "",
-                    Expression::Sub(
-                        Box::from(Expression::Symbol(String::from("a"))),
+                    Expression::Add(
                         Box::from(
-                            Expression::Add(
-                                Box::from(Expression::Symbol(String::from("b"))),
-                                Box::from(Expression::Symbol(String::from("c")))
+                            Expression::Sub(
+                                Box::from(Expression::Symbol(String::from("a"))),
+                                Box::from(Expression::Symbol(String::from("b")))
                             )
-                        )
+                        ),
+                        Box::from(Expression::Symbol(String::from("c")))
                     )
                 )
             )

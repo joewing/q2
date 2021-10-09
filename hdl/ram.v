@@ -1,5 +1,5 @@
 
-module q2_ram(
+module ram(
   input wire nce,
   input wire nwe,
   input wire noe,

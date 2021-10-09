@@ -5,12 +5,11 @@
 
 module q2_tb;
 
-  reg [11:0] sw = 12'h000;
-  reg incp_sw = 0;
-  reg dep_sw = 0;
-  reg start_sw = 0;
-  reg stop_sw = 1;
-  reg rst = 1;
+  reg [11:0] nsw = 12'hFFF;
+  reg ndep_sw = 1;
+  reg nincp_sw = 1;
+  reg do_start = 0;
+  reg nrst = 0;
   wire run;
 
   integer i;
@@ -20,10 +19,10 @@ module q2_tb;
 
     //$dumpvars;
 
-    #20000 rst = 1; stop_sw = 0;
-    #20000 rst = 0; stop_sw = 0;
-    #20000 start_sw = 1;
-    #20000 start_sw = 0;
+    #20000 nrst = 0;
+    #20000 nrst = 1;
+    #20000 do_start = 1;
+    #20000 do_start = 0;
     for (i = 0; i < 100000000; i = i + 1) begin
       #100
       if (!run) begin
@@ -36,13 +35,16 @@ module q2_tb;
     $stop;
   end
 
+  wire (strong0, weak1) nstart_sw = ~do_start;
+  wire (strong0, weak1) nstop_sw = nrst;
+
   q2 dut(
-    .rst(rst),
-    .sw(sw),
-    .incp_sw(incp_sw),
-    .dep_sw(dep_sw),
-    .start_sw(start_sw),
-    .stop_sw(stop_sw),
+    .nrst(nrst),
+    .nsw(nsw),
+    .nincp_sw(nincp_sw),
+    .ndep_sw(ndep_sw),
+    .nstart_sw(nstart_sw),
+    .nstop_sw(nstop_sw),
     .run(run)
   );
 

@@ -1,4 +1,6 @@
 
+  .align
+
 .def I2C_EN         0x800
 .def I2C_SCL        0x400
 .def I2C_SDA        0x200
@@ -6,9 +8,6 @@
 .def i2c_zero_clk   I2C_EN | I2C_SDA
 .def i2c_one        I2C_EN | I2C_SCL
 .def i2c_one_clk    I2C_EN
-.def i2c_input_mask ~I2C_SDA
-
-  .align
 
 ; Send I2C start
 ; Take SDA low while SCL stays high.
@@ -17,6 +16,8 @@ i2c_start:
   lda   #i2c_one_clk    ; SDA=1, CLK=1
   sta   @=neg1
   lda   #i2c_zero_clk   ; SDA=0, CLK=1
+  sta   @=neg1
+  lda   #i2c_zero       ; SDA=0, CLK=0
   sta   @=neg1
   jmp   @=x1
 
@@ -30,6 +31,16 @@ i2c_stop:
   sta   @=neg1
   lda   #i2c_one_clk    ; SDA=1, CLK=1
   sta   @=neg1
+  jmp   @=x1
+
+; Wait for SCL to go high (clock stretching).
+; Destroys x1
+i2c_wait:
+  sta   =x1
+i2c_wait_loop:
+  lda   @=neg1
+  nor   #~I2C_SCL
+  jfc   i2c_wait_loop
   jmp   @=x1
 
 ; Write byte in x0.
@@ -97,7 +108,7 @@ i2c_read_loop:
   sta   @=neg1
 
   lda   @=neg1
-  nor   #i2c_input_mask
+  nor   #~I2C_SDA
   lea   =0
   jfc   $+2
   lea   =1
@@ -107,10 +118,6 @@ i2c_read_loop:
 
   lda   #i2c_one
   sta   @=neg1
-
-  lda   =x0
-  add   =x0
-  sta   =x0
 
   lda   =x2
   jfc   i2c_read_loop
