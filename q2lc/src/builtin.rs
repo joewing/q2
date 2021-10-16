@@ -2,11 +2,7 @@ use crate::parser::parse_builtin;
 use crate::statement::Statement;
 
 pub fn generate_builtins() -> Vec<Statement> {
-    let mut result = Vec::new();
-    for body in BUILTINS {
-        result.extend(parse_builtin(body));
-    }
-    result
+    BUILTINS.iter().flat_map(|body| parse_builtin(body)).collect()
 }
 
 const BUILTINS: &[&str] = &[

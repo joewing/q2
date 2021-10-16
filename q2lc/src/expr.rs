@@ -16,6 +16,15 @@ pub enum FlagState {
 }
 
 #[derive(Clone, Copy, PartialEq)]
+pub enum UnaryOperator {
+    ArrayDecl,
+    Deref,
+    Not,
+    Negate,
+    Lnot,
+}
+
+#[derive(Clone, Copy, PartialEq)]
 pub enum BinaryOperator {
     Add,
     Sub,
@@ -42,14 +51,10 @@ pub enum BinaryOperator {
 pub enum Expression {
     Constant(Word),
     ArrayLiteral(Vec<Expression>),
-    ArrayDecl(Box<Expression>),
     Symbol(String),
-    Deref(Box<Expression>),
     Call(Box<Expression>, Vec<Expression>),
     Binary(BinaryOperator, Box<Expression>, Box<Expression>),
-    Not(Box<Expression>),
-    Negate(Box<Expression>),
-    Lnot(Box<Expression>),
+    Unary(UnaryOperator, Box<Expression>),
 }
 
 impl Expression {
@@ -58,12 +63,8 @@ impl Expression {
         match self {
             Expression::Constant(_) => (),
             Expression::ArrayLiteral(exprs) => used_functions(exprs, funs),
-            Expression::ArrayDecl(expr) => expr.used_symbols(funs),
             Expression::Symbol(s) => {
                 funs.insert(s.clone());
-            },
-            Expression::Deref(inner) => {
-                inner.used_symbols(funs);
             },
             Expression::Call(expr, args) => {
                 expr.used_symbols(funs);
@@ -73,13 +74,7 @@ impl Expression {
                 lhs.used_symbols(funs);
                 rhs.used_symbols(funs)
             },
-            Expression::Not(inner) => {
-                inner.used_symbols(funs)
-            },
-            Expression::Negate(inner) => {
-                inner.used_symbols(funs)
-            },
-            Expression::Lnot(inner) => {
+            Expression::Unary(_, inner) => {
                 inner.used_symbols(funs)
             },
         }
@@ -89,34 +84,27 @@ impl Expression {
         match self {
             Expression::Constant(_) => SymbolTable::BASE_WATERMARK,
             Expression::ArrayLiteral(exprs) => {
-                let mut watermark = SymbolTable::BASE_WATERMARK;
-                for expr in exprs {
-                    watermark = Word::max(watermark, expr.get_watermark(state));
-                }
-                watermark
+                exprs.iter().fold(
+                    SymbolTable::BASE_WATERMARK, |w, e| Word::max(w, e.get_watermark(state))
+                )
             },
-            Expression::ArrayDecl(expr) => expr.get_watermark(state),
             Expression::Symbol(name) => {
                 match state.lookup(name) {
                     Symbol::Function(w, _) => w,
                     _ => SymbolTable::BASE_WATERMARK,
                 }
             },
-            Expression::Deref(inner) => inner.get_watermark(state),
             Expression::Call(fun, args) => {
-                let mut arg_watermark = SymbolTable::BASE_WATERMARK;
-                for arg in args {
-                    arg_watermark = Word::max(arg_watermark, arg.get_watermark(state));
-                }
-                Word::max(fun.get_watermark(state), arg_watermark)
+                args.iter().fold(
+                    fun.get_watermark(state),
+                    |w, a| Word::max(w, a.get_watermark(state))
+                )
             },
             Expression::Binary(_, lhs, rhs) => Word::max(
                 lhs.get_watermark(state),
                 rhs.get_watermark(state)
             ),
-            Expression::Not(inner) => inner.get_watermark(state),
-            Expression::Negate(inner) => inner.get_watermark(state),
-            Expression::Lnot(inner) => inner.get_watermark(state),
+            Expression::Unary(_, inner) => inner.get_watermark(state),
         }
     }
 
@@ -124,12 +112,10 @@ impl Expression {
         match self {
             Expression::Constant(w) => Expression::Constant(w.clone()),
             Expression::ArrayLiteral(exprs) => Expression::ArrayLiteral(simplify_exprs(exprs, state)),
-            Expression::ArrayDecl(expr) => Expression::ArrayDecl(Box::from(expr.simplify(state))),
             Expression::Symbol(s) => match state.lookup(s) {
                 Symbol::Constant(w) => Expression::Constant(w),
                 _ => Expression::Symbol(s.clone())
             },
-            Expression::Deref(inner) => Expression::Deref(Box::from(inner.simplify(state))),
             Expression::Call(fun, params) => {
                 Expression::Call(Box::from(fun.simplify(state)), simplify_exprs(params, state))
             },
@@ -176,30 +162,23 @@ impl Expression {
                     },
                 }
             },
-            Expression::Not(inner) => {
+            Expression::Unary(op, inner) => {
                 let new_inner = inner.simplify(state);
                 if let Expression::Constant(a) = new_inner {
-                    Expression::Constant(a.not() & 0xFFF)
-                } else if let Expression::Binary(BinaryOperator::Or, a, b) = new_inner {
-                    Expression::Binary(BinaryOperator::Nor, a, b)
+                    match op {
+                        UnaryOperator::Not => Expression::Constant(a.not() & 0xFFF),
+                        UnaryOperator::Negate => Expression::Constant((a.not() + 1) & 0xFFF),
+                        UnaryOperator::Lnot => Expression::Constant(if a != 0 { 0 } else { 1 }),
+                        _ => Expression::Unary(*op, Box::from(new_inner))
+                    }
+                } else if *op == UnaryOperator::Not {
+                    if let Expression::Binary(BinaryOperator::Or, b, c) = new_inner {
+                        Expression::Binary(BinaryOperator::Nor, b, c)
+                    } else {
+                        Expression::Unary(*op, Box::from(new_inner))
+                    }
                 } else {
-                    Expression::Not(Box::from(new_inner))
-                }
-            },
-            Expression::Negate(inner) => {
-                let new_inner = inner.simplify(state);
-                if let Expression::Constant(a) = new_inner {
-                    Expression::Constant((a.not() + 1) & 0xFFF)
-                } else {
-                    Expression::Negate(Box::from(new_inner))
-                }
-            },
-            Expression::Lnot(inner) => {
-                let new_inner = inner.simplify(state);
-                if let Expression::Constant(a) = new_inner {
-                    Expression::Constant(if a != 0 { 0 } else { 1 })
-                } else {
-                    Expression::Lnot(Box::from(new_inner))
+                    Expression::Unary(*op, Box::from(new_inner))
                 }
             },
         }
@@ -209,17 +188,7 @@ impl Expression {
         match self {
             Expression::Constant(w) => emit::emit_constant(state, *w),
             Expression::ArrayLiteral(exprs) => emit::emit_array_literal(state, exprs),
-            Expression::ArrayDecl(expr) => {
-                if let Expression::Constant(size) = expr.as_ref() {
-                    let addr = state.append_heap(*size);
-                    state.append_code(format!("lda #{}", addr));
-                    FlagState::Zero
-                } else {
-                    panic!("array size must be constant");
-                }
-            },
             Expression::Symbol(s) => emit::emit_symbol(s, state),
-            Expression::Deref(inner) => emit::emit_deref(inner.as_ref(), state),
             Expression::Call(fun, args) => emit::emit_call(fun, args, state),
             Expression::Binary(op, l, r) => {
                 let lhs = l.as_ref();
@@ -243,9 +212,13 @@ impl Expression {
                     _ => panic!("not implemented")
                 }
             },
-            Expression::Not(inner) => emit::emit_not(inner.as_ref(), state),
-            Expression::Negate(inner) => emit::emit_negate(inner.as_ref(), state),
-            Expression::Lnot(inner) => emit::emit_lnot(inner.as_ref(), state),
+            Expression::Unary(op, inner) => match op {
+                UnaryOperator::Deref => emit::emit_deref(inner.as_ref(), state),
+                UnaryOperator::Not => emit::emit_not(inner.as_ref(), state),
+                UnaryOperator::Negate => emit::emit_negate(inner.as_ref(), state),
+                UnaryOperator::Lnot => emit::emit_lnot(inner.as_ref(), state),
+                UnaryOperator::ArrayDecl => emit::emit_array_decl(state, inner.as_ref()),
+            },
         }
     }
 }
@@ -265,16 +238,10 @@ fn is_constant(expr: &Expression, value: Word) -> bool {
     }
 }
 
-fn used_functions(exprs: &Vec<Expression>, funs: &mut HashSet<String>) {
-    for expr in exprs {
-        expr.used_symbols(funs);
-    }
+fn used_functions(exprs: &Vec<Expression>, symbols: &mut HashSet<String>) {
+    exprs.iter().for_each(|e| e.used_symbols(symbols));
 }
 
 fn simplify_exprs(exprs: &Vec<Expression>, state: &mut SymbolTable) -> Vec<Expression> {
-    let mut new_exprs = Vec::new();
-    for expr in exprs {
-        new_exprs.push(expr.simplify(state));
-    }
-    new_exprs
+    exprs.iter().map(|e| e.simplify(state)).collect()
 }

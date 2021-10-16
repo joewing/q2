@@ -1,11 +1,12 @@
 extern crate nom;
 use nom::{combinator::*, character::*, branch::*, bytes::complete::*};
 use std::str::FromStr;
-use crate::expr::{BinaryOperator, Expression, Word};
+use crate::expr::{BinaryOperator, Expression, UnaryOperator, Word};
 use crate::statement::Statement;
 use self::nom::IResult;
 use self::nom::error::VerboseError;
 use self::nom::multi::{many0, separated_list0};
+use self::nom::sequence::tuple;
 
 type Res<I, O> = IResult<I, O, VerboseError<I>>;
 
@@ -19,10 +20,7 @@ fn eat_whitespace(input: &str) -> Res<&str, ()> {
     let (input, _) = nom::multi::many0(
         alt(
             (
-                nom::character::complete::char(' '),
-                nom::character::complete::char('\t'),
-                nom::character::complete::char('\r'),
-                nom::character::complete::char('\n'),
+                nom::character::complete::one_of(" \t\r\n"),
                 eat_comment
             )
         )
@@ -48,7 +46,7 @@ fn parse_separator(input: &str) -> Res<&str, ()> {
 fn parse_var(input: &str) -> Res<&str, Statement> {
     let (input, _) = tag("var")(input)?;
     let (input, ident) = parse_ident(input)?;
-    let (input, equals_opt) = opt(tag("="))(input)?;
+    let (input, equals_opt) = opt(nom::character::complete::char('='))(input)?;
     if equals_opt.is_some() {
         let (input, expr) = parse_expr(input)?;
         let (input, _) = nom::character::complete::char(';')(input)?;
@@ -139,17 +137,17 @@ fn parse_symbol(input: &str) -> Res<&str, Expression> {
 
 fn parse_unary<'a>(
     name: char,
-    create: impl Fn(Box<Expression>) -> Expression
+    op: UnaryOperator
 ) -> impl Fn(&'a str) -> Res<&'a str, Expression> {
     move |input| {
         let (input, _) = nom::character::complete::char(name)(input)?;
         let (input, inner) = parse_factor(input)?;
-        Ok((input, create(Box::from(inner))))
+        Ok((input, Expression::Unary(op, Box::from(inner))))
     }
 }
 
 fn parse_deref(input: &str) -> Res<&str, Expression> {
-    parse_unary('@', |e| Expression::Deref(e))(input)
+    parse_unary('@', UnaryOperator::Deref)(input)
 }
 
 fn parse_nest(input: &str) -> Res<&str, Expression> {
@@ -184,10 +182,10 @@ fn parse_factor(input: &str) -> Res<&str, Expression> {
             parse_call,
             parse_symbol,
             parse_deref,
-            parse_unary(':', |e| Expression::ArrayDecl(e)),
-            parse_unary('~', |e| Expression::Not(e)),
-            parse_unary('-', |e| Expression::Negate(e)),
-            parse_unary('!', |e| Expression::Lnot(e)),
+            parse_unary(':', UnaryOperator::ArrayDecl),
+            parse_unary('~', UnaryOperator::Not),
+            parse_unary('-', UnaryOperator::Negate),
+            parse_unary('!', UnaryOperator::Lnot),
             parse_nest,
         )
     )(input)?;
@@ -273,7 +271,7 @@ fn parse_expr(input: &str) -> Res<&str, Expression> {
 fn parse_assign(input: &str) -> Res<&str, Statement> {
     let (input, dest) = parse_expr(input)?;
     let (input, _) = eat_whitespace(input)?;
-    let (input, _) = tag("=")(input)?;
+    let (input, _) = nom::character::complete::char('=')(input)?;
     let (input, _) = eat_whitespace(input)?;
     let (input, src) = parse_expr(input)?;
     let (input, _) = nom::character::complete::char(';')(input)?;
@@ -285,14 +283,16 @@ fn parse_if(input: &str) -> Res<&str, Statement> {
     let (input, cond) = parse_expr(input)?;
     let (input, _) = tag("then")(input)?;
     let (input, t) = parse_statements(input)?;
-    let (input, else_opt) = opt(tag("else"))(input)?;
-    let (input, result) = if else_opt.is_none() {
-        (input, Statement::If(cond, t, Vec::new()))
-    } else {
-        let (input, f) = parse_statements(input)?;
-        (input, Statement::If(cond, t, f))
-    };
+    let (input, nested) = many0(
+        tuple((tag("elseif"), parse_expr, tag("then"), parse_statements))
+    )(input)?;
+    let (input, else_opt) = opt(tuple((tag("else"), parse_statements)))(input)?;
     let (input, _) = tag("end")(input)?;
+    let else_statements = else_opt.map(|(_, ss)| ss).unwrap_or(Vec::new());
+    let tails = nested.iter().rev().fold(else_statements, |s, (_, c, _, ns)|
+        vec![Statement::If(c.clone(), ns.to_vec(), s)]
+    );
+    let result = Statement::If(cond, t, tails);
     Ok((input, result))
 }
 

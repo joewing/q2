@@ -3,6 +3,7 @@ use crate::emit;
 use crate::expr::{Expression, Word};
 use crate::symbol::{Symbol, SymbolTable};
 
+#[derive(Clone)]
 pub enum Statement {
     Var(String, Option<Expression>),
     Const(String, Expression),
@@ -112,11 +113,7 @@ impl Statement {
 }
 
 fn simplify_statements(state: &mut SymbolTable, statements: &Vec<Statement>) -> Vec<Statement> {
-    let mut new_statements = Vec::new();
-    for statement in statements {
-        new_statements.push(statement.simplify(state));
-    }
-    new_statements
+    statements.iter().map(|s| s.simplify(state)).collect()
 }
 
 pub fn simplify(state: &mut SymbolTable, statements: &Vec<Statement>) -> Vec<Statement> {
@@ -148,22 +145,14 @@ pub fn simplify(state: &mut SymbolTable, statements: &Vec<Statement>) -> Vec<Sta
 
 pub fn emit_statements(state: &mut SymbolTable, statements: &Vec<Statement>) {
     state.enter();
-    for statement in statements {
-        statement.emit(state);
-    }
+    statements.iter().for_each(|s| s.emit(state));
     state.leave();
 }
 
 pub fn get_watermark(state: &SymbolTable, statements: &Vec<Statement>) -> Word {
-    let mut watermark = 0;
-    for statement in statements {
-        watermark = Word::max(watermark, statement.get_watermark(state));
-    }
-    watermark
+    statements.iter().fold(0, |w, s| Word::max(w, s.get_watermark(state)))
 }
 
 fn used_symbols(statements: &Vec<Statement>, symbols: &mut HashSet<String>) {
-    for statement in statements.iter().rev() {
-        statement.used_symbols(symbols);
-    }
+    statements.iter().rev().for_each(|s| s.used_symbols(symbols));
 }
