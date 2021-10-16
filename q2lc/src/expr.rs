@@ -54,33 +54,33 @@ pub enum Expression {
 
 impl Expression {
 
-    pub fn used_functions(&self, funs: &mut HashSet<String>) {
+    pub fn used_symbols(&self, funs: &mut HashSet<String>) {
         match self {
             Expression::Constant(_) => (),
             Expression::ArrayLiteral(exprs) => used_functions(exprs, funs),
-            Expression::ArrayDecl(expr) => expr.used_functions(funs),
+            Expression::ArrayDecl(expr) => expr.used_symbols(funs),
             Expression::Symbol(s) => {
                 funs.insert(s.clone());
             },
             Expression::Deref(inner) => {
-                inner.used_functions(funs);
+                inner.used_symbols(funs);
             },
             Expression::Call(expr, args) => {
-                expr.used_functions(funs);
+                expr.used_symbols(funs);
                 used_functions(args, funs)
             },
             Expression::Binary(_, lhs, rhs) => {
-                lhs.used_functions(funs);
-                rhs.used_functions(funs)
+                lhs.used_symbols(funs);
+                rhs.used_symbols(funs)
             },
             Expression::Not(inner) => {
-                inner.used_functions(funs)
+                inner.used_symbols(funs)
             },
             Expression::Negate(inner) => {
-                inner.used_functions(funs)
+                inner.used_symbols(funs)
             },
             Expression::Lnot(inner) => {
-                inner.used_functions(funs)
+                inner.used_symbols(funs)
             },
         }
     }
@@ -267,7 +267,7 @@ fn is_constant(expr: &Expression, value: Word) -> bool {
 
 fn used_functions(exprs: &Vec<Expression>, funs: &mut HashSet<String>) {
     for expr in exprs {
-        expr.used_functions(funs);
+        expr.used_symbols(funs);
     }
 }
 

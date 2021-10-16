@@ -40,33 +40,33 @@ impl Statement {
         }
     }
 
-    pub fn used_functions(&self, funs: &mut HashSet<String>) {
+    pub fn used_symbols(&self, symbols: &mut HashSet<String>) {
         match self {
             Statement::Var(_, expr_opt) => match expr_opt {
-                Some(expr) => expr.used_functions(funs),
+                Some(expr) => expr.used_symbols(symbols),
                 None => (),
             },
-            Statement::Const(_, expr) => expr.used_functions(funs),
+            Statement::Const(_, expr) => expr.used_symbols(symbols),
             Statement::Assign(dest, src) => {
-                dest.used_functions(funs);
-                src.used_functions(funs);
+                dest.used_symbols(symbols);
+                src.used_symbols(symbols);
             },
             Statement::If(cond, t, f) => {
-                cond.used_functions(funs);
-                used_functions(t, funs);
-                used_functions(f, funs);
+                cond.used_symbols(symbols);
+                used_symbols(t, symbols);
+                used_symbols(f, symbols);
             },
             Statement::While(cond, body) => {
-                cond.used_functions(funs);
-                used_functions(body, funs);
+                cond.used_symbols(symbols);
+                used_symbols(body, symbols);
             },
             Statement::Function(n, _, body) => {
-                if funs.contains(n) {
-                    used_functions(body, funs);
+                if symbols.contains(n) {
+                    used_symbols(body, symbols);
                 }
             },
-            Statement::Expression(expr) => expr.used_functions(funs),
-            Statement::Return(expr) => expr.used_functions(funs),
+            Statement::Expression(expr) => expr.used_symbols(symbols),
+            Statement::Return(expr) => expr.used_symbols(symbols),
         }
     }
 
@@ -124,12 +124,17 @@ pub fn simplify(state: &mut SymbolTable, statements: &Vec<Statement>) -> Vec<Sta
 
     let mut used = HashSet::new();
     used.insert(SymbolTable::ENTRYPOINT.to_string());
-    used_functions(&simplified_statements, &mut used);
+    used_symbols(&simplified_statements, &mut used);
 
     let mut used_statements = Vec::new();
     for statement in simplified_statements {
         match &statement {
             Statement::Function(name, _, _) => {
+                if used.contains(name) {
+                    used_statements.push(statement);
+                }
+            },
+            Statement::Var(name, _) => {
                 if used.contains(name) {
                     used_statements.push(statement);
                 }
@@ -157,8 +162,8 @@ pub fn get_watermark(state: &SymbolTable, statements: &Vec<Statement>) -> Word {
     watermark
 }
 
-fn used_functions(statements: &Vec<Statement>, funs: &mut HashSet<String>) {
+fn used_symbols(statements: &Vec<Statement>, symbols: &mut HashSet<String>) {
     for statement in statements.iter().rev() {
-        statement.used_functions(funs);
+        statement.used_symbols(symbols);
     }
 }

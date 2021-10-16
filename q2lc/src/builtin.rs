@@ -4,7 +4,7 @@ use crate::statement::Statement;
 pub fn generate_builtins() -> Vec<Statement> {
     let mut result = Vec::new();
     for body in BUILTINS {
-        result.push(parse_builtin(body));
+        result.extend(parse_builtin(body));
     }
     result
 }
@@ -16,6 +16,12 @@ const BUILTINS: &[&str] = &[
     DIVMOD,
     DIVIDE,
     MODULUS,
+    RAND,
+    MEMSET,
+    OUTPUT,
+    PUTS,
+    ITOA,
+    PUTINT,
 ];
 
 pub const SHIFT_RIGHT_NAME: &str = "shift_right";
@@ -89,5 +95,55 @@ const MODULUS: &str = concat!(
     "fun modulus(x, y)\n",
     "  divmod(@x, @y, x, y);\n",
     "  return @y;\n",
+    "end\n",
+);
+
+const RAND: &str = concat!(
+    "var rseed = 1;\n",
+    "fun rand()\n",
+    "  rseed = @rseed * 2917 + 353;\n",
+    "  return @rseed;",
+    "end\n",
+);
+
+const MEMSET: &str = concat!(
+    "fun memset(ptr, count, value)\n",
+    "  while @count do\n",
+    "    @ptr = @value;\n",
+    "    count = @count - 1;\n",
+    "    ptr = @ptr + 1;\n",
+    "  end\n",
+    "end\n",
+);
+
+const OUTPUT: &str = "const OUTPUT = 0xFFF;";
+
+const PUTS: &str = concat!(
+    "fun puts(ptr)\n",
+    "  while @@ptr do\n",
+    "    OUTPUT = @@ptr;\n",
+    "    ptr = @ptr + 1;\n",
+    "  end\n",
+    "end\n",
+);
+
+const ITOA: &str = concat!(
+    "fun itoa(v)\n",
+    "  var temp = :5;\n",
+    "  var i = 4;\n",
+    "  while @i do\n",
+    "    i = @i - 1;\n",
+    "    var m;\n",
+    "    divmod(@v, 10, v, m);\n",
+    "    @temp + @i = @m + '0';\n",
+    "  end\n",
+    "  @temp + 4 = 0;\n",
+    "  return @temp;\n",
+    "end\n",
+);
+
+const PUTINT: &str = concat!(
+    "fun putint(v)\n",
+    "  puts(itoa(@v));\n",
     "end\n",
 );

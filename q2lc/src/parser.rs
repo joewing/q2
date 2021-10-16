@@ -320,8 +320,8 @@ fn parse_function(input: &str) -> Res<&str, Statement> {
     Ok((input, Statement::Function(name, args, body)))
 }
 
-pub fn parse_builtin(input: &str) -> Statement {
-    match parse_function(input) {
+pub fn parse_builtin(input: &str) -> Vec<Statement> {
+    match parse_statements(input) {
         Ok(f) if f.0.is_empty() => f.1,
         Ok(f) => panic!("incomplete parse: {}", f.0),
         Err(e) => panic!("parse failed: {}", e.to_string()),
