@@ -1,5 +1,6 @@
 
 ASM = ./q2asm/target/debug/q2asm
+Q2LC = ./q2lc/target/debug/q2lc
 PROGOLD = minipro
 PROG = ./q2prog/target/debug/q2prog
 #DEVICE = AT28C256
@@ -15,20 +16,23 @@ sim-%: examples/%.hex
 	cp $< hdl/test.hex
 	(cd hdl && $(MAKE) sim)
 
-examples/%.lst: $(ASM) examples/*.q2
+examples/%.lst: $(ASM) examples/%.q2
 	$(ASM) examples/$*.q2
 
-examples/%.hex: $(ASM) examples/*.q2
+examples/%.hex: $(ASM) examples/%.q2
 	$(ASM) examples/$*.q2
 
-examples/%.q2p: $(ASM) examples/*.q2
+examples/%.q2p: $(ASM) examples/%.q2
 	$(ASM) examples/$*.q2
 
-examples/%.low.hex: $(ASM) examples/*.q2
+examples/%.low.hex: $(ASM) examples/%.q2
 	$(ASM) examples/$*.q2
 
-examples/%.high.hex: $(ASM) examples/*.q2
+examples/%.high.hex: $(ASM) examples/%.q2
 	$(ASM) examples/$*.q2
+
+examples/%.q2: $(Q2LC) examples/%.q2l
+	$(Q2LC) examples/$*.q2l
 
 prog-low-%: examples/%.low.hex
 	$(PROGOLD) -p $(DEVICE) -w examples/$*.low.hex

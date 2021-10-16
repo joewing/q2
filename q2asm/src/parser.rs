@@ -176,60 +176,21 @@ fn parse_current_address(input: &str) -> CustomResult<&str, Expression> {
     Ok((input, Expression::CurrentAddress))
 }
 
-fn parse_binop<'a>(
+fn parse_binop<'a, 'b>(
     op: &'a str,
-    a: Expression,
+    a: &'b Expression,
     parse_rhs: impl Fn(&'a str) -> CustomResult<&'a str, Expression>,
-    builder: impl Fn(Expression, Expression) -> Expression
+    builder: impl Fn(Box<Expression>, Box<Expression>) -> Expression
 ) -> impl Fn(&'a str) -> CustomResult<&'a str, Expression> {
+    let a_clone = a.clone();
     move |input| {
         let (input, _) = eat_whitespace(input)?;
         let (input, _) = tag(op)(input)?;
         let (input, _) = eat_whitespace(input)?;
         let (input, b) = parse_rhs(input)?;
-        let result = builder(a.clone(), b);
+        let result = builder(Box::from(a_clone.clone()), Box::from(b));
         Ok((input, result))
     }
-}
-
-fn parse_add<'a>(lhs: Expression) -> impl Fn(&'a str) -> CustomResult<&'a str, Expression> {
-    move |input| parse_binop("+", lhs.clone(), parse_term, |a, b| Expression::Add(Box::from(a), Box::from(b)))(input)
-}
-
-fn parse_sub<'a>(lhs: Expression) -> impl Fn(&'a str) -> CustomResult<&'a str, Expression> {
-    move |input| parse_binop("-", lhs.clone(), parse_term, move |a, b| Expression::Sub(Box::from(a), Box::from(b)))(input)
-}
-
-fn parse_mul<'a>(lhs: Expression) -> impl Fn(&'a str) -> CustomResult<&'a str, Expression> {
-    move |input| parse_binop("*", lhs.clone(), parse_factor, move |a, b| Expression::Mul(Box::from(a), Box::from(b)))(input)
-}
-
-fn parse_div<'a>(lhs: Expression) -> impl Fn(&'a str) -> CustomResult<&'a str, Expression> {
-    move |input| parse_binop("/", lhs.clone(), parse_factor, move |a, b| Expression::Div(Box::from(a), Box::from(b)))(input)
-}
-
-fn parse_mod<'a>(lhs: Expression) -> impl Fn(&'a str) -> CustomResult<&'a str, Expression> {
-    move |input| parse_binop("/", lhs.clone(), parse_factor, move |a, b| Expression::Mod(Box::from(a), Box::from(b)))(input)
-}
-
-fn parse_and<'a>(lhs: Expression) -> impl Fn(&'a str) -> CustomResult<&'a str, Expression> {
-    move |input| parse_binop("&", lhs.clone(), parse_term, move |a, b| Expression::And(Box::from(a), Box::from(b)))(input)
-}
-
-fn parse_or<'a>(lhs: Expression) -> impl Fn(&'a str) -> CustomResult<&'a str, Expression> {
-    move |input| parse_binop("|", lhs.clone(), parse_term, move |a, b| Expression::Or(Box::from(a), Box::from(b)))(input)
-}
-
-fn parse_xor<'a>(lhs: Expression) -> impl Fn(&'a str) -> CustomResult<&'a str, Expression> {
-    move |input| parse_binop("^", lhs.clone(), parse_term, move |a, b| Expression::Xor(Box::from(a), Box::from(b)))(input)
-}
-
-fn parse_shr<'a>(lhs: Expression) -> impl Fn(&'a str) -> CustomResult<&'a str, Expression> {
-    move |input| parse_binop(">>", lhs.clone(), parse_term, move |a, b| Expression::Shr(Box::from(a), Box::from(b)))(input)
-}
-
-fn parse_shl<'a>(lhs: Expression) -> impl Fn(&'a str) -> CustomResult<&'a str, Expression> {
-    move |input| parse_binop("<<", lhs.clone(), parse_term, move |a, b| Expression::Shl(Box::from(a), Box::from(b)))(input)
 }
 
 fn parse_symbol(input: &str) -> CustomResult<&str, Expression> {
@@ -312,9 +273,9 @@ fn parse_term_cont<'a>(input: &'a str, lhs: Expression) -> CustomResult<&'a str,
     let (input, t_opt) = opt(
         alt(
             (
-                parse_mul(lhs.clone()),
-                parse_div(lhs.clone()),
-                parse_mod(lhs.clone()),
+                parse_binop("*", &lhs, parse_factor, |a, b| Expression::Mul(a, b)),
+                parse_binop("/", &lhs, parse_factor, |a, b| Expression::Div(a, b)),
+                parse_binop("%", &lhs, parse_factor, |a, b| Expression::Mod(a, b)),
             )
         )
     )(input)?;
@@ -333,13 +294,13 @@ fn parse_expr_cont<'a>(input: &'a str, lhs: Expression) -> CustomResult<&'a str,
     let (input, e_opt) = opt(
         alt(
             (
-                parse_add(lhs.clone()),
-                parse_sub(lhs.clone()),
-                parse_and(lhs.clone()),
-                parse_or(lhs.clone()),
-                parse_xor(lhs.clone()),
-                parse_shr(lhs.clone()),
-                parse_shl(lhs.clone())
+                parse_binop("+", &lhs, parse_term, |a, b| Expression::Add(a, b)),
+                parse_binop("-", &lhs, parse_term, |a, b| Expression::Sub(a, b)),
+                parse_binop("&", &lhs, parse_term, |a, b| Expression::And(a, b)),
+                parse_binop("|", &lhs, parse_term, |a, b| Expression::Or(a, b)),
+                parse_binop("^", &lhs, parse_term, |a, b| Expression::Xor(a, b)),
+                parse_binop(">>", &lhs, parse_term, |a, b| Expression::Shr(a, b)),
+                parse_binop("<<", &lhs, parse_term, |a, b| Expression::Shl(a, b)),
             )
         )
     )(input)?;
