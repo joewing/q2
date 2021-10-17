@@ -1,0 +1,31 @@
+
+const MAX_VALUE = 1024;
+
+fun initlcd()
+  puts([0x138, 0x10C, 0x106, 0x101, 0]);
+end
+
+fun show_primes()
+  puts("Primes: ");
+  const RESULTS = :MAX_VALUE;
+  memset(RESULTS, MAX_VALUE, 1);
+  var p = 2;
+  while @p < MAX_VALUE do
+    if @(RESULTS + @p) then
+      OUTPUT = 0x180 + 8;
+      putint(@p);
+      var i = @p;
+      while @i < MAX_VALUE do
+        RESULTS + @i = 0;
+        i = @i + @p;
+      end
+    end
+    p = @p + 1;
+  end
+end
+
+fun main()
+  initlcd();
+  show_primes();
+end
+

@@ -1,0 +1,270 @@
+# Hunt the Wumpus for the Q2.
+
+# Enumeration of possible hazards in each room.
+const MONSTER = 1;
+const PIT     = 2;
+const BAT     = 3;
+
+# Map of rooms. Each room is adjancent to 3 others.
+const MAP = [
+  [ 2,  8,  14 ],   #  0
+  [ 7,  13, 19 ],   #  1
+  [ 12, 18, 0  ],   #  2
+  [ 16, 17, 19 ],   #  3
+  [ 11, 14, 18 ],   #  4
+  [ 13, 15, 18 ],   #  5
+  [ 9,  14, 16 ],   #  6
+  [ 1,  15, 17 ],   #  7
+  [ 0,  10, 16 ],   #  8
+  [ 6,  11, 19 ],   #  9
+  [ 8,  12, 17 ],   #  10
+  [ 4,  9,  13 ],   #  11
+  [ 2,  10, 15 ],   #  12
+  [ 1,  5,  11 ],   #  13
+  [ 0,  4,  6  ],   #  14
+  [ 5,  7,  12 ],   #  15
+  [ 3,  6,  8  ],   #  16
+  [ 3,  7,  10 ],   #  17
+  [ 2,  4,  5  ],   #  18
+  [ 1,  3,  9  ]    #  19
+];
+
+
+# Names of the 20 rooms.
+const ROOMS = "ABCDEFGHIJKLMNOPQRST";
+
+# Some custom sprites.
+const SPRITES = [
+  0b00001110,   # 0 - monster
+  0b00010101,
+  0b00011111,
+  0b00010001,
+  0b00001110,
+  0b00010001,
+  0b00010001,
+  0b00000000,
+  0b00000000,   # 1 - pit
+  0b00000000,
+  0b00010001,
+  0b00001010,
+  0b00001010,
+  0b00001010,
+  0b00001010,
+  0b00000000,
+  0b00001010,   # 2 - bat
+  0b00011111,
+  0b00010101,
+  0b00000000,
+  0b00000000,
+  0b00000000,
+  0b00000000,
+  0b00000000
+];
+
+# Global state.
+const CAVE = :20;   # Contents of each room.
+var monster_room;   # Room with the monster.
+var current_room;   # Our room.
+var game_over = 0;  # Game over indicator.
+
+# Read the keypad.
+fun getkey()
+  return ~(@OUTPUT | ~31);
+end
+
+# Wait for a key press.
+fun waitkey()
+  while 1 do
+    var key = getkey();
+    if @key then
+      while getkey() do
+      end
+      return @key;
+    end
+  end
+end
+
+# Initialize the LCD and load custom sprites.
+fun init_lcd()
+  puts([0x138, 0x10C, 0x106, 0x101, 0]);
+  puts("Hunt the Wumpus!");
+  OUTPUT = 0x180 + 0x40;
+  puts("Creating map... ");
+  OUTPUT = 0x140 + 0;
+  var i = 0;
+  while @i < 3 * 8 do
+    OUTPUT = @(SPRITES + @i);
+    i = @i + 1;
+  end
+end
+
+# Find an empty room.
+fun find_open_room()
+  while 1 do
+    var room = rand() & 31;
+    if @room < 20 && @(CAVE + @room) == 0 then
+      return @room;
+    end
+  end
+end
+
+# Find a room and place the specified hazard.
+fun place_hazard(h)
+  var room = find_open_room();
+  CAVE + @room = @h;
+  return @room;
+end
+
+# Initialize the cave with hazards.
+fun init_cave()
+  memset(CAVE, 20, 0);
+  current_room = find_open_room();
+  monster_room = place_hazard(MONSTER);
+  place_hazard(PIT);
+  place_hazard(PIT);
+  place_hazard(PIT);
+  place_hazard(BAT);
+  place_hazard(BAT);
+end
+
+# Check adjacent rooms for the specified hazard.
+fun check_hazard(h)
+  var i = 0;
+  while @i < 3 do
+    var pos = @(@(MAP + @current_room) + @i);
+    if @(CAVE + @pos) == @h then
+      return 1;
+    end
+    i = @i + 1;
+  end
+  return 0;
+end
+
+# Show adjacent rooms.
+fun show_directions()
+  var i = 0;
+  OUTPUT = 0x180 + 0x40 + 9;
+  while @i < 3 do
+    var room = @(@(MAP + @current_room) + @i);
+    OUTPUT = @room + 'A';
+    OUTPUT = ' ';
+    i = @i + 1;
+  end
+end
+
+# Move to the specified adjacent room.
+fun do_move(x)
+  current_room = @(@(MAP + @current_room) + @x);
+end
+
+# Shoot into the specified adjacent room.
+fun do_shoot(x)
+  var pos = @(@(MAP + @current_room) + @x);
+  var occupant = @(CAVE + @pos);
+  if occupant == MONSTER then
+    OUTPUT = 0x180 + 0x40;
+    puts("Got the Wumpus! ");
+    game_over = 1;
+  else
+    OUTPUT = 0x180 + 0x40;
+    puts("    Missed!     ");
+    var move = rand() & 3;
+    if @move then
+      monster_room = @(@(MAP + @monster_room) + @move - 1);
+    end
+  end
+end
+
+# Show the move menu and wait for input.
+# Returns 1 if an action was taken, 0 to switch menus.
+fun move_menu()
+  OUTPUT = 0x180 + 0x40;
+  puts("  Move?         ");
+  show_directions();
+  var key = waitkey();
+  if @key == 1 then
+    do_move(0); # Left
+    return 1;
+  elseif @key == 2 then
+    do_move(2); # Right
+    return 1;
+  elseif @key == 4 then
+    do_move(1); # Up
+    return 1;
+  end
+  return 0;
+end
+
+# Show the shoot menu and wait for input.
+# Returns 1 if an action was taken, 0 to switch menus.
+fun shoot_menu()
+  OUTPUT = 0x180 + 0x40;
+  puts(" Shoot?         ");
+  show_directions();
+  var key = waitkey();
+  if @key == 1 then
+    do_shoot(0);  # Left
+    return 1;
+  elseif @key == 2 then
+    do_shoot(2);  # Right
+    return 1;
+  elseif @key == 4 then
+    do_shoot(1);  # Up
+    return 1;
+  end
+  return 0;
+end
+
+# Show menus until an action is taken.
+fun show_menu()
+  while 1 do
+    if move_menu() then
+      return 1;
+    end
+    if shoot_menu() then
+      return 1;
+    end
+  end
+end
+
+# Show the current room and check for hazards.
+fun show_room()
+  OUTPUT = 0x180 + 0;
+  puts(" Room           ");
+  OUTPUT = 0x180 + 6;
+  OUTPUT = @(ROOMS + @current_room);
+
+  if check_hazard(MONSTER) then
+    puts([0x180 + 10, 8, 0]);
+  end
+  if check_hazard(PIT) then
+    puts([0x180 + 12, 9, 0]);
+  end
+  if check_hazard(BAT) then
+    puts([0x180 + 14, 10, 0]);
+  end
+
+  var occupant = @(CAVE + @current_room);
+  OUTPUT = 0x180 + 0x40;
+  if @monster_room == @current_room then
+    puts("     Eaten!     ");
+    game_over = 1;
+  elseif @occupant == PIT then
+    puts(" Fell in a pit! ");
+    game_over = 1;
+  elseif @occupant == BAT then
+    puts("     Bats!      ");
+    current_room = find_open_room();
+    waitkey();
+  end
+end
+
+fun main()
+  init_lcd();
+  init_cave();
+  while !@game_over do
+    show_room();
+    show_menu();
+  end
+end
+
