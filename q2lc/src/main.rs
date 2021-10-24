@@ -14,7 +14,7 @@ use std::error::Error;
 use std::io::Write;
 use crate::builtin::generate_builtins;
 use crate::symbol::SymbolTable;
-use crate::statement::{emit_statements, simplify};
+use crate::statement::simplify;
 
 const Q2L_EXTENSION: &str = ".q2l";
 const Q2_EXTENSION: &str = ".q2";
@@ -28,12 +28,11 @@ fn output_name(input_name: &str) -> String {
 }
 
 fn compile(input_name: &str) -> Result<(), Box<dyn Error>> {
-    let content = fs::read_to_string(input_name)?;
     let mut source = generate_builtins();
-    source.extend(parser::parse(input_name, content.as_str())?);
+    source.push(parser::parse(input_name)?);
     let mut state = SymbolTable::new();
-    let statements = simplify(&mut state, &source);
-    emit_statements(&mut state, &statements);
+    let simplified = simplify(&mut state, source);
+    simplified.emit(&mut state);
     let mut output_file = fs::File::create(output_name(input_name))?;
     for line in state.emit() {
         output_file.write_all(line.as_bytes())?;
@@ -42,7 +41,7 @@ fn compile(input_name: &str) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn main() -> Result<(), Box<dyn Error>> {
+fn main() {
     let input_key = "INPUT";
     let matches = App::new(crate_name!())
         .version(crate_version!())
@@ -57,10 +56,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         .get_matches();
 
     let input_name = matches.value_of(input_key).unwrap();
-    compile(input_name).map_err(
-        |e| {
-            eprintln!("ERROR: {}", e);
-            e
-        }
-    )
+    match compile(input_name) {
+        Ok(_) => (),
+        Err(e) => {
+            eprintln!("ERROR: {}", e.to_string());
+            std::process::exit(-1)
+        },
+    }
 }

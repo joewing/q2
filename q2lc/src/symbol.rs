@@ -1,20 +1,45 @@
 use std::collections::{HashMap, HashSet};
+
+#[derive(Clone, Copy, PartialEq, Eq, Hash)]
+pub struct Watermark {
+    pub(crate) stack: Word,
+    heap: Word,
+}
+
 use crate::expr::{Expression, Word};
 
 #[derive(Hash, PartialEq, Eq, Clone)]
 pub enum Symbol {
     Undefined,
-    Function(Word, Vec<Word>),
+    Function(Watermark, Vec<Word>),
     Constant(Word),
     Label(String),
 }
 
+impl Watermark {
+    pub fn combine(&self, other: Watermark) -> Watermark {
+        Watermark {
+            heap: Word::min(self.heap, other.heap),
+            stack: Word::max(self.stack, other.stack),
+        }
+    }
+
+    pub fn update_heap(&mut self, heap: Word) {
+        self.heap = Word::min(self.heap, heap);
+    }
+
+    pub fn update_stack(&mut self, stack: Word) {
+        self.stack = Word::max(self.stack, stack);
+    }
+}
+
 struct Scope {
     symbols: HashMap<String, Symbol>,
-    watermark: Word,
+    watermark: Watermark,
     stack: Word,
     heap: Word,
     return_address: Symbol,
+    break_label: Option<String>,
 }
 
 pub struct SymbolTable {
@@ -32,16 +57,19 @@ impl SymbolTable {
     pub const PAGE_SIZE: Word = 128;
     pub const ORIGIN: Word = SymbolTable::PAGE_SIZE;
     pub const ENTRYPOINT: &'static str = "main";
-    pub const BASE_WATERMARK: Word = 4;
-    pub const HEAP_START: Word = 0xFFF;
+    pub const BASE_WATERMARK: Watermark = Watermark {
+        stack: 4,
+        heap: 0xFFF,
+    };
 
     pub fn new() -> SymbolTable {
         let global_scope = Scope {
             symbols: HashMap::new(),
             watermark: SymbolTable::BASE_WATERMARK,
-            heap: SymbolTable::HEAP_START,
-            stack: SymbolTable::BASE_WATERMARK,
+            heap: SymbolTable::BASE_WATERMARK.heap,
+            stack: SymbolTable::BASE_WATERMARK.stack,
             return_address: Symbol::Constant(0),
+            break_label: None,
         };
         SymbolTable {
             code: Vec::new(),
@@ -70,8 +98,8 @@ impl SymbolTable {
             temp.push(format!("{}:", label));
             let s = match symbol {
                 Symbol::Label(s) => s.clone(),
-                Symbol::Constant(w) => w.to_string(),
-                _ => panic!("internal error")
+                Symbol::Constant(w) => (w & 0xFFF).to_string(),
+                _ => panic!("undefined: {}", label)
             };
             temp.push(format!("  .dw {}", s));
         }
@@ -172,6 +200,14 @@ impl SymbolTable {
         self.scopes.last().unwrap().return_address.clone()
     }
 
+    pub fn break_label(&self) -> String {
+        let last = self.scopes.last().unwrap();
+        match &last.break_label {
+            Some(s) => s.clone(),
+            None => panic!("break not in a loop")
+        }
+    }
+
     pub fn next_label(&mut self) -> String {
         self.index += 1;
         let label = format!("L{}", self.index);
@@ -183,7 +219,12 @@ impl SymbolTable {
         for expr in exprs {
             let value = match expr {
                 Expression::Constant(w) => Symbol::Constant(*w),
-                Expression::Symbol(name) => self.lookup(name),
+                Expression::Symbol(name) => match self.lookup(name) {
+                    Symbol::Constant(w) => Symbol::Constant(w),
+                    Symbol::Label(s) => Symbol::Label(s),
+                    Symbol::Function(_, _) => Symbol::Label(name.clone()),
+                    Symbol::Undefined => panic!("undefined: {}", name),
+                },
                 Expression::ArrayLiteral(inner) => self.append_data(inner),
                 _ => panic!("array literal must be constant"),
             };
@@ -197,21 +238,23 @@ impl SymbolTable {
     pub fn append_heap(&mut self, size: Word) -> Word {
         let mut scope = self.scopes.last_mut().unwrap();
         scope.heap -= size;
+        scope.watermark.update_heap(scope.heap);
         scope.heap
     }
 
     pub fn enter(&mut self) {
         let last = self.scopes.last().unwrap();
         let watermark = last.watermark;
-        let heap = last.heap;
         let return_address = last.return_address.clone();
+        let break_label = last.break_label.clone();
         self.scopes.push(
             Scope {
                 symbols: HashMap::new(),
                 watermark: watermark,
-                stack: watermark,
-                heap: heap,
+                stack: watermark.stack,
+                heap: watermark.heap,
                 return_address: return_address,
+                break_label: break_label,
             }
         );
     }
@@ -219,20 +262,42 @@ impl SymbolTable {
     pub fn leave(&mut self) {
         let last = self.scopes.pop().unwrap();
         let current = self.scopes.last_mut().unwrap();
-        current.watermark = Word::max(last.watermark, current.watermark);
+        current.watermark = last.watermark.combine(current.watermark);
     }
 
-    pub fn enter_function(&mut self, watermark: Word) -> Symbol {
+    pub fn enter_loop(&mut self, break_label: &String) {
         let last = self.scopes.last().unwrap();
-        let heap = last.heap;
+        let watermark = last.watermark;
         let return_address = last.return_address.clone();
         self.scopes.push(
             Scope {
                 symbols: HashMap::new(),
                 watermark: watermark,
-                stack: watermark,
-                heap: heap,
+                stack: watermark.stack,
+                heap: watermark.heap,
                 return_address: return_address,
+                break_label: Some(break_label.clone()),
+            }
+        );
+    }
+
+    pub fn leave_loop(&mut self) {
+        let break_label = self.break_label();
+        self.leave();
+        self.append_label(&break_label);
+    }
+
+    pub fn enter_function(&mut self, watermark: Watermark) -> Symbol {
+        let last = self.scopes.last().unwrap();
+        let return_address = last.return_address.clone();
+        self.scopes.push(
+            Scope {
+                symbols: HashMap::new(),
+                watermark: watermark,
+                stack: watermark.stack,
+                heap: watermark.heap,
+                return_address: return_address,
+                break_label: None,
             }
         );
         let return_address = self.allocate_temp();
@@ -242,7 +307,11 @@ impl SymbolTable {
 
     pub fn leave_function(&mut self, name: &String, args: Vec<Word>) {
         let func_scope = self.scopes.pop().unwrap();
-        let symbol = Symbol::Function(func_scope.watermark + 1, args);
+        let watermark = Watermark {
+            stack: func_scope.watermark.stack + 1,
+            heap: func_scope.watermark.heap,
+        };
+        let symbol = Symbol::Function(watermark, args);
         let scope = self.scopes.last_mut().unwrap();
         scope.symbols.insert(name.clone(), symbol);
     }
@@ -251,7 +320,7 @@ impl SymbolTable {
         let mut scope = self.scopes.last_mut().unwrap();
         let addr = scope.stack;
         scope.stack += 1;
-        scope.watermark = Word::max(scope.watermark, scope.stack);
+        scope.watermark.update_stack(scope.stack);
         Symbol::Constant(addr)
     }
 

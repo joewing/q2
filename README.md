@@ -7,6 +7,7 @@ This repo contains the following subdirectories:
   - hdl - A Verilog model and test bench for simulating Q2 programs.
   - scad - An OpenSCAD 3d model for the case.
   - q2asm - A Q2 assembler (in Rust).
+  - q2lc - A compiler for a simple language (in Rust).
   - q2prog - A Q2 programmer (in Rust) for a Raspberry Pi.
   - examples - Q2 assembly language examples.
   - pcb - Schematics and PCB in KiCad

@@ -3,7 +3,7 @@ use std::ops::Not;
 
 use crate::builtin::{DIVIDE_NAME, MODULUS_NAME, MULTIPLY_NAME, SHIFT_LEFT_NAME, SHIFT_RIGHT_NAME};
 use crate::emit;
-use crate::symbol::{SymbolTable, Symbol};
+use crate::symbol::{SymbolTable, Symbol, Watermark};
 
 pub type Word = u16;
 
@@ -15,7 +15,7 @@ pub enum FlagState {
     ShrCarry,
 }
 
-#[derive(Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, PartialEq, Debug)]
 pub enum UnaryOperator {
     ArrayDecl,
     Deref,
@@ -24,7 +24,7 @@ pub enum UnaryOperator {
     Lnot,
 }
 
-#[derive(Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, PartialEq, Debug)]
 pub enum BinaryOperator {
     Add,
     Sub,
@@ -47,7 +47,7 @@ pub enum BinaryOperator {
     Lor,
 }
 
-#[derive(Clone)]
+#[derive(PartialEq, Clone, Debug)]
 pub enum Expression {
     Constant(Word),
     ArrayLiteral(Vec<Expression>),
@@ -80,12 +80,12 @@ impl Expression {
         }
     }
 
-    pub fn get_watermark(&self, state: &SymbolTable) -> Word {
+    pub fn get_watermark(&self, state: &SymbolTable) -> Watermark {
         match self {
             Expression::Constant(_) => SymbolTable::BASE_WATERMARK,
             Expression::ArrayLiteral(exprs) => {
                 exprs.iter().fold(
-                    SymbolTable::BASE_WATERMARK, |w, e| Word::max(w, e.get_watermark(state))
+                    SymbolTable::BASE_WATERMARK, |w, e| w.combine(e.get_watermark(state))
                 )
             },
             Expression::Symbol(name) => {
@@ -97,13 +97,12 @@ impl Expression {
             Expression::Call(fun, args) => {
                 args.iter().fold(
                     fun.get_watermark(state),
-                    |w, a| Word::max(w, a.get_watermark(state))
+                    |w, a| w.combine(a.get_watermark(state))
                 )
             },
-            Expression::Binary(_, lhs, rhs) => Word::max(
-                lhs.get_watermark(state),
-                rhs.get_watermark(state)
-            ),
+            Expression::Binary(_, lhs, rhs) => {
+                lhs.get_watermark(state).combine(rhs.get_watermark(state))
+            },
             Expression::Unary(_, inner) => inner.get_watermark(state),
         }
     }
@@ -125,12 +124,12 @@ impl Expression {
                 match (&new_lhs, &new_rhs) {
                     (Expression::Constant(a), Expression::Constant(b)) => {
                         let value = match op {
-                            BinaryOperator::Add => a + b,
-                            BinaryOperator::Sub => a - b,
-                            BinaryOperator::Mul => a * b,
-                            BinaryOperator::Div => a / b,
-                            BinaryOperator::Mod => a % b,
-                            BinaryOperator::Shl => a << b,
+                            BinaryOperator::Add => a.wrapping_add(*b),
+                            BinaryOperator::Sub => a.wrapping_sub(*b),
+                            BinaryOperator::Mul => a.wrapping_mul(*b),
+                            BinaryOperator::Div => a.wrapping_div(*b),
+                            BinaryOperator::Mod => a.wrapping_rem(*b),
+                            BinaryOperator::Shl => a.wrapping_shl(*b as u32),
                             BinaryOperator::Shr => a >> b,
                             BinaryOperator::And => a & b,
                             BinaryOperator::Or => a | b,
@@ -145,7 +144,7 @@ impl Expression {
                             BinaryOperator::Land => if *a != 0 && *b != 0 { 1 } else { 0 },
                             BinaryOperator::Lor => if *a != 0 || *b != 0 { 1 } else { 0 },
                         };
-                        Expression::Constant(value)
+                        Expression::Constant(value & 0xFFF)
                     },
                     _ => match op {
                         BinaryOperator::Shl if !is_constant(&new_rhs, 1) =>
@@ -198,6 +197,7 @@ impl Expression {
                     BinaryOperator::Sub => emit::emit_sub(lhs, rhs, state),
                     BinaryOperator::And => emit::emit_and(lhs, rhs, state),
                     BinaryOperator::Or  => emit::emit_or(lhs, rhs, state),
+                    BinaryOperator::Xor => emit::emit_xor(lhs, rhs, state),
                     BinaryOperator::Nor => emit::emit_nor(lhs, rhs, state),
                     BinaryOperator::Shr => emit::emit_shr(lhs, rhs, state),
                     BinaryOperator::Shl => emit::emit_shl(lhs, rhs, state),
@@ -209,7 +209,7 @@ impl Expression {
                     BinaryOperator::Le => emit::emit_le(lhs, rhs, state),
                     BinaryOperator::Land => emit::emit_land(state, lhs, rhs),
                     BinaryOperator::Lor => emit::emit_lor(state, lhs, rhs),
-                    _ => panic!("not implemented")
+                    _ => panic!("not implemented"),
                 }
             },
             Expression::Unary(op, inner) => match op {
@@ -244,4 +244,24 @@ fn used_functions(exprs: &Vec<Expression>, symbols: &mut HashSet<String>) {
 
 fn simplify_exprs(exprs: &Vec<Expression>, state: &mut SymbolTable) -> Vec<Expression> {
     exprs.iter().map(|e| e.simplify(state)).collect()
+}
+
+#[cfg(test)]
+mod tests {
+    use test_case::test_case;
+    use crate::expr::*;
+    use crate::parser;
+    use crate::symbol::SymbolTable;
+
+    #[test_case("5 + 3", Expression::Constant(8))]
+    #[test_case("1 * 2 + 3", Expression::Constant(5))]
+    #[test_case("2 - 3", Expression::Constant(0xFFF))]
+    #[test_case("1 + 2 * 3", Expression::Constant(7))]
+    #[test_case("1 + 2 + x", Expression::Binary(BinaryOperator::Add, Box::from(Expression::Constant(3)), Box::from(Expression::Symbol("x".to_string()))))]
+    fn simplify_tests(input: &str, expected: Expression) {
+        let (input, expr) = parser::parse_expr(input).unwrap();
+        assert_eq!(input, "");
+        let mut symbols = SymbolTable::new();
+        assert_eq!(expr.simplify(&mut symbols), expected)
+    }
 }

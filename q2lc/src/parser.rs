@@ -1,10 +1,13 @@
 extern crate nom;
+
 use nom::{combinator::*, character::*, branch::*, bytes::complete::*};
 use std::str::FromStr;
+use std::fs;
+
 use crate::expr::{BinaryOperator, Expression, UnaryOperator, Word};
 use crate::statement::Statement;
 use self::nom::IResult;
-use self::nom::error::VerboseError;
+use self::nom::error::{context, VerboseError, VerboseErrorKind};
 use self::nom::multi::{many0, separated_list0};
 use self::nom::sequence::tuple;
 
@@ -151,9 +154,9 @@ fn parse_deref(input: &str) -> Res<&str, Expression> {
 }
 
 fn parse_nest(input: &str) -> Res<&str, Expression> {
-    let (input, _) = tag("(")(input)?;
+    let (input, _) = nom::character::complete::char('(')(input)?;
     let (input, expr) = parse_expr(input)?;
-    let (input, _) = tag(")")(input)?;
+    let (input, _) = nom::character::complete::char(')')(input)?;
     Ok((input, expr))
 }
 
@@ -165,11 +168,11 @@ fn parse_call(input: &str) -> Res<&str, Expression> {
         )
     )(input)?;
     let (input, _) = eat_whitespace(input)?;
-    let (input, _) = tag("(")(input)?;
+    let (input, _) = nom::character::complete::char('(')(input)?;
     let (input, _) = eat_whitespace(input)?;
     let (input, params) = separated_list0(parse_separator, parse_expr)(input)?;
     let (input, _) = eat_whitespace(input)?;
-    let (input, _) = tag(")")(input)?;
+    let (input, _) = nom::character::complete::char(')')(input)?;
     Ok((input, Expression::Call(Box::from(fun), params)))
 }
 
@@ -240,8 +243,8 @@ const BINOP_PARSERS: &[&[(&str, BinaryOperator)]] = &[
 ];
 
 fn parse_level_cont(level: usize, input: &str, lhs: Expression) -> Res<&str, Expression> {
-    for (name, op) in BINOP_PARSERS[level].iter() {
-        match parse_binop(name, &lhs, parse_level(level), *op)(input) {
+    for (name, op) in BINOP_PARSERS[level - 1].iter() {
+        match parse_binop(name, &lhs, parse_level(level - 1), *op)(input) {
             Ok((input, rhs)) => return parse_level_cont(level, input, rhs),
             _ => (),
         }
@@ -251,19 +254,19 @@ fn parse_level_cont(level: usize, input: &str, lhs: Expression) -> Res<&str, Exp
 
 fn parse_level(level: usize) -> impl Fn(&str) -> Res<&str, Expression> {
     move |input| {
-        let (input, lhs) = if level > 0 {
-            parse_level(level - 1)(input)
-        } else {
+        if level == 0 {
             parse_factor(input)
-        }?;
-        parse_level_cont(level, input, lhs)
+        } else {
+            let (input, lhs) = parse_level(level - 1)(input)?;
+            parse_level_cont(level, input, lhs)
+        }
     }
 }
 
-fn parse_expr(input: &str) -> Res<&str, Expression> {
+pub(crate) fn parse_expr(input: &str) -> Res<&str, Expression> {
     let (input, _) = eat_whitespace(input)?;
-    let (input, lhs) = parse_level(BINOP_PARSERS.len() - 1)(input)?;
-    let (input, expr) = parse_level_cont(BINOP_PARSERS.len() - 1, input, lhs)?;
+    let (input, lhs) = parse_level(BINOP_PARSERS.len())(input)?;
+    let (input, expr) = parse_level_cont(BINOP_PARSERS.len(), input, lhs)?;
     let (input, _) = eat_whitespace(input)?;
     Ok((input, expr))
 }
@@ -280,7 +283,7 @@ fn parse_assign(input: &str) -> Res<&str, Statement> {
 
 fn parse_if(input: &str) -> Res<&str, Statement> {
     let (input, _) = tag("if")(input)?;
-    let (input, cond) = parse_expr(input)?;
+    let (input, cond) = context("if-expr", parse_expr)(input)?;
     let (input, _) = tag("then")(input)?;
     let (input, t) = parse_statements(input)?;
     let (input, nested) = many0(
@@ -288,12 +291,23 @@ fn parse_if(input: &str) -> Res<&str, Statement> {
     )(input)?;
     let (input, else_opt) = opt(tuple((tag("else"), parse_statements)))(input)?;
     let (input, _) = tag("end")(input)?;
-    let else_statements = else_opt.map(|(_, ss)| ss).unwrap_or(Vec::new());
+    let else_statements = else_opt.map(|(_, ss)| ss).unwrap_or(Statement::Block(Vec::new()));
     let tails = nested.iter().rev().fold(else_statements, |s, (_, c, _, ns)|
-        vec![Statement::If(c.clone(), ns.to_vec(), s)]
+        Statement::If(c.clone(), Box::from(ns.clone()), Box::from(s))
     );
-    let result = Statement::If(cond, t, tails);
+    let result = Statement::If(cond, Box::from(t), Box::from(tails));
     Ok((input, result))
+}
+
+fn parse_ifcarry(input: &str) -> Res<&str, Statement> {
+    let (input, _) = tag("ifcarry")(input)?;
+    let (input, cond) = parse_expr(input)?;
+    let (input, _) = tag("then")(input)?;
+    let (input, t) = parse_statements(input)?;
+    let (input, else_opt) = opt(tuple((tag("else"), parse_statements)))(input)?;
+    let (input, _) = tag("end")(input)?;
+    let f = else_opt.map(|x| x.1).unwrap_or(Statement::Block(Vec::new()));
+    Ok((input, Statement::IfCarry(cond, Box::from(t), Box::from(f))))
 }
 
 fn parse_while(input: &str) -> Res<&str, Statement> {
@@ -302,25 +316,25 @@ fn parse_while(input: &str) -> Res<&str, Statement> {
     let (input, _) = tag("do")(input)?;
     let (input, body) = parse_statements(input)?;
     let (input, _) = tag("end")(input)?;
-    Ok((input, Statement::While(cond, body)))
+    Ok((input, Statement::While(cond, Box::from(body))))
 }
 
 fn parse_function(input: &str) -> Res<&str, Statement> {
     let (input, _) = tag("fun")(input)?;
     let (input, name) = parse_ident(input)?;
-    let (input, _) = tag("(")(input)?;
+    let (input, _) = nom::character::complete::char('(')(input)?;
     let (input, _) = eat_whitespace(input)?;
     let (input, args) = separated_list0(parse_separator, parse_ident)(input)?;
     let (input, _) = eat_whitespace(input)?;
-    let (input, _) = tag(")")(input)?;
+    let (input, _) = nom::character::complete::char(')')(input)?;
     let (input, _) = eat_whitespace(input)?;
     let (input, body) = parse_statements(input)?;
     let (input, _) = tag("end")(input)?;
     let (input, _) = eat_whitespace(input)?;
-    Ok((input, Statement::Function(name, args, body)))
+    Ok((input, Statement::Function(name, args, Box::from(body))))
 }
 
-pub fn parse_builtin(input: &str) -> Vec<Statement> {
+pub fn parse_builtin(input: &str) -> Statement {
     match parse_statements(input) {
         Ok(f) if f.0.is_empty() => f.1,
         Ok(f) => panic!("incomplete parse: {}", f.0),
@@ -328,8 +342,8 @@ pub fn parse_builtin(input: &str) -> Vec<Statement> {
     }
 }
 
-fn parse_call_statement(input: &str) -> Res<&str, Statement> {
-    let (input, expr) = parse_call(input)?;
+fn parse_expr_statement(input: &str) -> Res<&str, Statement> {
+    let (input, expr) = parse_expr(input)?;
     let (input, _) = eat_whitespace(input)?;
     let (input, _) = nom::character::complete::char(';')(input)?;
     Ok((input, Statement::Expression(expr)))
@@ -342,6 +356,35 @@ fn parse_return(input: &str) -> Res<&str, Statement> {
     Ok((input, Statement::Return(expr)))
 }
 
+fn parse_break(input: &str) -> Res<&str, Statement> {
+    let (input, _) = tag("break")(input)?;
+    let (input, _) = eat_whitespace(input)?;
+    let (input, _) = nom::character::complete::char(';')(input)?;
+    Ok((input, Statement::Break))
+}
+
+fn parse_include(input: &str) -> Res<&str, Statement> {
+    let (input, _) = tag("include")(input)?;
+    let (input, _) = eat_whitespace(input)?;
+    let (input, _) = nom::character::complete::char('\"')(input)?;
+    let (input, name) = take_while1(|c| c != '\"')(input)?;
+    let (input, _) = nom::character::complete::char('\"')(input)?;
+    let (input, _) = eat_whitespace(input)?;
+    let (input, _) = nom::character::complete::char(';')(input)?;
+    match parse(name) {
+        Ok(statement) => Ok((input, statement)),
+        Err(_) => Err(
+            nom::Err::Failure(
+                VerboseError {
+                    errors: vec![
+                        (name, VerboseErrorKind::Context("error parsing include file"))
+                    ]
+                }
+            )
+        )
+    }
+}
+
 fn parse_statement(input: &str) -> Res<&str, Statement> {
     let (input, _) = eat_whitespace(input)?;
     let (input, statement) = alt(
@@ -349,33 +392,93 @@ fn parse_statement(input: &str) -> Res<&str, Statement> {
             parse_var,
             parse_assign,
             parse_if,
+            parse_ifcarry,
             parse_while,
             parse_function,
-            parse_call_statement,
             parse_return,
             parse_const,
+            parse_break,
+            parse_include,
+            parse_expr_statement,
         )
     )(input)?;
     Ok((input, statement))
 }
 
-fn parse_statements(input: &str) -> Res<&str, Vec<Statement>> {
+fn parse_statements(input: &str) -> Res<&str, Statement> {
     let (input, statements) = many0(parse_statement)(input)?;
     let (input, _) = eat_whitespace(input)?;
-    Ok((input, statements))
+    Ok((input, Statement::Block(statements)))
 }
 
-pub fn parse(file_name: &str, input: &str) -> Result<Vec<Statement>, String> {
-    match parse_statements(input) {
-        Ok((remaining, statements)) => {
-            if remaining.is_empty() {
-                Ok(statements)
-            } else {
-                let offset = input.len() - remaining.len();
-                let line = input[0..offset].chars().filter(|c| *c == '\n').count() + 1;
-                Err(format!("{}[{}]: syntax error", file_name, line))
-            }
-        },
+pub fn parse(file_name: &str) -> Result<Statement, String> {
+    match fs::read_to_string(file_name) {
+        Ok(input) =>
+            match parse_statements(input.as_str()) {
+                Ok((remaining, statements)) => {
+                    if remaining.is_empty() {
+                        Ok(statements)
+                    } else {
+                        let offset = input.len() - remaining.len();
+                        let line = input[0..offset].chars().filter(|c| *c == '\n').count() + 1;
+                        Err(format!("{}[{}]: syntax error", file_name, line))
+                    }
+                },
+                Err(e) => Err(e.to_string())
+            },
         Err(e) => Err(e.to_string())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use test_case::test_case;
+    use crate::expr::*;
+    use crate::parser::parse_expr;
+
+    #[test_case("x_y123", Expression::Symbol("x_y123".to_string()))]
+    #[test_case("5", Expression::Constant(5))]
+    #[test_case("-5", Expression::Unary(UnaryOperator::Negate, Box::from(Expression::Constant(5))))]
+    #[test_case("@6", Expression::Unary(UnaryOperator::Deref, Box::from(Expression::Constant(6))))]
+    #[test_case("5 + 10",
+        Expression::Binary(
+            BinaryOperator::Add, Box::from(Expression::Constant(5)), Box::from(Expression::Constant(10))
+        )
+    )]
+    #[test_case("5 - 10",
+        Expression::Binary(
+            BinaryOperator::Sub, Box::from(Expression::Constant(5)), Box::from(Expression::Constant(10))
+        )
+    )]
+    #[test_case("5 + 10 + 15",
+        Expression::Binary(
+            BinaryOperator::Add,
+            Box::from(
+                Expression::Binary(
+                    BinaryOperator::Add,
+                    Box::from(Expression::Constant(5)),
+                    Box::from(Expression::Constant(10))
+                )
+            ),
+            Box::from(Expression::Constant(15))
+        )
+    )]
+    #[test_case("5 + 10 * 15",
+        Expression::Binary(
+            BinaryOperator::Add,
+            Box::from(Expression::Constant(5)),
+            Box::from(
+                Expression::Binary(
+                    BinaryOperator::Mul,
+                    Box::from(Expression::Constant(10)),
+                    Box::from(Expression::Constant(15))
+                )
+            )
+        )
+    )]
+    fn parse_expr_tests(input: &str, expected: Expression) {
+        let (input, expr) = parse_expr(input).unwrap();
+        assert_eq!(input, "");
+        assert_eq!(expr, expected);
     }
 }

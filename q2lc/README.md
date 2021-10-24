@@ -59,7 +59,7 @@ To allocate a word and initialize it with 5:
 var x = 5;
 ```
 
-To allocate a word and initialize with with a pointer to
+To allocate a word and initialize it with a pointer to
 an array of 15 (uninitialized) words:
 ```
 var y = :15;
@@ -173,4 +173,91 @@ pointers for functions that receive arguments, though communication
 through global variables is possible.  Also note that using funciton
 pointers to recursively call a function will likely result in an
 infinite loop.
+
+## Operators
+
+The following operators are supported:
+
+  Operator  | Description       | Precedence
+  --------- | ----------------- | ----------
+  `~`       | Unary bitwise NOT | 1
+  `-`       | Unary negation    | 1
+  `!`       | Unary logical NOT | 1
+  `@`       | Dereference       | 1
+  `*`       | Multiply          | 2
+  `/`       | Divide            | 2
+  `%`       | Modulus           | 2
+  `&`       | Bitwise AND       | 3
+  `^`       | Bitwise XOR       | 3
+  `\|`      | Bitwise OR        | 3
+  `<<`      | Shift left        | 4
+  `>>`      | Shift right       | 4
+  `==`      | Equal             | 5
+  `!=`      | Not equal         | 5
+  `<=`      | Less or equal     | 5
+  `>=`      | Greater or equal  | 5
+  `<`       | Less than         | 5
+  `>`       | Greater than      | 5
+  `&&`      | Logical AND       | 6
+  `\|\|`    | Logical OR        | 6
+
+Some notes:
+  * All numbers are assumed to be unsigned.
+  * Comparison operators return 0 if false and a non-zero, but
+    unspecified value if true.
+  * Logical AND and OR are short-circuiting.
+
+## Conditionals
+
+The usual "if-then-else" is supported as follows:
+
+```
+  if condition then
+    # body
+  else
+    # else part
+  end
+```
+
+The `else` portion is optional. It is also possible to add
+more branches using one or more `elseif` sections:
+
+```
+  if cond1 then
+    # body 1
+  elseif cond2 then
+    # body 2
+  elseif cond3 then
+    # body 3
+  else
+    # body 4
+  end
+```
+
+Zero is false and any non-zero value is true.
+
+## Loops
+
+The only supported loop construct is the `while` loop:
+
+```
+  while condition do
+    # body
+  end
+```
+
+This will execute the body of the loop until the condition
+evaluates to 0. The `break` keyword can be used to exit the
+inner-most loop.
+
+## Builtins
+
+The following built-in function are available:
+
+ * `divmod(x, y, a, b)` - Computes `a = x / y` and `b = x % y`.
+ * `memset(dest, count, value)` - Sets `count` words at `dest` to `value`.
+ * `itoa(i)` - Return a pointer to a 5 word zero-terminated ASCII string representing `i`.
+ * `puts(s)` - Write a zero-terminated string to the output device.
+ * `putint(i)` - Write the word `i` to the output device (`puts(itoa(i))`).
+ * `rand()` - Return a random number between 0x000 and 0xFFF inclusive.
 

@@ -219,10 +219,10 @@ end
 fun show_menu()
   while 1 do
     if move_menu() then
-      return 1;
+      break;
     end
     if shoot_menu() then
-      return 1;
+      break;
     end
   end
 end

@@ -2,7 +2,7 @@ use crate::parser::parse_builtin;
 use crate::statement::Statement;
 
 pub fn generate_builtins() -> Vec<Statement> {
-    BUILTINS.iter().flat_map(|body| parse_builtin(body)).collect()
+    BUILTINS.iter().map(|body| parse_builtin(body)).collect()
 }
 
 const BUILTINS: &[&str] = &[
@@ -14,6 +14,7 @@ const BUILTINS: &[&str] = &[
     MODULUS,
     RAND,
     MEMSET,
+    MEMCPY,
     OUTPUT,
     PUTS,
     ITOA,
@@ -47,7 +48,7 @@ const MULTIPLY: &str = concat!(
     "fun multiply(x, y)\n",
     "  var result = 0;\n",
     "  while @x do\n",
-    "    if @x & 1 then\n",
+    "    ifcarry @x >> 1 then\n",
     "      result = @result + @y;",
     "    end",
     "    x = @x >> 1;\n",
@@ -65,7 +66,7 @@ const DIVMOD: &str = concat!(
     "  while @n do\n",
     "    @result = @@result << 1;\n",
     "    @rem = @@rem << 1;\n",
-    "    if @x & 0x800 then\n",
+    "    ifcarry @x << 1 then\n",
     "      @rem = @@rem + 1;\n",
     "    end\n",
     "    x = @x + @x;\n",
@@ -108,6 +109,17 @@ const MEMSET: &str = concat!(
     "    @ptr = @value;\n",
     "    count = @count - 1;\n",
     "    ptr = @ptr + 1;\n",
+    "  end\n",
+    "end\n",
+);
+
+const MEMCPY: &str = concat!(
+    "fun memcpy(dest, src, count)\n",
+    "  while @count do\n",
+    "    @dest = @@src;\n",
+    "    dest = @dest + 1;\n",
+    "    src = @src + 1;\n",
+    "    count = @count - 1;\n",
     "  end\n",
     "end\n",
 );

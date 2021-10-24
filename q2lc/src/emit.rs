@@ -1,6 +1,6 @@
 use crate::expr::{Expression, FlagState, UnaryOperator, Word};
 use crate::symbol::{SymbolTable, Symbol};
-use crate::statement::{emit_statements, get_watermark, Statement};
+use crate::statement::Statement;
 
 const LDA: &str = "lda";
 const NOR: &str = "nor";
@@ -120,13 +120,34 @@ pub fn emit_call(fun: &Expression, args: &Vec<Expression>, state: &mut SymbolTab
         let symbol = state.lookup(name);
         match symbol {
             Symbol::Undefined => panic!("function not defined: {}", name),
-            Symbol::Function(_, params) => {
+            Symbol::Function(wm, params) => {
                 if args.len() != params.len() {
                     panic!("wrong number of arguments for {}", name);
                 }
+                let mut locals = Vec::new();
                 for i in 0..params.len() {
-                    args.get(i).unwrap().emit(state);
-                    emit_store(state, &Symbol::Constant(*params.get(i).unwrap()));
+                    let arg = args.get(i).unwrap();
+                    if arg.get_watermark(state).stack >= wm.stack {
+                        let arg = args.get(i).unwrap();
+                        let temp = state.allocate_temp();
+                        locals.push(Some(temp.clone()));
+                        arg.emit(state);
+                        emit_store(state, &temp);
+                    } else {
+                        locals.push(None);
+                    }
+                }
+                for i in 0..params.len() {
+                    let param = params.get(i).unwrap();
+                    if let Some(local) = locals.get(i).unwrap() {
+                        state.append_code(LDA, local);
+                        emit_store(state, &Symbol::Constant(*param));
+                        state.release_temp();
+                    } else {
+                        let arg = args.get(i).unwrap();
+                        arg.emit(state);
+                        emit_store(state, &Symbol::Constant(*param));
+                    }
                 }
                 let label = state.next_label();
                 state.append_code(LEA, &Symbol::Label(label.clone()));
@@ -163,10 +184,10 @@ pub fn emit_negate(inner: &Expression, state: &mut SymbolTable) -> FlagState {
 
 pub fn emit_lnot(inner: &Expression, state: &mut SymbolTable) -> FlagState {
     emit_test(state, inner);
-    state.append_code_immediate(LEA, 0);
+    state.append_code(LEA, &Symbol::Constant(0));
     let label = state.next_label();
     state.append_code(JFC, &Symbol::Label(label.clone()));
-    state.append_code_immediate(LEA, 1);
+    state.append_code(LEA, &Symbol::Constant(1));
     state.append_label(&label);
     FlagState::Unknown
 }
@@ -206,6 +227,25 @@ pub fn emit_or(lhs: &Expression, rhs: &Expression, state: &mut SymbolTable) -> F
     state.append_code(NOR, &temp);
     state.append_code_immediate(NOR, 0);
     pop(state);
+    FlagState::Zero
+}
+
+pub fn emit_xor(lhs: &Expression, rhs: &Expression, state: &mut SymbolTable) -> FlagState {
+    let temp = state.allocate_temp();
+    let rhs_temp = push(rhs, state);
+    let lhs_temp = push(lhs, state);
+    state.append_code_immediate(NOR, 0);
+    emit_store(state, &temp);           // temp = ~lhs
+    state.append_code(LDA, &rhs_temp);
+    state.append_code_immediate(NOR, 0);
+    state.append_code(NOR, &temp);
+    emit_store(state, &temp);           // temp = ~lhs NOR ~rhs
+    state.append_code(LDA, &rhs_temp);
+    state.append_code(NOR, &lhs_temp);
+    state.append_code(NOR, &temp);      // temp = (~lhs NOR ~rhs) NOR (lhs NOR rhs)
+    pop(state);
+    pop(state);
+    state.release_temp();
     FlagState::Zero
 }
 
@@ -302,33 +342,65 @@ pub fn emit_land(state: &mut SymbolTable, lhs: &Expression, rhs: &Expression) ->
 pub fn emit_lor(state: &mut SymbolTable, lhs: &Expression, rhs: &Expression) -> FlagState {
     let true_label = state.next_label();
     emit_test(state, lhs);
-    state.append_code_indirect(JFC, &Symbol::Label(true_label.clone()));
+    state.append_code(JFC, &Symbol::Label(true_label.clone()));
     emit_test(state, rhs);
     state.append_label(&true_label);
     FlagState::Zero
 }
 
-pub fn emit_if(state: &mut SymbolTable, cond: &Expression, t: &Vec<Statement>, f: &Vec<Statement>) {
+pub fn emit_if(state: &mut SymbolTable, cond: &Expression, t: &Statement, f: &Statement) {
     let true_label = state.next_label();
     let end_label = state.next_label();
     emit_test(state, cond);
     state.append_code(JFC, &Symbol::Label(true_label.clone()));
-    emit_statements(state, f);
+    state.enter();
+    f.emit(state);
+    state.leave();
     state.append_code(JMP, &Symbol::Label(end_label.clone()));
     state.append_label(&true_label);
-    emit_statements(state, t);
+    state.enter();
+    t.emit(state);
+    state.leave();
     state.append_label(&end_label);
 }
 
-pub fn emit_while(state: &mut SymbolTable, cond: &Expression, body: &Vec<Statement>) {
+pub fn emit_ifcarry(state: &mut SymbolTable, cond: &Expression, t: &Statement, f: &Statement) {
+    let false_label = state.next_label();
+    cond.emit(state);
+    state.append_code(JFC, &Symbol::Label(false_label.clone()));
+    state.enter();
+    t.emit(state);
+    state.leave();
+    if f.is_empty() {
+        state.append_label(&false_label);
+    } else {
+        let end_label = state.next_label();
+        state.append_code(JMP, &Symbol::Label(end_label.clone()));
+        state.append_label(&false_label);
+        state.enter();
+        f.emit(state);
+        state.leave();
+        state.append_label(&end_label);
+    }
+}
+
+pub fn emit_while(state: &mut SymbolTable, cond: &Expression, body: &Statement) {
     let cond_label = state.next_label();
     let top_label = state.next_label();
+    let break_label = state.next_label();
     state.append_code(JMP, &Symbol::Label(cond_label.clone()));
     state.append_label(&top_label);
-    emit_statements(state, body);
+    state.enter_loop(&break_label);
+    body.emit(state);
     state.append_label(&cond_label);
     emit_test(state, cond);
     state.append_code(JFC, &Symbol::Label(top_label));
+    state.leave_loop();
+}
+
+pub fn emit_break(state: &mut SymbolTable) {
+    let label = state.break_label();
+    state.append_code(JMP, &Symbol::Label(label));
 }
 
 pub fn emit_return(state: &mut SymbolTable, expr: &Expression) {
@@ -337,12 +409,12 @@ pub fn emit_return(state: &mut SymbolTable, expr: &Expression) {
     state.append_code_indirect(JMP, &return_address);
 }
 
-pub fn emit_function(state: &mut SymbolTable, name: &String, args: &Vec<String>, body: &Vec<Statement>) {
-    let return_addr = state.enter_function(get_watermark(state, body));
+pub fn emit_function(state: &mut SymbolTable, name: &String, args: &Vec<String>, body: &Statement) {
+    let return_addr = state.enter_function(body.get_watermark(state));
     state.append_label(name);
     emit_store(state, &return_addr);
     let arg_addrs = args.iter().map(|arg| state.declare_arg(arg)).collect();
-    emit_statements(state, body);
+    body.emit(state);
     state.append_code_indirect(JMP, &return_addr);
     state.leave_function(name, arg_addrs);
 }
