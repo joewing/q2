@@ -1,214 +1,222 @@
-extern crate nom;
 
-use nom::{combinator::*, character::*, branch::*, bytes::complete::*};
 use std::str::FromStr;
-use std::fs;
-
 use crate::expr::{BinaryOperator, Expression, UnaryOperator, Word};
 use crate::statement::Statement;
-use self::nom::IResult;
-use self::nom::error::{context, VerboseError, VerboseErrorKind};
-use self::nom::multi::{many0, separated_list0};
-use self::nom::sequence::tuple;
+use crate::tokenizer::Tokenizer;
 
-type Res<I, O> = IResult<I, O, VerboseError<I>>;
-
-fn eat_comment(input: &str) -> Res<&str, char> {
-    let (input, ch) = nom::character::complete::char('#')(input)?;
-    let (input, _) = take_while(|c| c != '\n' && c != '\r')(input)?;
-    Ok((input, ch))
+fn parse(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
+    let block = parse_block(tokenizer)?;
+    let _ = tokenizer.expect("")?;
+    Ok(block)
 }
 
-fn eat_whitespace(input: &str) -> Res<&str, ()> {
-    let (input, _) = nom::multi::many0(
-        alt(
-            (
-                nom::character::complete::one_of(" \t\r\n"),
-                eat_comment
-            )
-        )
-    )(input)?;
-    Ok((input, ()))
+pub fn parse_file(file_name: &str) -> Result<Statement, String> {
+    let mut tokenizer = Tokenizer::from_file(file_name)?;
+    parse(&mut tokenizer)
 }
 
-fn parse_ident(input: &str) -> Res<&str, String> {
-    let (input, _) = eat_whitespace(input)?;
-    let (input, prefix) = take_while1(|c| nom::character::is_alphabetic(c as u8) || c == '_')(input)?;
-    let (input, suffix) = take_while(|c| nom::character::is_alphanumeric(c as u8) || c == '_')(input)?;
-    let (input, _) = eat_whitespace(input)?;
-    Ok((input, format!("{}{}", prefix, suffix)))
+pub fn parse_str(input: &str) -> Result<Statement, String> {
+    let mut tokenizer = Tokenizer::from_str(input)?;
+    parse(&mut tokenizer)
 }
 
-fn parse_separator(input: &str) -> Res<&str, ()> {
-    let (input, _) = eat_whitespace(input)?;
-    let (input, _) = nom::character::complete::char(',')(input)?;
-    let (input, _) = eat_whitespace(input)?;
-    Ok((input, ()))
+fn parse_while(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
+    tokenizer.next_token();
+    let cond = parse_expr(tokenizer)?;
+    let _ = tokenizer.expect("do")?;
+    let body = parse_block(tokenizer)?;
+    let _ = tokenizer.expect("end")?;
+    Ok(Statement::While(cond, Box::from(body)))
 }
 
-fn parse_var(input: &str) -> Res<&str, Statement> {
-    let (input, _) = tag("var")(input)?;
-    let (input, ident) = parse_ident(input)?;
-    let (input, equals_opt) = opt(nom::character::complete::char('='))(input)?;
-    if equals_opt.is_some() {
-        let (input, expr) = parse_expr(input)?;
-        let (input, _) = nom::character::complete::char(';')(input)?;
-        Ok((input, Statement::Var(ident, Some(expr))))
+fn parse_ident(tokenizer: &mut Tokenizer) -> Result<String, String> {
+    let result = tokenizer.peek_token();
+    tokenizer.next_token();
+    if result.value.is_empty() {
+        result.error("identifier expected".to_string())
     } else {
-        let (input, _) = nom::character::complete::char(';')(input)?;
-        Ok((input, Statement::Var(ident, None)))
+        Ok(result.value)
     }
 }
 
-fn parse_const(input: &str) -> Res<&str, Statement> {
-    let (input, _) = tag("const")(input)?;
-    let (input, ident) = parse_ident(input)?;
-    let (input, _) = nom::character::complete::char('=')(input)?;
-    let (input, expr) = parse_expr(input)?;
-    let (input, _) = nom::character::complete::char(';')(input)?;
-    Ok((input, Statement::Const(ident, expr)))
+fn parse_var(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
+    let _ = tokenizer.expect("var")?;
+    let ident = parse_ident(tokenizer)?;
+    let expr_opt = if tokenizer.check("=") {
+        tokenizer.next_token();
+        let expr = parse_expr(tokenizer)?;
+        Some(expr)
+    } else {
+        None
+    };
+    let _ = tokenizer.expect(";")?;
+    Ok(Statement::Var(ident, expr_opt))
 }
 
-fn parse_bin(input: &str) -> Res<&str, Word> {
-    let (input, _) = tag("0b")(input)?;
-    let (input, s) = take_while1(|c| c == '0' || c == '1')(input)?;
-    let value = i64::from_str_radix(s, 2).unwrap();
-    Ok((input, value as Word))
+fn parse_const(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
+    let _ = tokenizer.expect("const")?;
+    let ident = parse_ident(tokenizer)?;
+    let _ = tokenizer.expect("=")?;
+    let expr = parse_expr(tokenizer)?;
+    let _ = tokenizer.expect(";")?;
+    Ok(Statement::Const(ident, expr))
 }
 
-fn parse_dec(input: &str) -> Res<&str, Word> {
-    let (input, s) = take_while1(|c| is_digit(c as u8))(input)?;
-    let value = i64::from_str(s).unwrap();
-    Ok((input, value as Word))
+fn parse_bin(tokenizer: &mut Tokenizer) -> Result<Word, String> {
+    let tok = tokenizer.peek_token();
+    tokenizer.next_token();
+    let input = tok.value.as_str();
+    match Word::from_str_radix(&input[2..], 2) {
+        Ok(value) => Ok(value),
+        Err(_) => tok.error(format!("invalid binary number: {}", input))
+    }
 }
 
-fn parse_oct(input: &str) -> Res<&str, Word> {
-    let (input, _) = tag("0o")(input)?;
-    let (input, s) = take_while1(|c| is_oct_digit(c as u8))(input)?;
-    let value = i64::from_str_radix(s, 8).unwrap();
-    Ok((input, value as Word))
+fn parse_dec(tokenizer: &mut Tokenizer) -> Result<Word, String> {
+    let tok = tokenizer.peek_token();
+    tokenizer.next_token();
+    let input = tok.value.as_str();
+    match Word::from_str(input) {
+        Ok(value) => Ok(value),
+        Err(_) => tok.error(format!("invalid decimal number: {}", input))
+    }
 }
 
-fn parse_hex(input: &str) -> Res<&str, Word> {
-    let (input, _) = tag("0x")(input)?;
-    let (input, s) = take_while1(|c| is_hex_digit(c as u8))(input)?;
-    let value = i64::from_str_radix(s, 16).unwrap();
-    Ok((input, value as Word))
+fn parse_oct(tokenizer: &mut Tokenizer) -> Result<Word, String> {
+    let tok = tokenizer.peek_token();
+    tokenizer.next_token();
+    let input = tok.value.as_str();
+    match Word::from_str_radix(&input[2..], 8) {
+        Ok(value) => Ok(value),
+        Err(_) => tok.error(format!("invalid octal number: {}", input))
+    }
 }
 
-fn parse_char(input: &str) -> Res<&str, Word> {
-    let (input, _) = nom::character::complete::char('\'')(input)?;
-    let (input, ch) = nom::character::complete::anychar(input)?;
-    let (input, _) = nom::character::complete::char('\'')(input)?;
-    Ok((input, ch as Word))
+fn parse_hex(tokenizer: &mut Tokenizer) -> Result<Word, String> {
+    let tok = tokenizer.peek_token();
+    tokenizer.next_token();
+    let input = tok.value.as_str();
+    match Word::from_str_radix(&input[2..], 16) {
+        Ok(value) => Ok(value),
+        Err(_) => tok.error(format!("invalid hex number: {}", input))
+    }
 }
 
-fn parse_string(input: &str) -> Res<&str, Expression> {
-    let (input, _) = nom::character::complete::char('\"')(input)?;
-    let (input, s) = take_while(|c| c != '\"')(input)?;
-    let (input, _) = nom::character::complete::char('\"')(input)?;
-    let mut words = Vec::new();
-    words.extend(s.as_bytes().iter().map(|c| Expression::Constant(*c as Word)));
+fn parse_char(tokenizer: &mut Tokenizer) -> Result<Word, String> {
+    let tok = tokenizer.peek_token();
+    tokenizer.next_token();
+    let chars: Vec<char> = tok.value.chars().collect();
+    if chars.len() == 3 && *chars.get(0).unwrap() == '\'' && *chars.get(2).unwrap() == '\'' {
+        let ch = *chars.get(1).unwrap() as Word;
+        Ok(ch)
+    } else {
+        tok.error(format!("invalid character literal: {}", tok.value))
+    }
+}
+
+fn parse_string_literal(tokenizer: &mut Tokenizer) -> Result<Expression, String> {
+    let tok = tokenizer.peek_token();
+    tokenizer.next_token();
+    let mut words: Vec<Expression> = tok.value.chars().skip(1).take_while(|c| *c != '\"').map(|c| Expression::Constant(c as Word)).collect();
     words.push(Expression::Constant(0));
-    Ok((input, Expression::ArrayLiteral(words)))
+    Ok(Expression::ArrayLiteral(words))
 }
 
-fn parse_array_literal(input: &str) -> Res<&str, Expression> {
-    let (input, _) = nom::character::complete::char('[')(input)?;
-    let (input, exprs) = separated_list0(nom::character::complete::char(','), parse_expr)(input)?;
-    let (input, _) = nom::character::complete::char(']')(input)?;
-    Ok((input, Expression::ArrayLiteral(exprs)))
-}
-
-fn parse_constant(input: &str) -> Res<&str, Expression> {
-    let (input, value) = alt(
-        (
-            parse_hex,
-            parse_bin,
-            parse_oct,
-            parse_dec,
-            parse_char,
-        )
-    )(input)?;
-    Ok((input, Expression::Constant(value)))
-}
-
-fn parse_symbol(input: &str) -> Res<&str, Expression> {
-    let (input, name) = parse_ident(input)?;
-    Ok((input, Expression::Symbol(name)))
-}
-
-fn parse_unary<'a>(
-    name: char,
-    op: UnaryOperator
-) -> impl Fn(&'a str) -> Res<&'a str, Expression> {
-    move |input| {
-        let (input, _) = nom::character::complete::char(name)(input)?;
-        let (input, inner) = parse_factor(input)?;
-        Ok((input, Expression::Unary(op, Box::from(inner))))
+fn parse_array_literal(tokenizer: &mut Tokenizer) -> Result<Expression, String> {
+    let _ = tokenizer.expect("[")?;
+    let mut exprs = Vec::new();
+    loop {
+        exprs.push(parse_expr(tokenizer)?);
+        if !tokenizer.check(",") {
+            break;
+        }
+        tokenizer.next_token();
     }
+    let _ = tokenizer.expect("]")?;
+    Ok(Expression::ArrayLiteral(exprs))
 }
 
-fn parse_deref(input: &str) -> Res<&str, Expression> {
-    parse_unary('@', UnaryOperator::Deref)(input)
+fn parse_literal(tokenizer: &mut Tokenizer) -> Result<Expression, String> {
+    let tok = tokenizer.peek_token();
+    let word = if tok.value.starts_with("0b") {
+        parse_bin(tokenizer)
+    } else if tok.value.starts_with("0o") {
+        parse_oct(tokenizer)
+    } else if tok.value.starts_with("0x") {
+        parse_hex(tokenizer)
+    } else if tok.value.starts_with("\'") {
+        parse_char(tokenizer)
+    } else {
+        parse_dec(tokenizer)
+    }?;
+    Ok(Expression::Constant(word))
 }
 
-fn parse_nest(input: &str) -> Res<&str, Expression> {
-    let (input, _) = nom::character::complete::char('(')(input)?;
-    let (input, expr) = parse_expr(input)?;
-    let (input, _) = nom::character::complete::char(')')(input)?;
-    Ok((input, expr))
+fn parse_symbol(tokenizer: &mut Tokenizer) -> Result<Expression, String> {
+    let name = parse_ident(tokenizer)?;
+    Ok(Expression::Symbol(name))
 }
 
-fn parse_call(input: &str) -> Res<&str, Expression> {
-    let (input, fun) = alt(
-        (
-            parse_deref,
-            parse_symbol,
-        )
-    )(input)?;
-    let (input, _) = eat_whitespace(input)?;
-    let (input, _) = nom::character::complete::char('(')(input)?;
-    let (input, _) = eat_whitespace(input)?;
-    let (input, params) = separated_list0(parse_separator, parse_expr)(input)?;
-    let (input, _) = eat_whitespace(input)?;
-    let (input, _) = nom::character::complete::char(')')(input)?;
-    Ok((input, Expression::Call(Box::from(fun), params)))
+fn parse_unary(tokenizer: &mut Tokenizer, op: UnaryOperator) -> Result<Expression, String> {
+    tokenizer.next_token();
+    let inner = parse_factor(tokenizer)?;
+    Ok(Expression::Unary(op, Box::new(inner)))
 }
 
-fn parse_factor(input: &str) -> Res<&str, Expression> {
-    let (input, factor) = alt(
-        (
-            parse_constant,
-            parse_string,
-            parse_array_literal,
-            parse_call,
-            parse_symbol,
-            parse_deref,
-            parse_unary(':', UnaryOperator::ArrayDecl),
-            parse_unary('~', UnaryOperator::Not),
-            parse_unary('-', UnaryOperator::Negate),
-            parse_unary('!', UnaryOperator::Lnot),
-            parse_nest,
-        )
-    )(input)?;
-    Ok((input, factor))
+fn parse_deref(tokenizer: &mut Tokenizer) -> Result<Expression, String> {
+    parse_unary(tokenizer, UnaryOperator::Deref)
 }
 
-fn parse_binop<'a, 'b>(
-    name: &'a str,
-    a: &'b Expression,
-    parse_rhs: impl Fn(&'a str) -> Res<&'a str, Expression>,
-    op: BinaryOperator
-) -> impl Fn(&'a str) -> Res<&'a str, Expression> {
-    let clone_a = a.clone();
-    move |input| {
-        let (input, _) = eat_whitespace(input)?;
-        let (input, _) = tag(name)(input)?;
-        let (input, _) = eat_whitespace(input)?;
-        let (input, b) = parse_rhs(input)?;
-        let result = Expression::Binary(op, Box::new(clone_a.clone()), Box::new(b));
-        Ok((input, result))
+fn parse_nest(tokenizer: &mut Tokenizer) -> Result<Expression, String> {
+    tokenizer.next_token();
+    let expr = parse_expr(tokenizer)?;
+    let _ = tokenizer.expect(")")?;
+    Ok(expr)
+}
+
+fn is_alpha(c: char) -> bool {
+    (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_'
+}
+
+fn parse_factor(tokenizer: &mut Tokenizer) -> Result<Expression, String> {
+    let tok = tokenizer.peek_token();
+    let factor = if tok.value.starts_with("\"") {
+        parse_string_literal(tokenizer)
+    } else if tok.value == "[" {
+        parse_array_literal(tokenizer)
+    } else if tok.value == "@" {
+        parse_deref(tokenizer)
+    } else if tok.value == ":" {
+        parse_unary(tokenizer, UnaryOperator::ArrayDecl)
+    } else if tok.value == "~" {
+        parse_unary(tokenizer, UnaryOperator::Not)
+    } else if tok.value == "-" {
+        parse_unary(tokenizer, UnaryOperator::Negate)
+    } else if tok.value == "!" {
+        parse_unary(tokenizer, UnaryOperator::Lnot)
+    } else if tok.value == "(" {
+        parse_nest(tokenizer)
+    } else if tok.value.starts_with(is_alpha) {
+        parse_symbol(tokenizer)
+    } else {
+        parse_literal(tokenizer)
+    }?;
+    if tokenizer.check("(") {
+        tokenizer.next_token();
+        let mut args = Vec::new();
+        if !tokenizer.check(")") {
+            loop {
+                args.push(parse_expr(tokenizer)?);
+                if !tokenizer.check(",") {
+                    break;
+                }
+                tokenizer.next_token();
+            }
+        }
+        let _ = tokenizer.expect(")")?;
+        Ok(Expression::Call(Box::from(factor), args))
+    } else {
+        Ok(factor)
     }
 }
 
@@ -242,204 +250,199 @@ const BINOP_PARSERS: &[&[(&str, BinaryOperator)]] = &[
     ]
 ];
 
-fn parse_level_cont(level: usize, input: &str, lhs: Expression) -> Res<&str, Expression> {
+fn parse_level_cont(
+    tokenizer: &mut Tokenizer,
+    level: usize,
+    lhs: Expression
+) -> Result<Expression, String> {
     for (name, op) in BINOP_PARSERS[level - 1].iter() {
-        match parse_binop(name, &lhs, parse_level(level - 1), *op)(input) {
-            Ok((input, rhs)) => return parse_level_cont(level, input, rhs),
-            _ => (),
+        if tokenizer.check(name) {
+            tokenizer.next_token();
+            let rhs = parse_level(tokenizer, level - 1)?;
+            let new_lhs = Expression::Binary(*op, Box::new(lhs.clone()), Box::new(rhs));
+            return parse_level_cont(tokenizer, level, new_lhs);
         }
     }
-    return Ok((input, lhs))
+    Ok(lhs)
 }
 
-fn parse_level(level: usize) -> impl Fn(&str) -> Res<&str, Expression> {
-    move |input| {
-        if level == 0 {
-            parse_factor(input)
-        } else {
-            let (input, lhs) = parse_level(level - 1)(input)?;
-            parse_level_cont(level, input, lhs)
-        }
+fn parse_level(tokenizer: &mut Tokenizer, level: usize) -> Result<Expression, String> {
+    if level == 0 {
+        parse_factor(tokenizer)
+    } else {
+        let lhs = parse_level(tokenizer, level - 1)?;
+        parse_level_cont(tokenizer, level, lhs)
     }
 }
 
-pub(crate) fn parse_expr(input: &str) -> Res<&str, Expression> {
-    let (input, _) = eat_whitespace(input)?;
-    let (input, lhs) = parse_level(BINOP_PARSERS.len())(input)?;
-    let (input, expr) = parse_level_cont(BINOP_PARSERS.len(), input, lhs)?;
-    let (input, _) = eat_whitespace(input)?;
-    Ok((input, expr))
+fn parse_expr(tokenizer: &mut Tokenizer) -> Result<Expression, String> {
+    let lhs = parse_level(tokenizer, BINOP_PARSERS.len())?;
+    parse_level_cont(tokenizer, BINOP_PARSERS.len(), lhs)
 }
 
-fn parse_assign(input: &str) -> Res<&str, Statement> {
-    let (input, dest) = parse_expr(input)?;
-    let (input, _) = eat_whitespace(input)?;
-    let (input, _) = nom::character::complete::char('=')(input)?;
-    let (input, _) = eat_whitespace(input)?;
-    let (input, src) = parse_expr(input)?;
-    let (input, _) = nom::character::complete::char(';')(input)?;
-    Ok((input, Statement::Assign(dest, src)))
-}
+fn parse_if(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
+    let _ = tokenizer.expect("if")?;
+    let cond = parse_expr(tokenizer)?;
+    let _ = tokenizer.expect("then")?;
+    let t = parse_block(tokenizer)?;
+    let mut nested = Vec::new();
+    while tokenizer.check("elseif") {
+        tokenizer.next_token();
+        let econd = parse_expr(tokenizer)?;
+        let _ = tokenizer.expect("then")?;
+        let s = parse_block(tokenizer)?;
+        nested.push((econd, s));
+    }
+    let else_statement = if tokenizer.check("else") {
+        tokenizer.next_token();
+        parse_block(tokenizer)?
+    } else {
+        Statement::Block(Vec::new())
+    };
+    let _ = tokenizer.expect("end")?;
 
-fn parse_if(input: &str) -> Res<&str, Statement> {
-    let (input, _) = tag("if")(input)?;
-    let (input, cond) = context("if-expr", parse_expr)(input)?;
-    let (input, _) = tag("then")(input)?;
-    let (input, t) = parse_statements(input)?;
-    let (input, nested) = many0(
-        tuple((tag("elseif"), parse_expr, tag("then"), parse_statements))
-    )(input)?;
-    let (input, else_opt) = opt(tuple((tag("else"), parse_statements)))(input)?;
-    let (input, _) = tag("end")(input)?;
-    let else_statements = else_opt.map(|(_, ss)| ss).unwrap_or(Statement::Block(Vec::new()));
-    let tails = nested.iter().rev().fold(else_statements, |s, (_, c, _, ns)|
+    let tails = nested.iter().rev().fold(else_statement, |s, (c, ns)|
         Statement::If(c.clone(), Box::from(ns.clone()), Box::from(s))
     );
-    let result = Statement::If(cond, Box::from(t), Box::from(tails));
-    Ok((input, result))
+    Ok(Statement::If(cond, Box::from(t), Box::from(tails)))
 }
 
-fn parse_ifcarry(input: &str) -> Res<&str, Statement> {
-    let (input, _) = tag("ifcarry")(input)?;
-    let (input, cond) = parse_expr(input)?;
-    let (input, _) = tag("then")(input)?;
-    let (input, t) = parse_statements(input)?;
-    let (input, else_opt) = opt(tuple((tag("else"), parse_statements)))(input)?;
-    let (input, _) = tag("end")(input)?;
-    let f = else_opt.map(|x| x.1).unwrap_or(Statement::Block(Vec::new()));
-    Ok((input, Statement::IfCarry(cond, Box::from(t), Box::from(f))))
+fn parse_ifcarry(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
+    let _ = tokenizer.expect("ifcarry")?;
+    let cond = parse_expr(tokenizer)?;
+    let _ = tokenizer.expect("then")?;
+    let t = parse_block(tokenizer)?;
+    let f = if tokenizer.check("else") {
+        tokenizer.next_token();
+        parse_block(tokenizer)?
+    } else {
+        Statement::Block(Vec::new())
+    };
+    let _ = tokenizer.expect("end")?;
+    Ok(Statement::IfCarry(cond, Box::from(t), Box::from(f)))
 }
 
-fn parse_while(input: &str) -> Res<&str, Statement> {
-    let (input, _) = tag("while")(input)?;
-    let (input, cond) = parse_expr(input)?;
-    let (input, _) = tag("do")(input)?;
-    let (input, body) = parse_statements(input)?;
-    let (input, _) = tag("end")(input)?;
-    Ok((input, Statement::While(cond, Box::from(body))))
-}
-
-fn parse_function(input: &str) -> Res<&str, Statement> {
-    let (input, _) = tag("fun")(input)?;
-    let (input, name) = parse_ident(input)?;
-    let (input, _) = nom::character::complete::char('(')(input)?;
-    let (input, _) = eat_whitespace(input)?;
-    let (input, args) = separated_list0(parse_separator, parse_ident)(input)?;
-    let (input, _) = eat_whitespace(input)?;
-    let (input, _) = nom::character::complete::char(')')(input)?;
-    let (input, _) = eat_whitespace(input)?;
-    let (input, body) = parse_statements(input)?;
-    let (input, _) = tag("end")(input)?;
-    let (input, _) = eat_whitespace(input)?;
-    Ok((input, Statement::Function(name, args, Box::from(body))))
+fn parse_function(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
+    let _ = tokenizer.expect("fun")?;
+    let name = parse_ident(tokenizer)?;
+    let _ = tokenizer.expect("(")?;
+    let mut params = Vec::new();
+    if !tokenizer.check(")") {
+        loop {
+            params.push(parse_ident(tokenizer)?);
+            if !tokenizer.check(",") {
+                break;
+            }
+            let _ = tokenizer.expect(",")?;
+        }
+    }
+    let _ = tokenizer.expect(")")?;
+    let body = parse_block(tokenizer)?;
+    let _ = tokenizer.expect("end")?;
+    Ok(Statement::Function(name, params, Box::from(body)))
 }
 
 pub fn parse_builtin(input: &str) -> Statement {
-    match parse_statements(input) {
-        Ok(f) if f.0.is_empty() => f.1,
-        Ok(f) => panic!("incomplete parse: {}", f.0),
-        Err(e) => panic!("parse failed: {}", e.to_string()),
+    match parse_str(input) {
+        Ok(block) => block,
+        Err(e) => panic!("parse failed: {}, when parsing:\n{}", e, input)
     }
 }
 
-fn parse_expr_statement(input: &str) -> Res<&str, Statement> {
-    let (input, expr) = parse_expr(input)?;
-    let (input, _) = eat_whitespace(input)?;
-    let (input, _) = nom::character::complete::char(';')(input)?;
-    Ok((input, Statement::Expression(expr)))
+fn parse_return(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
+    let _ = tokenizer.expect("return")?;
+    let expr = parse_expr(tokenizer)?;
+    let _ = tokenizer.expect(";")?;
+    Ok(Statement::Return(expr))
 }
 
-fn parse_return(input: &str) -> Res<&str, Statement> {
-    let (input, _) = tag("return")(input)?;
-    let (input, expr) = parse_expr(input)?;
-    let (input, _) = nom::character::complete::char(';')(input)?;
-    Ok((input, Statement::Return(expr)))
+fn parse_break(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
+    let _ = tokenizer.expect("break")?;
+    let _ = tokenizer.expect(";")?;
+    Ok(Statement::Break)
 }
 
-fn parse_break(input: &str) -> Res<&str, Statement> {
-    let (input, _) = tag("break")(input)?;
-    let (input, _) = eat_whitespace(input)?;
-    let (input, _) = nom::character::complete::char(';')(input)?;
-    Ok((input, Statement::Break))
+fn parse_include(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
+    let _ = tokenizer.expect("include")?;
+    let tok = tokenizer.peek_token();
+    tokenizer.next_token();
+    let name: String = tok.value.chars().skip(1).take_while(|c| *c != '\"').collect();
+    let _ = tokenizer.expect(";")?;
+    parse_file(name.as_str())
 }
 
-fn parse_include(input: &str) -> Res<&str, Statement> {
-    let (input, _) = tag("include")(input)?;
-    let (input, _) = eat_whitespace(input)?;
-    let (input, _) = nom::character::complete::char('\"')(input)?;
-    let (input, name) = take_while1(|c| c != '\"')(input)?;
-    let (input, _) = nom::character::complete::char('\"')(input)?;
-    let (input, _) = eat_whitespace(input)?;
-    let (input, _) = nom::character::complete::char(';')(input)?;
-    match parse(name) {
-        Ok(statement) => Ok((input, statement)),
-        Err(_) => Err(
-            nom::Err::Failure(
-                VerboseError {
-                    errors: vec![
-                        (name, VerboseErrorKind::Context("error parsing include file"))
-                    ]
-                }
-            )
-        )
-    }
+fn parse_assign(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
+    let lhs = parse_expr(tokenizer)?;
+    let statement = if tokenizer.check("=") {
+        tokenizer.next_token();
+        let rhs = parse_expr(tokenizer)?;
+        Statement::Assign(lhs, rhs)
+    } else {
+        Statement::Expression(lhs)
+    };
+    let _ = tokenizer.expect(";")?;
+    Ok(statement)
 }
 
-fn parse_statement(input: &str) -> Res<&str, Statement> {
-    let (input, _) = eat_whitespace(input)?;
-    let (input, statement) = alt(
-        (
-            parse_var,
-            parse_assign,
-            parse_if,
-            parse_ifcarry,
-            parse_while,
-            parse_function,
-            parse_return,
-            parse_const,
-            parse_break,
-            parse_include,
-            parse_expr_statement,
-        )
-    )(input)?;
-    Ok((input, statement))
-}
+const STATEMENT_PARSERS: &[(&str, fn(&mut Tokenizer) -> Result<Statement, String>)] = &[
+    ("if", parse_if),
+    ("var", parse_var),
+    ("ifcarry", parse_ifcarry),
+    ("while", parse_while),
+    ("fun", parse_function),
+    ("const", parse_const),
+    ("break", parse_break),
+    ("include", parse_include),
+    ("return", parse_return),
+];
 
-fn parse_statements(input: &str) -> Res<&str, Statement> {
-    let (input, statements) = many0(parse_statement)(input)?;
-    let (input, _) = eat_whitespace(input)?;
-    Ok((input, Statement::Block(statements)))
-}
-
-pub fn parse(file_name: &str) -> Result<Statement, String> {
-    match fs::read_to_string(file_name) {
-        Ok(input) =>
-            match parse_statements(input.as_str()) {
-                Ok((remaining, statements)) => {
-                    if remaining.is_empty() {
-                        Ok(statements)
-                    } else {
-                        let offset = input.len() - remaining.len();
-                        let line = input[0..offset].chars().filter(|c| *c == '\n').count() + 1;
-                        Err(format!("{}[{}]: syntax error", file_name, line))
-                    }
-                },
-                Err(e) => Err(e.to_string())
-            },
-        Err(e) => Err(e.to_string())
+fn parse_block(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
+    let mut statements = Vec::new();
+    loop {
+        let tok = tokenizer.peek_token();
+        let value = &tok.value;
+        let mut found = false;
+        for (start, parser) in STATEMENT_PARSERS {
+            if value == *start {
+                statements.push(parser(tokenizer)?);
+                found = true;
+                break;
+            }
+        }
+        if !found {
+            if value.is_empty() || value == "end" || value == "else" || value == "elseif" {
+                return Ok(Statement::Block(statements));
+            } else {
+                statements.push(parse_assign(tokenizer)?);
+            }
+        }
     }
 }
 
 #[cfg(test)]
-mod tests {
+pub(crate) mod tests {
     use test_case::test_case;
     use crate::expr::*;
-    use crate::parser::parse_expr;
+    use crate::parser;
+    use crate::tokenizer::Tokenizer;
+
+    pub fn parse_expr_str(input: &str) -> Result<Expression, String> {
+        let mut tokenizer = Tokenizer::from_str(input)?;
+        let expr = parser::parse_expr(&mut tokenizer)?;
+        let _ = tokenizer.expect("")?;
+        Ok(expr)
+    }
 
     #[test_case("x_y123", Expression::Symbol("x_y123".to_string()))]
     #[test_case("5", Expression::Constant(5))]
     #[test_case("-5", Expression::Unary(UnaryOperator::Negate, Box::from(Expression::Constant(5))))]
     #[test_case("@6", Expression::Unary(UnaryOperator::Deref, Box::from(Expression::Constant(6))))]
+    #[test_case("@x + 1",
+        Expression::Binary(BinaryOperator::Add,
+            Box::new(Expression::Unary(UnaryOperator::Deref, Box::from(Expression::Symbol("x".to_string())))),
+            Box::new(Expression::Constant(1))
+        )
+    )]
     #[test_case("5 + 10",
         Expression::Binary(
             BinaryOperator::Add, Box::from(Expression::Constant(5)), Box::from(Expression::Constant(10))
@@ -477,8 +480,7 @@ mod tests {
         )
     )]
     fn parse_expr_tests(input: &str, expected: Expression) {
-        let (input, expr) = parse_expr(input).unwrap();
-        assert_eq!(input, "");
+        let expr = parser::tests::parse_expr_str(input).unwrap();
         assert_eq!(expr, expected);
     }
 }

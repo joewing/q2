@@ -4,6 +4,7 @@ mod statement;
 mod symbol;
 mod builtin;
 mod emit;
+mod tokenizer;
 
 extern crate clap;
 use clap::{App, Arg, crate_version, crate_name, crate_authors};
@@ -13,6 +14,7 @@ use std::env;
 use std::error::Error;
 use std::io::Write;
 use crate::builtin::generate_builtins;
+use crate::parser::parse_file;
 use crate::symbol::SymbolTable;
 use crate::statement::simplify;
 
@@ -29,7 +31,7 @@ fn output_name(input_name: &str) -> String {
 
 fn compile(input_name: &str) -> Result<(), Box<dyn Error>> {
     let mut source = generate_builtins();
-    source.push(parser::parse(input_name)?);
+    source.push(parse_file(input_name)?);
     let mut state = SymbolTable::new();
     let simplified = simplify(&mut state, source);
     simplified.emit(&mut state);

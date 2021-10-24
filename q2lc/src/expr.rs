@@ -259,8 +259,7 @@ mod tests {
     #[test_case("1 + 2 * 3", Expression::Constant(7))]
     #[test_case("1 + 2 + x", Expression::Binary(BinaryOperator::Add, Box::from(Expression::Constant(3)), Box::from(Expression::Symbol("x".to_string()))))]
     fn simplify_tests(input: &str, expected: Expression) {
-        let (input, expr) = parser::parse_expr(input).unwrap();
-        assert_eq!(input, "");
+        let expr = parser::tests::parse_expr_str(input).unwrap();
         let mut symbols = SymbolTable::new();
         assert_eq!(expr.simplify(&mut symbols), expected)
     }
