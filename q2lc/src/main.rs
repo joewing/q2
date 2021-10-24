@@ -34,9 +34,9 @@ fn compile(input_name: &str) -> Result<(), Box<dyn Error>> {
     source.push(parse_file(input_name)?);
     let mut state = SymbolTable::new();
     let simplified = simplify(&mut state, source);
-    simplified.emit(&mut state);
+    let _ = simplified.emit(&mut state)?;
     let mut output_file = fs::File::create(output_name(input_name))?;
-    for line in state.emit() {
+    for line in state.emit()? {
         output_file.write_all(line.as_bytes())?;
         output_file.write_all(&['\n' as u8])?;
     }

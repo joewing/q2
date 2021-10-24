@@ -10,7 +10,6 @@ use crate::expr::{Expression, Word};
 
 #[derive(Hash, PartialEq, Eq, Clone)]
 pub enum Symbol {
-    Undefined,
     Function(Watermark, Vec<Word>),
     Constant(Word),
     Label(String),
@@ -49,12 +48,14 @@ pub struct SymbolTable {
     immediates: HashMap<Symbol, String>,
     local_labels: HashSet<String>,
     scopes: Vec<Scope>,
-    index: usize
+    index: usize,
+    page: Word,
 }
 
 impl SymbolTable {
 
     pub const PAGE_SIZE: Word = 128;
+    pub const PAGE_COUNT: Word = 32;
     pub const ORIGIN: Word = SymbolTable::PAGE_SIZE;
     pub const ENTRYPOINT: &'static str = "main";
     pub const BASE_WATERMARK: Watermark = Watermark {
@@ -79,6 +80,7 @@ impl SymbolTable {
             local_labels: HashSet::new(),
             words: 0,
             index: 0,
+            page: 1,
         }
     }
 
@@ -109,9 +111,30 @@ impl SymbolTable {
         self.local_labels.clear();
         self.immediates.clear();
         self.words = 0;
+        self.page += 1;
     }
 
-    pub fn emit(&mut self) -> Vec<String> {
+    fn check_size(&self) -> Result<(), String> {
+        if self.scopes.len() != 1 {
+            return Err(format!("invalid state"));
+        }
+        let scope = self.scopes.last().unwrap();
+        if scope.watermark.stack > SymbolTable::PAGE_SIZE {
+            return Err(format!("too many vars: {}", scope.watermark.stack));
+        }
+        if self.page > SymbolTable::PAGE_COUNT {
+            return Err(format!("code requires too many pages: {}", self.page));
+        }
+        let code_end = self.page * SymbolTable::PAGE_SIZE;
+        if code_end > scope.watermark.heap {
+            return Err(
+                format!("heap (0x{:x}) and code (0x{:x}) overlap", scope.watermark.heap, code_end)
+            );
+        }
+        Ok(())
+    }
+
+    pub fn emit(&mut self) -> Result<Vec<String>, String> {
         let mut result = vec![
             format!("  lea $+3"),
             format!("  jmp @$+1"),
@@ -134,7 +157,8 @@ impl SymbolTable {
             }
         }
         self.data.clear();
-        result
+        let _ = self.check_size()?;
+        Ok(result)
     }
 
     fn advance(&mut self) {
@@ -153,22 +177,25 @@ impl SymbolTable {
         self.words += 1;
     }
 
-    pub fn append_code_indirect(&mut self, opcode: &str, symbol: &Symbol) {
+    pub fn append_code_indirect(&mut self, opcode: &str, symbol: &Symbol) -> Result<(), String> {
         self.advance();
         let operand_str = self.emit_operand(symbol);
         self.append(format!("  {} @{}", opcode, operand_str));
+        Ok(())
     }
 
-    pub fn append_code_immediate(&mut self, opcode: &str, word: Word) {
+    pub fn append_code_immediate(&mut self, opcode: &str, word: Word) -> Result<(), String> {
         self.advance();
         let operand_str = self.append_immediate(&Symbol::Constant(word));
         self.append(format!("  {} {}", opcode, operand_str));
+        Ok(())
     }
 
-    pub fn append_code(&mut self, opcode: &str, symbol: &Symbol) {
+    pub fn append_code(&mut self, opcode: &str, symbol: &Symbol) -> Result<(), String> {
         self.advance();
         let operand_str = self.emit_operand(symbol);
         self.append(format!("  {} {}", opcode, operand_str));
+        Ok(())
     }
 
     fn emit_operand(&mut self, symbol: &Symbol) -> String {
@@ -200,11 +227,11 @@ impl SymbolTable {
         self.scopes.last().unwrap().return_address.clone()
     }
 
-    pub fn break_label(&self) -> String {
+    pub fn break_label(&self) -> Result<String, String> {
         let last = self.scopes.last().unwrap();
         match &last.break_label {
-            Some(s) => s.clone(),
-            None => panic!("break not in a loop")
+            Some(s) => Ok(s.clone()),
+            None => Err(format!("break not in a loop"))
         }
     }
 
@@ -214,32 +241,41 @@ impl SymbolTable {
         label
     }
 
-    pub fn append_data(&mut self, exprs: &Vec<Expression>) -> Symbol {
+    pub fn append_data(&mut self, exprs: &Vec<Expression>) -> Result<Symbol, String> {
         let mut data = Vec::new();
         for expr in exprs {
             let value = match expr {
                 Expression::Constant(w) => Symbol::Constant(*w),
-                Expression::Symbol(name) => match self.lookup(name) {
-                    Symbol::Constant(w) => Symbol::Constant(w),
-                    Symbol::Label(s) => Symbol::Label(s),
-                    Symbol::Function(_, _) => Symbol::Label(name.clone()),
-                    Symbol::Undefined => panic!("undefined: {}", name),
+                Expression::Symbol(name) => {
+                    let symbol = self.lookup(name)?;
+                    match symbol {
+                        Symbol::Constant(w) => Symbol::Constant(w),
+                        Symbol::Label(s) => Symbol::Label(s),
+                        Symbol::Function(_, _) => Symbol::Label(name.clone()),
+                    }
                 },
-                Expression::ArrayLiteral(inner) => self.append_data(inner),
-                _ => panic!("array literal must be constant"),
+                Expression::ArrayLiteral(inner) => self.append_data(inner)?,
+                _ => {
+                    return Err(format!("array literal must be constant"));
+                },
             };
             data.push(value);
         }
         let label = self.next_label();
         self.data.push((label.clone(), data));
-        Symbol::Label(label)
+        Ok(Symbol::Label(label))
     }
 
-    pub fn append_heap(&mut self, size: Word) -> Word {
+    pub fn append_heap(&mut self, size: Word) -> Result<Word, String> {
         let mut scope = self.scopes.last_mut().unwrap();
-        scope.heap -= size;
+        scope.heap = match scope.heap.overflowing_sub(size) {
+            (v, false) => v,
+            (_, true) => {
+                return Err(format!("out of heap space"));
+            },
+        };
         scope.watermark.update_heap(scope.heap);
-        scope.heap
+        Ok(scope.heap)
     }
 
     pub fn enter(&mut self) {
@@ -281,10 +317,11 @@ impl SymbolTable {
         );
     }
 
-    pub fn leave_loop(&mut self) {
-        let break_label = self.break_label();
+    pub fn leave_loop(&mut self) -> Result<(), String> {
+        let break_label = self.break_label()?;
         self.leave();
         self.append_label(&break_label);
+        Ok(())
     }
 
     pub fn enter_function(&mut self, watermark: Watermark) -> Symbol {
@@ -313,6 +350,7 @@ impl SymbolTable {
         };
         let symbol = Symbol::Function(watermark, args);
         let scope = self.scopes.last_mut().unwrap();
+        scope.watermark = scope.watermark.combine(watermark);
         scope.symbols.insert(name.clone(), symbol);
     }
 
@@ -328,7 +366,7 @@ impl SymbolTable {
         self.scopes.last_mut().unwrap().stack -= 1;
     }
 
-    pub fn declare_var(&mut self, name: &String, value: Option<Symbol>) {
+    pub fn declare_var(&mut self, name: &String, value: Option<Symbol>) -> Result<(), String> {
         let symbol = if self.is_global() {
             self.data.push((name.clone(), vec![value.unwrap_or(Symbol::Constant(0))]));
             Symbol::Label(name.clone())
@@ -337,6 +375,7 @@ impl SymbolTable {
         };
         let scope = self.scopes.last_mut().unwrap();
         scope.symbols.insert(name.clone(), symbol);
+        Ok(())
     }
 
     pub fn declare_const(&mut self, name: &String, symbol: Symbol) {
@@ -355,14 +394,14 @@ impl SymbolTable {
         }
     }
 
-    pub fn lookup(&self, name: &String) -> Symbol {
+    pub fn lookup(&self, name: &String) -> Result<Symbol, String> {
         for scope in self.scopes.iter() {
             match scope.symbols.get(name) {
-                Some(s) => return s.clone(),
+                Some(s) => return Ok(s.clone()),
                 None => ()
             }
         }
-        return Symbol::Undefined
+        Err(format!("undefined: {}", name))
     }
 
     pub fn is_global(&self) -> bool {

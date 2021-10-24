@@ -4,9 +4,28 @@ use crate::expr::{BinaryOperator, Expression, UnaryOperator, Word};
 use crate::statement::Statement;
 use crate::tokenizer::Tokenizer;
 
+const IF: &str = "if";
+const IFCARRY: &str = "ifcarry";
+const THEN: &str = "then";
+const ELSEIF: &str = "elseif";
+const ELSE: &str = "else";
+const END: &str = "end";
+const WHILE: &str = "while";
+const DO: &str = "do";
+const FUN: &str = "fun";
+const BREAK: &str = "break";
+const RETURN: &str = "return";
+const INCLUDE: &str = "include";
+const CONST: &str = "const";
+const VAR: &str = "var";
+const LPAREN: &str = "(";
+const RPAREN: &str = ")";
+const EOF: &str = "";
+const TERM: &str = ";";
+
 fn parse(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
     let block = parse_block(tokenizer)?;
-    let _ = tokenizer.expect("")?;
+    let _ = tokenizer.expect(EOF)?;
     Ok(block)
 }
 
@@ -20,15 +39,6 @@ pub fn parse_str(input: &str) -> Result<Statement, String> {
     parse(&mut tokenizer)
 }
 
-fn parse_while(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
-    tokenizer.next_token();
-    let cond = parse_expr(tokenizer)?;
-    let _ = tokenizer.expect("do")?;
-    let body = parse_block(tokenizer)?;
-    let _ = tokenizer.expect("end")?;
-    Ok(Statement::While(cond, Box::from(body)))
-}
-
 fn parse_ident(tokenizer: &mut Tokenizer) -> Result<String, String> {
     let result = tokenizer.peek_token();
     tokenizer.next_token();
@@ -40,7 +50,7 @@ fn parse_ident(tokenizer: &mut Tokenizer) -> Result<String, String> {
 }
 
 fn parse_var(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
-    let _ = tokenizer.expect("var")?;
+    let _ = tokenizer.expect(VAR)?;
     let ident = parse_ident(tokenizer)?;
     let expr_opt = if tokenizer.check("=") {
         tokenizer.next_token();
@@ -49,16 +59,16 @@ fn parse_var(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
     } else {
         None
     };
-    let _ = tokenizer.expect(";")?;
+    let _ = tokenizer.expect(TERM)?;
     Ok(Statement::Var(ident, expr_opt))
 }
 
 fn parse_const(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
-    let _ = tokenizer.expect("const")?;
+    let _ = tokenizer.expect(CONST)?;
     let ident = parse_ident(tokenizer)?;
     let _ = tokenizer.expect("=")?;
     let expr = parse_expr(tokenizer)?;
-    let _ = tokenizer.expect(";")?;
+    let _ = tokenizer.expect(TERM)?;
     Ok(Statement::Const(ident, expr))
 }
 
@@ -157,20 +167,10 @@ fn parse_symbol(tokenizer: &mut Tokenizer) -> Result<Expression, String> {
     Ok(Expression::Symbol(name))
 }
 
-fn parse_unary(tokenizer: &mut Tokenizer, op: UnaryOperator) -> Result<Expression, String> {
-    tokenizer.next_token();
-    let inner = parse_factor(tokenizer)?;
-    Ok(Expression::Unary(op, Box::new(inner)))
-}
-
-fn parse_deref(tokenizer: &mut Tokenizer) -> Result<Expression, String> {
-    parse_unary(tokenizer, UnaryOperator::Deref)
-}
-
 fn parse_nest(tokenizer: &mut Tokenizer) -> Result<Expression, String> {
     tokenizer.next_token();
     let expr = parse_expr(tokenizer)?;
-    let _ = tokenizer.expect(")")?;
+    let _ = tokenizer.expect(RPAREN)?;
     Ok(expr)
 }
 
@@ -178,29 +178,7 @@ fn is_alpha(c: char) -> bool {
     (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_'
 }
 
-fn parse_factor(tokenizer: &mut Tokenizer) -> Result<Expression, String> {
-    let tok = tokenizer.peek_token();
-    let factor = if tok.value.starts_with("\"") {
-        parse_string_literal(tokenizer)
-    } else if tok.value == "[" {
-        parse_array_literal(tokenizer)
-    } else if tok.value == "@" {
-        parse_deref(tokenizer)
-    } else if tok.value == ":" {
-        parse_unary(tokenizer, UnaryOperator::ArrayDecl)
-    } else if tok.value == "~" {
-        parse_unary(tokenizer, UnaryOperator::Not)
-    } else if tok.value == "-" {
-        parse_unary(tokenizer, UnaryOperator::Negate)
-    } else if tok.value == "!" {
-        parse_unary(tokenizer, UnaryOperator::Lnot)
-    } else if tok.value == "(" {
-        parse_nest(tokenizer)
-    } else if tok.value.starts_with(is_alpha) {
-        parse_symbol(tokenizer)
-    } else {
-        parse_literal(tokenizer)
-    }?;
+fn parse_factor_cont(tokenizer: &mut Tokenizer, factor: Expression) -> Result<Expression, String> {
     if tokenizer.check("(") {
         tokenizer.next_token();
         let mut args = Vec::new();
@@ -218,6 +196,38 @@ fn parse_factor(tokenizer: &mut Tokenizer) -> Result<Expression, String> {
     } else {
         Ok(factor)
     }
+}
+
+const FACTOR_OPS: &[(&str, UnaryOperator)] = &[
+    ("@", UnaryOperator::Deref),
+    ("-", UnaryOperator::Negate),
+    ("~", UnaryOperator::Not),
+    ("!", UnaryOperator::Lnot),
+    (":", UnaryOperator::ArrayDecl),
+];
+
+fn parse_factor(tokenizer: &mut Tokenizer) -> Result<Expression, String> {
+    let tok = tokenizer.peek_token();
+    for (value, op) in FACTOR_OPS {
+        if tok.value == *value {
+            tokenizer.next_token();
+            let inner = parse_factor(tokenizer)?;
+            let factor = Expression::Unary(*op, Box::new(inner));
+            return parse_factor_cont(tokenizer, factor);
+        }
+    }
+    let factor = if tok.value.starts_with("\"") {
+        parse_string_literal(tokenizer)
+    } else if tok.value == "[" {
+        parse_array_literal(tokenizer)
+    } else if tok.value == LPAREN  {
+        parse_nest(tokenizer)
+    } else if tok.value.starts_with(is_alpha) {
+        parse_symbol(tokenizer)
+    } else {
+        parse_literal(tokenizer)
+    }?;
+    parse_factor_cont(tokenizer, factor)
 }
 
 const BINOP_PARSERS: &[&[(&str, BinaryOperator)]] = &[
@@ -280,26 +290,35 @@ fn parse_expr(tokenizer: &mut Tokenizer) -> Result<Expression, String> {
     parse_level_cont(tokenizer, BINOP_PARSERS.len(), lhs)
 }
 
-fn parse_if(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
-    let _ = tokenizer.expect("if")?;
+fn parse_while(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
+    tokenizer.next_token();
     let cond = parse_expr(tokenizer)?;
-    let _ = tokenizer.expect("then")?;
+    let _ = tokenizer.expect(DO)?;
+    let body = parse_block(tokenizer)?;
+    let _ = tokenizer.expect(END)?;
+    Ok(Statement::While(cond, Box::from(body)))
+}
+
+fn parse_if(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
+    let _ = tokenizer.expect(IF)?;
+    let cond = parse_expr(tokenizer)?;
+    let _ = tokenizer.expect(THEN)?;
     let t = parse_block(tokenizer)?;
     let mut nested = Vec::new();
-    while tokenizer.check("elseif") {
+    while tokenizer.check(ELSEIF) {
         tokenizer.next_token();
         let econd = parse_expr(tokenizer)?;
-        let _ = tokenizer.expect("then")?;
+        let _ = tokenizer.expect(THEN)?;
         let s = parse_block(tokenizer)?;
         nested.push((econd, s));
     }
-    let else_statement = if tokenizer.check("else") {
+    let else_statement = if tokenizer.check(ELSE) {
         tokenizer.next_token();
         parse_block(tokenizer)?
     } else {
         Statement::Block(Vec::new())
     };
-    let _ = tokenizer.expect("end")?;
+    let _ = tokenizer.expect(END)?;
 
     let tails = nested.iter().rev().fold(else_statement, |s, (c, ns)|
         Statement::If(c.clone(), Box::from(ns.clone()), Box::from(s))
@@ -308,26 +327,26 @@ fn parse_if(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
 }
 
 fn parse_ifcarry(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
-    let _ = tokenizer.expect("ifcarry")?;
+    let _ = tokenizer.expect(IFCARRY)?;
     let cond = parse_expr(tokenizer)?;
-    let _ = tokenizer.expect("then")?;
+    let _ = tokenizer.expect(THEN)?;
     let t = parse_block(tokenizer)?;
-    let f = if tokenizer.check("else") {
+    let f = if tokenizer.check(ELSE) {
         tokenizer.next_token();
         parse_block(tokenizer)?
     } else {
         Statement::Block(Vec::new())
     };
-    let _ = tokenizer.expect("end")?;
+    let _ = tokenizer.expect(END)?;
     Ok(Statement::IfCarry(cond, Box::from(t), Box::from(f)))
 }
 
 fn parse_function(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
-    let _ = tokenizer.expect("fun")?;
+    let _ = tokenizer.expect(FUN)?;
     let name = parse_ident(tokenizer)?;
-    let _ = tokenizer.expect("(")?;
+    let _ = tokenizer.expect(LPAREN)?;
     let mut params = Vec::new();
-    if !tokenizer.check(")") {
+    if !tokenizer.check(RPAREN) {
         loop {
             params.push(parse_ident(tokenizer)?);
             if !tokenizer.check(",") {
@@ -350,24 +369,24 @@ pub fn parse_builtin(input: &str) -> Statement {
 }
 
 fn parse_return(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
-    let _ = tokenizer.expect("return")?;
+    let _ = tokenizer.expect(RETURN)?;
     let expr = parse_expr(tokenizer)?;
-    let _ = tokenizer.expect(";")?;
+    let _ = tokenizer.expect(TERM)?;
     Ok(Statement::Return(expr))
 }
 
 fn parse_break(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
-    let _ = tokenizer.expect("break")?;
-    let _ = tokenizer.expect(";")?;
+    let _ = tokenizer.expect(BREAK)?;
+    let _ = tokenizer.expect(TERM)?;
     Ok(Statement::Break)
 }
 
 fn parse_include(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
-    let _ = tokenizer.expect("include")?;
+    let _ = tokenizer.expect(INCLUDE)?;
     let tok = tokenizer.peek_token();
     tokenizer.next_token();
     let name: String = tok.value.chars().skip(1).take_while(|c| *c != '\"').collect();
-    let _ = tokenizer.expect(";")?;
+    let _ = tokenizer.expect(TERM)?;
     parse_file(name.as_str())
 }
 
@@ -380,20 +399,20 @@ fn parse_assign(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
     } else {
         Statement::Expression(lhs)
     };
-    let _ = tokenizer.expect(";")?;
+    let _ = tokenizer.expect(TERM)?;
     Ok(statement)
 }
 
 const STATEMENT_PARSERS: &[(&str, fn(&mut Tokenizer) -> Result<Statement, String>)] = &[
-    ("if", parse_if),
-    ("var", parse_var),
-    ("ifcarry", parse_ifcarry),
-    ("while", parse_while),
-    ("fun", parse_function),
-    ("const", parse_const),
-    ("break", parse_break),
-    ("include", parse_include),
-    ("return", parse_return),
+    (IF, parse_if),
+    (VAR, parse_var),
+    (IFCARRY, parse_ifcarry),
+    (WHILE, parse_while),
+    (FUN, parse_function),
+    (CONST, parse_const),
+    (BREAK, parse_break),
+    (INCLUDE, parse_include),
+    (RETURN, parse_return),
 ];
 
 fn parse_block(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
@@ -410,7 +429,7 @@ fn parse_block(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
             }
         }
         if !found {
-            if value.is_empty() || value == "end" || value == "else" || value == "elseif" {
+            if value.is_empty() || value == END || value == ELSE || value == ELSEIF {
                 return Ok(Statement::Block(statements));
             } else {
                 statements.push(parse_assign(tokenizer)?);

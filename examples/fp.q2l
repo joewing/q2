@@ -1,3 +1,4 @@
+# Q2L floating point library.
 
 # Format:
 #   SMMMMMMMMMMM EEEEEEEEEEEE
@@ -9,6 +10,7 @@ fun puthex(v)
   OUTPUT = @(DIGITS + (@v & 15));
 end
 
+# Multiply 2 12-bit values to get a 24-bit result.
 fun mult24(a, b, result)
   @result = 0;
   @result + 1 = 0;
@@ -31,12 +33,14 @@ fun mult24(a, b, result)
   end
 end
 
+# Extract sign, significand, and exponent.
 fun fextract(ptr, sign, abs, exp)
   @sign = @@ptr & 0x800;
   @abs = @@ptr & 0x7FF;
   @exp = @(@ptr + 1);
 end
 
+# Normalize.
 fun fnorm(abs, exp)
   if @@abs & 0x800 then
     @abs = @@abs >> 1;
@@ -49,6 +53,7 @@ fun fnorm(abs, exp)
   end
 end
 
+# Floating-point add.
 fun fadd(x, y, result)
 
   # Extract x
@@ -104,17 +109,20 @@ fun fadd(x, y, result)
 
 end
 
+# Floating-point negation.
 fun fneg(x, result)
   @result = @@x ^ 0x800;
   @result + 1 = @(@x + 1);
 end
 
+# Floating-point subtract.
 fun fsub(x, y, result)
   const temp = :2;
   fneg(@y, temp);
   fadd(@x, temp, @result);
 end
 
+# Floating-point multiply.
 fun fmul(x, y, result)
 
   var absx;
@@ -146,6 +154,7 @@ fun fmul(x, y, result)
 
 end
 
+# Floating-point divide.
 fun fdiv(x, y, result)
 
   var absx;
@@ -164,8 +173,44 @@ fun fdiv(x, y, result)
   # Fix sign.
   signx = @signx ^ @signy;
 
+  # Get numerator for division.
+  var num_high = 0;
+  var num_low = @absx;
+  var n = 10;
+  while @n do
+    num_high = @num_high << 1;
+    ifcarry @num_low << 1 then
+      num_high = @num_high + 1;
+    end
+    num_low = @num_low << 1;
+    n = @n + -1;
+  end
+
   # Divide.
-  # TODO
+  absx = 0;
+  var rem = 0;
+  n = 23;
+  while @n do
+
+    absx = @absx << 1;
+    rem = @rem << 1;
+
+    ifcarry @num_high << 1 then
+      rem = @rem + 1;
+    end
+    num_high = @num_high << 1;
+    ifcarry @num_low << 1 then
+      num_high = @num_high + 1;
+    end
+    num_low = @num_low << 1;
+
+    if @rem >= @absy then
+      rem = @rem - @absy;
+      absx = @absx + 1;
+    end
+
+    n = @n + -1;
+  end
 
   # Normalize.
   fnorm(absx, expx);
@@ -175,6 +220,8 @@ fun fdiv(x, y, result)
 
 end
 
+# Convert floating point to ASCII.
+# Returns a 10-character string with zero terminator.
 fun ftoa(x)
   const result = "-xxxx.xxxx";
 
@@ -242,42 +289,21 @@ fun ftoa(x)
   end
 end
 
+# Convert an integer to floating-point.
+fun itof(v, result)
+  var signx = @v & 0x800;
+  var absx = @v;
+  if @signx then
+    absx = -@absx;
+  end
+  var expx = 0x7FF + 10;
+  fnorm(absx, expx);
+  @result = @signx + @absx;
+  @result + 1 = @expx;
+end
+
+# Output floating point value.
 fun putf(v)
   puts(ftoa(@v));
 end
 
-fun main()
-
-
-#  var x = [0x400, 0x7FC];
-#  var y = [0x640, 0x806];
-# 0.125 [400 7fc] + 200 [640 806] = 200.125 [641 806]
-
-  var x = [0x500, 0x7FF];
-  var y = [0x500, 0x800];
-# 1.25 [500 7ff] + 2.5 [500 800] = 3.75 [780 800]
-
-#  var x = [0x540, 0x801];
-#  var y = [0xc40, 0x802];
-# 5.25 [540 801] + -8.5 [c40 802] = -3.25 [e80 800]
-
-while 1 do
-    OUTPUT = 0x180;
-#    puthex(@@x);
-#    OUTPUT = ' ';
-#    puthex(@(@x + 1));
-#    OUTPUT = '+';
-#    puthex(@@y);
-#    OUTPUT = ' ';
-#    puthex(@(@y + 1));
-#    putf(@x);
-
-# 3.125
-    OUTPUT = 0x180 + 0x40;
-    fmul(@x, @y, @x);
-    fadd(@x, @y, @x);
-    putf(@x);
-
-end
-
-end

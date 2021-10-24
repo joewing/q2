@@ -236,6 +236,9 @@ more branches using one or more `elseif` sections:
 
 Zero is false and any non-zero value is true.
 
+To enable more efficient code using the flag, `ifcarry` can
+be used to execute conditional on the flag being set.
+
 ## Loops
 
 The only supported loop construct is the `while` loop:
@@ -257,7 +260,12 @@ The following built-in function are available:
  * `divmod(x, y, a, b)` - Computes `a = x / y` and `b = x % y`.
  * `memset(dest, count, value)` - Sets `count` words at `dest` to `value`.
  * `itoa(i)` - Return a pointer to a 5 word zero-terminated ASCII string representing `i`.
+ * `clear()` - Reset and clear the LCD.
  * `puts(s)` - Write a zero-terminated string to the output device.
  * `putint(i)` - Write the word `i` to the output device (`puts(itoa(i))`).
  * `rand()` - Return a random number between 0x000 and 0xFFF inclusive.
+ * `i2c_start()` - Start an I2C transaction.
+ * `i2c_stop()` - Stop an I2C transaction.
+ * `i2c_write(v)` - Write byte v to the I2C interface.
+ * `i2c_read()` - Read a byte from the I2C interface.
 

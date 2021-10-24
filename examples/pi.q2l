@@ -1,0 +1,60 @@
+
+include "examples/fp.q2l";
+
+fun main()
+  puts([0x138, 0x10C, 0x106, 0x101, 0]);
+
+  var i = 0;
+
+  OUTPUT = 0x180;
+  puts("Iter: ");
+  putint(@i);
+  OUTPUT = 0x180 + 0x40;
+  puts("pi = ");
+
+  # Use the taylor expansion of 4 * atan(1) to compute pi:
+  # 1 - 1/3 + 1/5 - 1/7 + ...
+
+  const result = :2;
+  itof(4, result);
+
+  const divisor = :2;
+  itof(1, divisor);
+
+  const two = :2;
+  itof(2, two);
+
+  const four = :2;
+  itof(4, four);
+
+  OUTPUT = 0x180 + 0x40 + 5;
+  putf(result);
+
+  while 1 do
+
+    i = @i + 1;
+    OUTPUT = 0x180 + 6;
+    putint(@i);
+
+    fadd(two, divisor, divisor);
+    var temp = :2;
+    fdiv(four, divisor, temp);
+    fsub(result, temp, result);
+
+    OUTPUT = 0x180 + 0x40 + 5;
+    putf(result);
+
+    i = @i + 1;
+    OUTPUT = 0x180 + 6;
+    putint(@i);
+
+    fadd(two, divisor, divisor);
+    fdiv(four, divisor, temp);
+    fadd(result, temp, result);
+
+    OUTPUT = 0x180 + 0x40 + 5;
+    putf(result);
+
+  end
+
+end

@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 use crate::emit;
-use crate::expr::Expression;
+use crate::expr::{Expression, UnaryOperator};
 use crate::symbol::{Symbol, SymbolTable, Watermark};
 
 #[derive(Clone)]
@@ -137,21 +137,27 @@ impl Statement {
         }
     }
 
-    pub fn emit(&self, state: &mut SymbolTable) {
+    pub fn emit(&self, state: &mut SymbolTable) -> Result<(), String> {
         match self {
-            Statement::Var(name, expr_opt) => emit::emit_var(state, name, expr_opt),
-            Statement::Const(name, expr) => emit::emit_const(state, name, expr),
+            Statement::Var(name, expr_opt) => emit_var(state, name, expr_opt),
+            Statement::Const(name, expr) => emit_const(state, name, expr),
             Statement::Assign(dest, src) => emit::emit_assign(state, dest, src),
             Statement::If(cond, t, f) => emit::emit_if(state, cond, t, f),
             Statement::IfCarry(cond, t, f) => emit::emit_ifcarry(state, cond, t, f),
             Statement::While(cond, body) => emit::emit_while(state, cond, body),
             Statement::Function(name, args, body) => emit::emit_function(state, name, args, body),
             Statement::Expression(expr) => {
-                let _ = expr.emit(state);
+                let _ = expr.emit(state)?;
+                Ok(())
             },
             Statement::Return(expr) => emit::emit_return(state, expr),
             Statement::Break => emit::emit_break(state),
-            Statement::Block(ss) => ss.iter().for_each(|s| s.emit(state)),
+            Statement::Block(ss) => {
+                for s in ss {
+                    let _ = s.emit(state)?;
+                }
+                Ok(())
+            },
         }
     }
 }
@@ -163,3 +169,59 @@ pub fn simplify(state: &mut SymbolTable, statements: Vec<Statement>) -> Statemen
     simplified_statements.iter().rev().for_each(|s| s.used_symbols(&mut used));
     Statement::Block(simplified_statements.iter().map(|s| s.prune(&used)).collect())
 }
+
+fn emit_var(state: &mut SymbolTable, name: &String, expr_opt: &Option<Expression>) -> Result<(), String> {
+    match expr_opt {
+        Some(expr) => match expr {
+            Expression::Constant(value) if state.is_global() =>
+                state.declare_var(name, Some(Symbol::Constant(*value))),
+            Expression::ArrayLiteral(inner) if state.is_global() => {
+                let label = state.append_data(inner)?;
+                state.declare_var(name, Some(label))
+            },
+            Expression::Unary(op, inner) if *op == UnaryOperator::ArrayDecl && state.is_global() => {
+                if let Expression::Constant(size) = inner.as_ref() {
+                    let addr = state.append_heap(*size)?;
+                    state.declare_var(name, Some(Symbol::Constant(addr)))
+                } else {
+                    Err(format!("array '{}' does not have constant size", name))
+                }
+            },
+            _ => {
+                if state.is_global() {
+                    Err(format!("global var '{}' not constant", name))
+                } else {
+                    let _ = expr.emit(state)?;
+                    let _ = state.declare_var(name, None)?;
+                    emit::emit_store(state, &state.lookup(name)?)
+                }
+            }
+        }
+        None => state.declare_var(name, None),
+    }
+}
+
+fn emit_const(state: &mut SymbolTable, name: &String, expr: &Expression) -> Result<(), String> {
+    match expr {
+        Expression::Constant(w) => {
+            state.declare_const(name, Symbol::Constant(*w));
+            Ok(())
+        },
+        Expression::ArrayLiteral(vs) => {
+            let symbol = state.append_data(vs)?;
+            state.declare_const(name, symbol);
+            Ok(())
+        },
+        Expression::Unary(op, size_expr) if *op == UnaryOperator::ArrayDecl => {
+            if let Expression::Constant(size) = size_expr.as_ref() {
+                let symbol = Symbol::Constant(state.append_heap(*size)?);
+                state.declare_const(name, symbol);
+                Ok(())
+            } else {
+                Err(format!("array size must be constant"))
+            }
+        },
+        _ => Err(format!("const must be constant")),
+    }
+}
+

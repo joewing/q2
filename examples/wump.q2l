@@ -65,7 +65,7 @@ const SPRITES = [
 const CAVE = :20;   # Contents of each room.
 var monster_room;   # Room with the monster.
 var current_room;   # Our room.
-var game_over = 0;  # Game over indicator.
+var game_over;      # Game over indicator.
 
 # Read the keypad.
 fun getkey()
@@ -86,7 +86,7 @@ end
 
 # Initialize the LCD and load custom sprites.
 fun init_lcd()
-  puts([0x138, 0x10C, 0x106, 0x101, 0]);
+  clear();
   puts("Hunt the Wumpus!");
   OUTPUT = 0x180 + 0x40;
   puts("Creating map... ");
@@ -117,6 +117,7 @@ end
 
 # Initialize the cave with hazards.
 fun init_cave()
+  game_over = 0;
   memset(CAVE, 20, 0);
   current_room = find_open_room();
   monster_room = place_hazard(MONSTER);
@@ -161,7 +162,7 @@ end
 fun do_shoot(x)
   var pos = @(@(MAP + @current_room) + @x);
   var occupant = @(CAVE + @pos);
-  if occupant == MONSTER then
+  if @occupant == MONSTER then
     OUTPUT = 0x180 + 0x40;
     puts("Got the Wumpus! ");
     game_over = 1;
@@ -186,10 +187,10 @@ fun move_menu()
     do_move(0); # Left
     return 1;
   elseif @key == 2 then
-    do_move(2); # Right
+    do_move(1); # Right
     return 1;
   elseif @key == 4 then
-    do_move(1); # Up
+    do_move(2); # Up
     return 1;
   end
   return 0;
@@ -206,10 +207,10 @@ fun shoot_menu()
     do_shoot(0);  # Left
     return 1;
   elseif @key == 2 then
-    do_shoot(2);  # Right
+    do_shoot(1);  # Right
     return 1;
   elseif @key == 4 then
-    do_shoot(1);  # Up
+    do_shoot(2);  # Up
     return 1;
   end
   return 0;
@@ -249,22 +250,27 @@ fun show_room()
   if @monster_room == @current_room then
     puts("     Eaten!     ");
     game_over = 1;
+    return 0;
   elseif @occupant == PIT then
     puts(" Fell in a pit! ");
     game_over = 1;
+    return 0;
   elseif @occupant == BAT then
     puts("     Bats!      ");
     current_room = find_open_room();
     waitkey();
+    return 0;
   end
+  return 1;
 end
 
 fun main()
   init_lcd();
   init_cave();
   while !@game_over do
-    show_room();
-    show_menu();
+    if show_room() then
+      show_menu();
+    end
   end
 end
 

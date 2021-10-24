@@ -7,14 +7,6 @@ use crate::symbol::{SymbolTable, Symbol, Watermark};
 
 pub type Word = u16;
 
-#[derive(Clone, Copy, PartialEq)]
-pub enum FlagState {
-    Unknown,
-    Zero,
-    AddCarry,
-    ShrCarry,
-}
-
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub enum UnaryOperator {
     ArrayDecl,
@@ -90,7 +82,7 @@ impl Expression {
             },
             Expression::Symbol(name) => {
                 match state.lookup(name) {
-                    Symbol::Function(w, _) => w,
+                    Ok(Symbol::Function(w, _)) => w,
                     _ => SymbolTable::BASE_WATERMARK,
                 }
             },
@@ -112,7 +104,7 @@ impl Expression {
             Expression::Constant(w) => Expression::Constant(w.clone()),
             Expression::ArrayLiteral(exprs) => Expression::ArrayLiteral(simplify_exprs(exprs, state)),
             Expression::Symbol(s) => match state.lookup(s) {
-                Symbol::Constant(w) => Expression::Constant(w),
+                Ok(Symbol::Constant(w)) => Expression::Constant(w),
                 _ => Expression::Symbol(s.clone())
             },
             Expression::Call(fun, params) => {
@@ -130,7 +122,7 @@ impl Expression {
                             BinaryOperator::Div => a.wrapping_div(*b),
                             BinaryOperator::Mod => a.wrapping_rem(*b),
                             BinaryOperator::Shl => a.wrapping_shl(*b as u32),
-                            BinaryOperator::Shr => a >> b,
+                            BinaryOperator::Shr => a.wrapping_shr(*b as u32),
                             BinaryOperator::And => a & b,
                             BinaryOperator::Or => a | b,
                             BinaryOperator::Nor => (a | b).not(),
@@ -183,7 +175,7 @@ impl Expression {
         }
     }
 
-    pub fn emit(&self, state: &mut SymbolTable) -> FlagState {
+    pub fn emit(&self, state: &mut SymbolTable) -> Result<bool, String> {
         match self {
             Expression::Constant(w) => emit::emit_constant(state, *w),
             Expression::ArrayLiteral(exprs) => emit::emit_array_literal(state, exprs),

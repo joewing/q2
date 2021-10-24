@@ -19,6 +19,14 @@ const BUILTINS: &[&str] = &[
     PUTS,
     ITOA,
     PUTINT,
+    I2C_EN,
+    I2C_SCL,
+    I2C_SDA,
+    I2C_START,
+    I2C_STOP,
+    I2C_WRITE,
+    I2C_READ,
+    CLEAR,
 ];
 
 pub const SHIFT_RIGHT_NAME: &str = "shift_right";
@@ -153,5 +161,77 @@ const ITOA: &str = concat!(
 const PUTINT: &str = concat!(
     "fun putint(v)\n",
     "  puts(itoa(@v));\n",
+    "end\n",
+);
+
+const I2C_EN: &str = "const I2C_EN = 0x800;";
+const I2C_SCL: &str = "const I2C_SCL = 0x400;";
+const I2C_SDA: &str = "const I2C_SDA = 0x200;";
+
+const I2C_START: &str = concat!(
+    "fun i2c_start()\n",
+    "  OUTPUT = I2C_EN;\n",
+    "  OUTPUT = I2C_EN | I2C_SDA;\n",
+    "  OUTPUT = I2C_EN | I2C_SDA | I2C_SCL;\n",
+    "end\n",
+);
+
+const I2C_STOP: &str = concat!(
+    "fun i2c_stop()\n",
+    "  OUTPUT = I2C_EN | I2C_SDA | I2C_SCL;\n",
+    "  OUTPUT = I2C_EN | I2C_SDA;\n",
+    "  OUTPUT = I2C_EN;\n",
+    "end\n",
+);
+
+const I2C_WRITE: &str = concat!(
+    "fun i2c_write(v)\n",
+    "  v = @v << 1;\n",
+    "  v = @v << 1;\n",
+    "  v = @v << 1;\n",
+    "  v = @v << 1;\n",
+    "  var i = 8;\n",
+    "  while @i do\n",
+    "    ifcarry @v << 1 then\n",
+    "      OUTPUT = I2C_EN | I2C_SCL;\n",
+    "      OUTPUT = I2C_EN;\n",
+    "      OUTPUT = I2C_EN | I2C_SCL;\n",
+    "    else\n",
+    "      OUTPUT = I2C_EN | I2C_SCL | I2C_SDA;\n",
+    "      OUTPUT = I2C_EN | I2C_SDA;\n",
+    "      OUTPUT = I2C_EN | I2C_SCL | I2C_SDA;\n",
+    "    end\n",
+    "    v = @v << 1;\n",
+    "    i = @i + -1;\n",
+    "  end\n",
+    "  OUTPUT = I2C_EN | I2C_SCL;\n",
+    "  OUTPUT = I2C_EN;\n",
+    "  OUTPUT = I2C_EN | I2C_SCL;\n",
+    "end\n",
+);
+
+const I2C_READ: &str = concat!(
+    "fun i2c_read()\n",
+    "  var result = 0;\n",
+    "  var i = 8;\n",
+    "  while @i do\n",
+    "    OUTPUT = I2C_EN | I2C_SCL;\n",
+    "    OUTPUT = I2C_EN;\n",
+    "    result = @result << 1;\n",
+    "    if @OUTPUT & I2C_SDA then\n",
+    "      result = @result + 1;\n",
+    "    end\n",
+    "    i = @i + -1;\n",
+    "  end\n",
+    "  OUTPUT = I2C_EN | I2C_SCL;\n",
+    "  OUTPUT = I2C_EN;\n",
+    "  OUTPUT = I2C_EN | I2C_SCL;\n",
+    "  return @result;\n",
+    "end\n",
+);
+
+const CLEAR: &str = concat!(
+    "fun clear()\n",
+    "  puts([0x138, 0x10C, 0x106, 0x101, 0x000]);\n",
     "end\n",
 );

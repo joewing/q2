@@ -1,5 +1,5 @@
 
-const MAX_VALUE = 1024;
+const MAX_VALUE = 256;
 
 fun initlcd()
   puts([0x138, 0x10C, 0x106, 0x101, 0]);
