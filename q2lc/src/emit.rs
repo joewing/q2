@@ -1,6 +1,29 @@
+use crate::allocator::Allocator;
+use crate::builtin::{DIVIDE_NAME, MODULUS_NAME, MULTIPLY_NAME, SHIFT_LEFT_NAME, SHIFT_RIGHT_NAME};
 use crate::expr::{Expression, UnaryOperator, Word};
 use crate::symbol::{SymbolTable, Symbol};
 use crate::statement::Statement;
+use crate::visitor::StatementVisitor;
+
+struct FunctionEmitter<'a> {
+    table: &'a mut SymbolTable,
+}
+
+impl FunctionEmitter<'_> {
+    pub fn emit_functions(table: &mut SymbolTable, statement: &Statement) -> Result<Statement, String> {
+        let mut emitter = FunctionEmitter {
+            table: table
+        };
+        emitter.visit_statement(statement)
+    }
+}
+
+impl StatementVisitor for FunctionEmitter<'_> {
+    fn visit_function(&mut self, name: &String, params: &Vec<String>, body: &Statement) -> Result<Statement, String> {
+        let _ = emit_function(&mut self.table, name, params, body)?;
+        Ok(Statement::EMPTY)
+    }
+}
 
 const LDA: &str = "lda";
 const NOR: &str = "nor";
@@ -78,7 +101,7 @@ pub fn emit_call(fun: &Expression, args: &Vec<Expression>, state: &mut SymbolTab
     if let Expression::Symbol(name) = fun {
         let symbol = state.lookup(name)?;
         match symbol {
-            Symbol::Function(wm, params) => {
+            Symbol::Function(_, params) => {
                 if args.len() != params.len() {
                     return Err(
                         format!(
@@ -87,31 +110,15 @@ pub fn emit_call(fun: &Expression, args: &Vec<Expression>, state: &mut SymbolTab
                         )
                     );
                 }
-                let mut locals = Vec::new();
-                for i in 0..params.len() {
-                    let arg = args.get(i).unwrap();
-                    if arg.get_watermark(state).stack >= wm.stack {
-                        let arg = args.get(i).unwrap();
-                        let temp = state.allocate_temp();
-                        locals.push(Some(temp.clone()));
-                        let _ = arg.emit(state)?;
-                        let _ = emit_store(state, &temp)?;
-                    } else {
-                        locals.push(None);
-                    }
-                }
+                state.enter();
                 for i in 0..params.len() {
                     let param = params.get(i).unwrap();
-                    if let Some(local) = locals.get(i).unwrap() {
-                        let _ = state.append_code(LDA, local)?;
-                        let _ = emit_store(state, &Symbol::Constant(*param))?;
-                        state.release_temp();
-                    } else {
-                        let arg = args.get(i).unwrap();
-                        let _ = arg.emit(state)?;
-                        let _ = emit_store(state, &Symbol::Constant(*param))?;
-                    }
+                    let arg = args.get(i).unwrap();
+                    let _ = arg.emit(state)?;
+                    let _ = emit_store(state, &Symbol::Constant(*param))?;
+                    state.update_stack(*param);
                 }
+                state.leave();
                 let label = state.next_label();
                 let _ = state.append_code(LEA, &Symbol::Label(label.clone()))?;
                 let _ = state.append_code(JMP, &Symbol::Label(name.clone()))?;
@@ -126,7 +133,7 @@ pub fn emit_call(fun: &Expression, args: &Vec<Expression>, state: &mut SymbolTab
         let fun_ptr = load(state, fun)?;
         let label = state.next_label();
         let _ = state.append_code(LEA, &Symbol::Label(label.clone()))?;
-        let _ = state.append_code(JMP, &fun_ptr)?;
+        let _ = state.append_code_indirect(JMP, &fun_ptr)?;
         let _ = state.append_label(&label);
         release(state);
     }
@@ -188,6 +195,18 @@ pub fn emit_sub(lhs: &Expression, rhs: &Expression, state: &mut SymbolTable) -> 
     Ok(true)
 }
 
+pub fn emit_mul(state: &mut SymbolTable, lhs: &Expression, rhs: &Expression) -> Result<bool, String> {
+    emit_call_builtin(state, MULTIPLY_NAME, lhs, rhs)
+}
+
+pub fn emit_div(state: &mut SymbolTable, lhs: &Expression, rhs: &Expression) -> Result<bool, String> {
+    emit_call_builtin(state, DIVIDE_NAME, lhs, rhs)
+}
+
+pub fn emit_mod(state: &mut SymbolTable, lhs: &Expression, rhs: &Expression) -> Result<bool, String> {
+    emit_call_builtin(state, MODULUS_NAME, lhs, rhs)
+}
+
 pub fn emit_and(lhs: &Expression, rhs: &Expression, state: &mut SymbolTable) -> Result<bool, String> {
     let not_lhs = state.allocate_temp();
     let _ = lhs.emit(state)?;
@@ -235,6 +254,14 @@ pub fn emit_nor(lhs: &Expression, rhs: &Expression, state: &mut SymbolTable) -> 
     Ok(true)
 }
 
+fn emit_call_builtin(state: &mut SymbolTable, name: &str, lhs: &Expression, rhs: &Expression) -> Result<bool, String> {
+    emit_call(
+        &Expression::Symbol(name.to_string()),
+        &vec![lhs.clone(), rhs.clone()],
+        state
+    )
+}
+
 pub fn emit_shr(lhs: &Expression, rhs: &Expression, state: &mut SymbolTable) -> Result<bool, String> {
     match rhs {
         Expression::Constant(w) if *w == 0 => Ok(false),
@@ -244,7 +271,7 @@ pub fn emit_shr(lhs: &Expression, rhs: &Expression, state: &mut SymbolTable) -> 
             release(state);
             Ok(false)
         },
-        _ => panic!("not implemented")
+        _ => emit_call_builtin(state, SHIFT_RIGHT_NAME, lhs, rhs)
     }
 }
 
@@ -262,7 +289,7 @@ pub fn emit_shl(lhs: &Expression, rhs: &Expression, state: &mut SymbolTable) -> 
             }
             Ok(false)
         },
-        _ => panic!("not implemented")
+        _ => emit_call_builtin(state, SHIFT_LEFT_NAME, lhs, rhs)
     }
 }
 
@@ -395,11 +422,18 @@ pub fn emit_return(state: &mut SymbolTable, expr: &Expression) -> Result<(), Str
     state.append_code_indirect(JMP, &return_address)
 }
 
-pub fn emit_function(state: &mut SymbolTable, name: &String, args: &Vec<String>, body: &Statement) -> Result<(), String> {
-    let return_addr = state.enter_function(body.get_watermark(state));
+pub fn emit_function(
+    state: &mut SymbolTable,
+    name: &String,
+    args: &Vec<String>,
+    body: &Statement
+) -> Result<(), String> {
+    let watermark = Allocator::watermark(state, body)?;
+    let return_addr = state.enter_function(watermark);
+    let arg_addrs = args.iter().map(|arg| state.declare_arg(arg)).collect();
+    let _ = FunctionEmitter::emit_functions(state, body)?;
     state.append_label(name);
     let _ = emit_store(state, &return_addr)?;
-    let arg_addrs = args.iter().map(|arg| state.declare_arg(arg)).collect();
     let _ = body.emit(state)?;
     let _ = state.append_code_indirect(JMP, &return_addr)?;
     state.leave_function(name, arg_addrs);

@@ -19,7 +19,7 @@ more information.
 
 ### For software development:
 
- * Rust - q2asm and q2prog are written in Rust.
+ * Rust - q2lc, q2asm, and q2prog are written in Rust.
   Install instructions are available
   [here](https://www.rust-lang.org/tools/install).
   Note that rustup will also install cargo, which is required.
@@ -45,6 +45,21 @@ more information.
   will also need a 3D printer and the necessary slicer program.
  * KiCad - The PCB and schematics are in
   [KiCad](https://kicad.org).
+
+## q2lc
+
+q2lc is a compiler for Q2 programs. It is built using 'cargo build'
+in the q2lc directory.
+
+The Makefile will take care of compiling and assembling Q2L
+programs in the examples directory automatically:
+
+```
+make examples/sieve.lst
+```
+
+This will compile sieve.q2l into sieve.q2 and then assemble
+sieve.q2 using q2asm to generate sieve.lst along with sieve.q2p.
 
 ## q2asm
 
@@ -262,35 +277,4 @@ The address space is 4096 12-bit words.
   --------- | --------------
   000 - FFE | RAM
   FFF       | I/O
-
-## Zero-Page Layout
-
-The zero page is the first 128 words, which can be accessed directly by
-any instruction from anywhere.
-Here is a possible layout:
-
-  Addr  | Name  | Description
-  ----- | ----- | ------------------------------
-  000   |       | jmp @$+1 (jump to entry point)
-  001   | =init | Entry point 
-  002   | =x0   | Temporary
-  003   | =x1   | Temporary
-  004   | =x2   | Temporary
-  005   | =x3   | Temporary
-  006   | =x4   | Temporary
-  007   | =x5   | Temporary
-  008   | =x6   | Temporary
-  009   | =x7   | Temporary
-  00A   | =x8   | Temporary
-  00B   | =x9   | Temporary
-  00C   | =x10  | Temporary
-  00D   | =x11  | Temporary
-  00E   | =x12  | Temporary
-  00F   | =x13  | Temporary
-  010   | =x14  | Temporary
-  011   | =x15  | Temporary
-  012   | =zero | 0
-  013   | =one  | 1
-  014   | =two  | 2
-  015   | =neg1 | -1
 

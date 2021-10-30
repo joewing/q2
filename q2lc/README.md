@@ -170,9 +170,46 @@ end
 
 Due to the static nature of Q2L, it is not possible to use function
 pointers for functions that receive arguments, though communication
-through global variables is possible.  Also note that using funciton
+through global variables is possible.  Also note that using function
 pointers to recursively call a function will likely result in an
 infinite loop.
+
+## Nested Functions
+
+Functions may be nested. Nested functions are able to access
+the parameters of the outer function as well as any values or
+functions defined earlier in the function:
+
+```
+fun outer(x)
+
+  fun nested(y)
+    putint(@x + @y);
+  end
+
+  nested(1);  # @x + 1
+  nested(2);  # @x + 2
+end
+```
+
+Mixing nested functions and function pointers is also possible:
+
+```
+fun doit(x, zero_or_one)
+
+  fun zero(@x);
+    putint(@x);
+  end
+
+  fun one()
+    putint(@x + 1);
+  end
+
+  const FUNS = [zero, one];
+  @(FUNS + @zero_or_one)();
+
+end
+```
 
 ## Operators
 

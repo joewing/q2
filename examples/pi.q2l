@@ -2,7 +2,7 @@
 include "examples/fp.q2l";
 
 fun main()
-  puts([0x138, 0x10C, 0x106, 0x101, 0]);
+  clear();
 
   var i = 0;
 

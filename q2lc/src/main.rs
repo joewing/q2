@@ -5,6 +5,12 @@ mod symbol;
 mod builtin;
 mod emit;
 mod tokenizer;
+mod renamer;
+mod visitor;
+mod pruner;
+mod simplifier;
+mod allocator;
+mod promoter;
 
 extern crate clap;
 use clap::{App, Arg, crate_version, crate_name, crate_authors};
@@ -15,8 +21,12 @@ use std::error::Error;
 use std::io::Write;
 use crate::builtin::generate_builtins;
 use crate::parser::parse_file;
+use crate::promoter::Promoter;
+use crate::pruner::Pruner;
+use crate::renamer::Renamer;
+use crate::simplifier::Simplifier;
 use crate::symbol::SymbolTable;
-use crate::statement::simplify;
+use crate::statement::Statement;
 
 const Q2L_EXTENSION: &str = ".q2l";
 const Q2_EXTENSION: &str = ".q2";
@@ -33,8 +43,20 @@ fn compile(input_name: &str) -> Result<(), Box<dyn Error>> {
     let mut source = generate_builtins();
     source.push(parse_file(input_name)?);
     let mut state = SymbolTable::new();
-    let simplified = simplify(&mut state, source);
-    let _ = simplified.emit(&mut state)?;
+
+    // Rename nested symbols based on hierarchy.
+    let renamed = Renamer::rename(&source)?;
+
+    // Simplify constant expressions.
+    let simplified = Simplifier::simplify(&renamed)?;
+
+    // Promote operators to function calls.
+    let promoted = Promoter::promote(&simplified)?;
+
+    // Prune unused functions.
+    let pruned = Statement::Block(Pruner::prune(&promoted)?);
+
+    let _ = pruned.emit_globals(&mut state)?;
     let mut output_file = fs::File::create(output_name(input_name))?;
     for line in state.emit()? {
         output_file.write_all(line.as_bytes())?;

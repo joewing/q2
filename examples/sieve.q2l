@@ -1,10 +1,6 @@
 
 const MAX_VALUE = 256;
 
-fun initlcd()
-  puts([0x138, 0x10C, 0x106, 0x101, 0]);
-end
-
 fun show_primes()
   puts("Primes: ");
   const RESULTS = :MAX_VALUE;
@@ -25,7 +21,7 @@ fun show_primes()
 end
 
 fun main()
-  initlcd();
+  clear();
   show_primes();
 end
 

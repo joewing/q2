@@ -58,7 +58,7 @@ impl SymbolTable {
     pub const PAGE_COUNT: Word = 32;
     pub const ORIGIN: Word = SymbolTable::PAGE_SIZE;
     pub const ENTRYPOINT: &'static str = "main";
-    pub const BASE_WATERMARK: Watermark = Watermark {
+    const BASE_WATERMARK: Watermark = Watermark {
         stack: 4,
         heap: 0xFFF,
     };
@@ -80,7 +80,7 @@ impl SymbolTable {
             local_labels: HashSet::new(),
             words: 0,
             index: 0,
-            page: 1,
+            page: 0,
         }
     }
 
@@ -101,7 +101,7 @@ impl SymbolTable {
             let s = match symbol {
                 Symbol::Label(s) => s.clone(),
                 Symbol::Constant(w) => (w & 0xFFF).to_string(),
-                _ => panic!("undefined: {}", label)
+                _ => panic!("undefined immediate: {}", label)
             };
             temp.push(format!("  .dw {}", s));
         }
@@ -119,10 +119,18 @@ impl SymbolTable {
             return Err(format!("invalid state"));
         }
         let scope = self.scopes.last().unwrap();
+        let total_words = SymbolTable::PAGE_COUNT * SymbolTable::PAGE_SIZE - 1;
+        let usage = (total_words - scope.watermark.heap)
+            + (self.page - 1) * SymbolTable::PAGE_SIZE
+            + scope.watermark.stack;
+        println!("memory usage:    {:4} / {:4}", usage, total_words);
+        println!("zero-page words: {:4} / {:4}", scope.watermark.stack, SymbolTable::PAGE_SIZE);
+        println!("code pages:      {:4} / {:4}", self.page - 1, SymbolTable::PAGE_COUNT - 1);
+        println!("heap words:      {:4} / {:4}", total_words - scope.watermark.heap, total_words);
         if scope.watermark.stack > SymbolTable::PAGE_SIZE {
             return Err(format!("too many vars: {}", scope.watermark.stack));
         }
-        if self.page > SymbolTable::PAGE_COUNT {
+        if self.page - 1 > SymbolTable::PAGE_COUNT {
             return Err(format!("code requires too many pages: {}", self.page));
         }
         let code_end = self.page * SymbolTable::PAGE_SIZE;
@@ -251,7 +259,9 @@ impl SymbolTable {
                     match symbol {
                         Symbol::Constant(w) => Symbol::Constant(w),
                         Symbol::Label(s) => Symbol::Label(s),
-                        Symbol::Function(_, _) => Symbol::Label(name.clone()),
+                        Symbol::Function(_, _) => {
+                            Symbol::Label(name.clone())
+                        },
                     }
                 },
                 Expression::ArrayLiteral(inner) => self.append_data(inner)?,
@@ -301,6 +311,13 @@ impl SymbolTable {
         current.watermark = last.watermark.combine(current.watermark);
     }
 
+    /** Update current stack to account for an argument to a function call. */
+    pub fn update_stack(&mut self, param: Word) {
+        let mut last = self.scopes.last_mut().unwrap();
+        last.stack = Word::max(last.stack, param + 1);
+        last.watermark.update_stack(last.stack);
+    }
+
     pub fn enter_loop(&mut self, break_label: &String) {
         let last = self.scopes.last().unwrap();
         let watermark = last.watermark;
@@ -344,10 +361,7 @@ impl SymbolTable {
 
     pub fn leave_function(&mut self, name: &String, args: Vec<Word>) {
         let func_scope = self.scopes.pop().unwrap();
-        let watermark = Watermark {
-            stack: func_scope.watermark.stack + 1,
-            heap: func_scope.watermark.heap,
-        };
+        let watermark = func_scope.watermark;
         let symbol = Symbol::Function(watermark, args);
         let scope = self.scopes.last_mut().unwrap();
         scope.watermark = scope.watermark.combine(watermark);
@@ -364,6 +378,14 @@ impl SymbolTable {
 
     pub fn release_temp(&mut self) {
         self.scopes.last_mut().unwrap().stack -= 1;
+    }
+
+    pub fn current_watermark(&self) -> Watermark {
+        let scope = self.scopes.last().unwrap();
+        Watermark {
+            stack: scope.stack,
+            heap: scope.heap,
+        }
     }
 
     pub fn declare_var(&mut self, name: &String, value: Option<Symbol>) -> Result<(), String> {
