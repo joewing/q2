@@ -2,8 +2,8 @@
   .align
 
 .def I2C_EN         0x800
-.def I2C_SCL        0x400
-.def I2C_SDA        0x200
+.def I2C_SCL        0x200
+.def I2C_SDA        0x100
 .def i2c_zero       I2C_EN | I2C_SCL | I2C_SDA
 .def i2c_zero_clk   I2C_EN | I2C_SDA
 .def i2c_one        I2C_EN | I2C_SCL

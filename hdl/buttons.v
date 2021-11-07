@@ -7,8 +7,8 @@ module buttons(
 
   localparam KEY = 1;
 
-  assign dbus[8:0] = rd ?
-    (key_timer[7] ? (1 << KEY) ^ 9'h1FF : 9'h1FF) : 9'bz;
+  assign dbus[7:0] = rd ?
+    (key_timer[7] ? (1 << KEY) ^ 8'hFF : 8'hFF) : 8'bz;
 
   // Continuously press and release a key.
   reg [7:0] key_timer = 0;

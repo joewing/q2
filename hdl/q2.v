@@ -1,12 +1,6 @@
 
 `define VCC 5.0
 
-// FET input capacitance.
-`define CISS_NF   0.04
-
-// FET threshold.
-`define VTH 2.0
-
 `include "nfet.v"
 `include "dff.v"
 `include "clock.v"
@@ -16,6 +10,8 @@
 `include "xreg.v"
 `include "preg.v"
 `include "slice.v"
+`include "addr.v"
+`include "field.v"
 `include "ram.v"
 `include "i2c.v"
 `include "lcd.v"
@@ -31,7 +27,7 @@ module q2(
   output reg run
 );
 
-  wire [11:0] abus;
+  wire [12:0] abus;
   wire [11:0] dbus;
 
   // Control lines
@@ -62,10 +58,12 @@ module q2(
   wire s3, ns3;
   wire f;
   wire nf;
-  wire deref;
+  wire deref, nderef;
   wire o2;
   wire o1;
   wire o0;
+  wire nstate_load;
+  wire nstate_exec;
 
   // ALU connections.
   wire nalu_cout;
@@ -97,23 +95,19 @@ module q2(
   wire nio;
   wire dep;
 
-  wire io_rd;
-  nfet adq1(1'b0, nio, io_rd);
-  nfet adq2(1'b0, rda, io_rd);
-
-  wire adt1, adt2;
-  nfet adq3(1'b0, dbus[11], adt1);
-  nfet adq4(1'b0, adt1, adt2);
-
-  wire lcd_wr;
-  nfet adq5(1'b0, adt2, lcd_wr);
-  nfet adq6(1'b0, nio, lcd_wr);
-  nfet adq7(1'b0, nwrm, lcd_wr);
-
-  wire i2c_wr;
-  nfet adq8(1'b0, adt1, i2c_wr);
-  nfet adq9(1'b0, nio, i2c_wr);
-  nfet adq10(1'b0, nwrm, i2c_wr);
+  wire io_rd, lcd_wr, i2c_wr, df_wr;
+  address_decoder ad(
+    .dbus(dbus),
+    .nwrm(nwrm),
+    .state_fetch(state_fetch),
+    .state_exec(rda),
+    .io(io),
+    .nio(nio),
+    .io_rd(io_rd),
+    .lcd_wr(lcd_wr),
+    .i2c_wr(i2c_wr),
+    .df_wr(df_wr)
+  );
 
   wire ram_nce;
   nfet rq1(1'b0, nio, ram_nce);
@@ -138,6 +132,17 @@ module q2(
     .i2c_scl_out(i2c_scl_out),
     .i2c_sda_out(i2c_sda_out),
     .dbus(dbus)
+  );
+
+  field field(
+    .nrst(nrst),
+    .nwrp(nwrp),
+    .nderef(nderef),
+    .nstate_load(nstate_load),
+    .nstate_exec(nstate_exec),
+    .df_wr(df_wr),
+    .dbus0(dbus[0]),
+    .abus12(abus[12])
   );
 
   ram ram(
@@ -194,8 +199,9 @@ module q2(
     .fout(f_in),
     .s2in(s2in),
     .io(io),
-    .nio(nio),
+    .state_fetch(state_fetch),
     .nstate_exec(nstate_exec),
+    .nstate_load(nstate_load),
     .dep(dep)
   );
 
@@ -238,7 +244,7 @@ module q2(
     .xin_p(1'b0),
     .xin_dbus(xlin_dbus),
     .wrs(i2c_wr),
-    .sin(dbus[9]),
+    .sin(dbus[8]),
     .nsout(i2c_sda_out),
     .aout(a[0]),
     .nxout(nx[0]),
@@ -267,7 +273,7 @@ module q2(
     .xin_p(1'b0),
     .xin_dbus(xlin_dbus),
     .wrs(i2c_wr),
-    .sin(dbus[10]),
+    .sin(dbus[9]),
     .nsout(i2c_scl_out),
     .aout(a[1]),
     .nxout(nx[1]),
@@ -478,6 +484,7 @@ module q2(
     .wrs(wro),
     .sin(dbus[8]),
     .sout(deref),
+    .nsout(nderef),
     .aout(a[8]),
     .nxout(nx[8]),
     .xout(x[8]),

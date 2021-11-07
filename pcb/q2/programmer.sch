@@ -3,10 +3,10 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 80 108
+Sheet 80 109
 Title ""
 Date ""
-Rev ""
+Rev "4"
 Comp ""
 Comment1 ""
 Comment2 ""
@@ -29,10 +29,10 @@ NoConn ~ 5750 1200
 NoConn ~ 5950 1200
 NoConn ~ 6050 1200
 $Comp
-L power:GND #PWR0628
+L power:GND #PWR0636
 U 1 1 6090F0D9
 P 5450 3900
-F 0 "#PWR0628" H 5450 3650 50  0001 C CNN
+F 0 "#PWR0636" H 5450 3650 50  0001 C CNN
 F 1 "GND" H 5455 3727 50  0000 C CNN
 F 2 "" H 5450 3900 50  0001 C CNN
 F 3 "" H 5450 3900 50  0001 C CNN

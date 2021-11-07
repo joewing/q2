@@ -3,11 +3,11 @@ module ram(
   input wire nce,
   input wire nwe,
   input wire noe,
-  input wire [11:0] abus,
+  input wire [12:0] abus,
   inout wire [11:0] dbus
 );
 
-  reg [11:0] ram[0:4095];
+  reg [11:0] ram[0:8191];
 
   always @(*) begin
     if (!nwe & !nce) ram[abus] <= dbus;

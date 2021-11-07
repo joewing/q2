@@ -6,9 +6,9 @@ A single-board 12-bit discrete transistor computer.
 This repo contains the following subdirectories:
   - hdl - A Verilog model and test bench for simulating Q2 programs.
   - scad - An OpenSCAD 3d model for the case.
-  - q2asm - A Q2 assembler (in Rust).
-  - q2lc - A compiler for a simple language (in Rust).
-  - q2prog - A Q2 programmer (in Rust) for a Raspberry Pi.
+  - [q2asm](a2asm/README.md) - A Q2 assembler (in Rust).
+  - [q2lc](q2lc/README.md) - A compiler for a simple language (in Rust).
+  - [q2prog](q2prog/README.md) - A Q2 programmer (in Rust) for a Raspberry Pi.
   - examples - Q2 assembly language examples.
   - pcb - Schematics and PCB in KiCad
 
@@ -30,8 +30,8 @@ more information.
   [Raspberry Pi](https://www.raspberrypi.org) are used to
   program the Q2. The exact model does not matter, though older
   Pis with only 26 GPIO pins will not be able to read programs
-  back from the Q2. If desired, a Raspberry Pi can be used as
-  a complete development environment for the Q2.
+  back from the Q2. A Raspberry Pi can be used as a complete
+  development environment for the Q2.
 
 ### For simulation:
 
@@ -151,43 +151,54 @@ The following address modes are supported:
   =x    | 01 | zero-page relative
   @=x   | 11 | indirect through zero page
 
+For convenience, the assembler also supports two additional
+address modes:
+
+  Value | DZ | Meaning
+  ----- | --- | --------------------------------
+  #x    | 00 | immediate
+  #@x   | 10 | immediate indirect
+
+These cause an extra word to be allocated at the end of the
+current page for an immediate value.
+
 ## Examples
 
 ```
 ; Negate: A = -A
-  nor   =zero
-  add   =one
+  nor   #0
+  add   #1
 ```
 
 ```
 ; Subtract: A - v
-  nor   =zero
+  nor   #0
   add   v       ; A = v - A - 1
-  nor   =zero   ; A = A - v
+  nor   #0      ; A = A - v
 ```
 
 ```
 ; Decrement A
-  add   =neg1
+  add   #-1
 ```
 
 ```
 ; NOT: A = ~A
-  nor   =zero
+  nor   #0
 ```
 
 ```
 ; OR: A = A | v
   nor   v
-  nor   =zero
+  nor   #0
 ```
 
 ```
 ; AND: A = A & v
-  nor   =zero
+  nor   #0
   sta   =t0   ; t0 = ~A
   lda   v
-  nor   =zero ; A = ~v
+  nor   #0    ; A = ~v
   nor   =t0   ; A = ~(~A | ~v) = A & v
 ```
 
@@ -200,7 +211,7 @@ The following address modes are supported:
 ```
 ; Jump if a >= b
   lda   a
-  nor   =zero
+  nor   #0
   add   b
   jfc   ge
 ```
@@ -208,9 +219,9 @@ The following address modes are supported:
 ```
 ; Jump if a != b
   lda   a
-  nor   =zero
+  nor   #0
   add   b
-  nor   =zero
+  nor   #0
   jfc   ne
 ```
 
@@ -229,15 +240,13 @@ func:
 
 ```
 ; Long jump
-  jmp   @$+1
-  .dw   addr
+  jmp   @#addr
 ```
 
 ```
 ; Long call
-  lea   $+3
-  jmp   @$+1
-  .dw   addr
+  lea   $+1
+  jmp   @#addr
 ```
 
 ```
@@ -247,17 +256,15 @@ ror:
   sta   =ra       ; save return address
   shr   =x0       ; A = x0 >> 1
   jfc   @=ra      ; return if no carry
-  add   rortopbit
+  add   0x800
   jmp   @=ra
-rortopbit:
-  .dw   0x800
 ```
 
 ```
 ; Push A on to the stack
   sta   @=sp
   lda   =sp
-  add   =neg1
+  add   #-1
   sta   =sp
 ```
 
@@ -269,12 +276,53 @@ rortopbit:
   lda   @=sp
 ```
 
-## Memory Map
+## I/O
 
-The address space is 4096 12-bit words.
+I/O is handled through address 0xFFF.
 
-  Address   | Description
-  --------- | --------------
-  000 - FFE | RAM
-  FFF       | I/O
+### LCD
+
+Writes are directed to the LCD when the top 3 bits written to 0xFFF
+are zero.  Writes to the LCD can be either commands or data.
+The low 8-bits are sent directly to the LCD and the 9th bit determines
+if data (0) or a command (1) is to be sent. Reads are not supported.
+
+### Buttons
+
+There are 5 buttons. Reading from 0xFFF returns the state of the
+buttons in the low five bits where 0 is returned if the button is
+pressed and 1 is returned if the button is not pressed.
+
+### I2C
+
+The SCL and SDA bits can be set by writing to 0xFFF with the top
+bit set. Bit 9 controls SCL and bit 8 controls SDA.
+Reads from 0xFFF return the state of the SCL and SDA bits.
+
+### Memory Extension
+
+The memory extension device allows the Q2 to address more than 4096
+words of memory. This is accomplished through the use of two
+additional latches: the data field (DF) and the instruction field (IF).
+Memory accesses for indirect loads or stores have the data field
+appended to the address. All other accesses have the instruction field
+appended.
+
+On reset, both the data and instruction fields are set to 0.
+The data field can be set by writing 0xCxx to address 0xFFF (note that
+the field is ignored for I/O). This will set the data field to xx.
+The data field is copied to the instruction field when a jump takes
+place.
+
+### Summary
+
+Writes:
+
+  00 0 C DDDDDDDD - LCD
+  10 C D 00000000 - I2C (C for SCL, D for SDA)
+  11 0 0 0000000F - Field
+
+Reads:
+
+  11 C D 111KKKKK
 

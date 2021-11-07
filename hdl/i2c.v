@@ -18,11 +18,11 @@ module i2c(
 
   wire t1, t2;
   nfet q1(1'b0, 1'b0, t1);
-  nfet q2(t1, rd, dbus[9]);
+  nfet q2(t1, rd, dbus[8]);
   nfet q3(1'b0, 1'b0, t2);
-  nfet q4(t2, rd, dbus[10]);
+  nfet q4(t2, rd, dbus[9]);
 
-  assign dbus[11:10] = rd ? 2'b11 : 2'bzz;
+  assign dbus[11] = rd ? 1'b1 : 1'bz;
 
   always @(scl or sda or rst) begin
     if (rst) begin

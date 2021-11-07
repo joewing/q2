@@ -3,10 +3,10 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 1 108
+Sheet 1 109
 Title ""
 Date ""
-Rev ""
+Rev "4"
 Comp ""
 Comment1 ""
 Comment2 ""
@@ -280,31 +280,31 @@ Wire Wire Line
 Wire Wire Line
 	750  3300 750  2750
 $Sheet
-S 1100 4900 1100 1000
+S 850  5050 1100 1000
 U 60A0BC91
 F0 "Clock" 50
 F1 "clock.sch" 50
 $EndSheet
 $Sheet
-S 3650 4900 1200 1000
+S 3300 5050 1200 1000
 U 60A44A82
 F0 "Memory" 50
 F1 "memory.sch" 50
 $EndSheet
 $Sheet
-S 2350 4900 1150 1000
+S 2050 5050 1150 1000
 U 60AE7F64
 F0 "Address Decoder" 50
 F1 "address.sch" 50
 $EndSheet
 $Sheet
-S 1100 6150 1100 950 
+S 850  6300 1100 950 
 U 60B749FD
 F0 "Decoder" 50
 F1 "decoder.sch" 50
 $EndSheet
 $Sheet
-S 2350 6150 1150 950 
+S 2050 6300 1150 950 
 U 60BC7BD0
 F0 "Control" 50
 F1 "control.sch" 50
@@ -438,13 +438,13 @@ X0
 Text GLabel 1000 1300 0    50   Input ~ 0
 ALU_OUT
 $Sheet
-S 3650 6150 1200 950 
+S 3300 6300 1200 950 
 U 60C3DB0A
 F0 "ALU" 50
 F1 "alu.sch" 50
 $EndSheet
 $Sheet
-S 5000 4900 1200 1000
+S 4600 5050 1200 1000
 U 6090BB51
 F0 "Programmer" 50
 F1 "programmer.sch" 50
@@ -480,7 +480,7 @@ F14 "SOUT" I R 7150 3900 50
 F15 "~SOUT" I R 7150 3800 50 
 $EndSheet
 $Sheet
-S 6350 4900 1200 1000
+S 5900 5050 1200 1000
 U 60A72A52
 F0 "Power" 50
 F1 "power.sch" 50
@@ -506,13 +506,13 @@ Wire Wire Line
 Wire Wire Line
 	650  2850 11100 2850
 $Sheet
-S 5000 6150 1200 950 
+S 4600 6300 1200 950 
 U 609C40CC
 F0 "UI" 50
 F1 "ui.sch" 50
 $EndSheet
 $Sheet
-S 7700 4900 1200 1000
+S 7200 5050 1200 1000
 U 60B6F292
 F0 "I2C" 50
 F1 "i2c.sch" 50
@@ -562,11 +562,11 @@ I2C_WR
 Text GLabel 10550 4100 2    50   Input ~ 0
 I2C_WR
 Text GLabel 8850 4000 2    50   Input ~ 0
-DBUS10
+DBUS9
 Text GLabel 8850 3800 2    50   Input ~ 0
 I2C_SCL_OUT
 Text GLabel 10550 4000 2    50   Input ~ 0
-DBUS9
+DBUS8
 Text GLabel 10550 3800 2    50   Input ~ 0
 I2C_SDA_OUT
 Text GLabel 7150 1900 2    50   Input ~ 0
@@ -619,9 +619,19 @@ S3
 Text GLabel 7150 3900 2    50   Input ~ 0
 CDIV
 $Sheet
-S 9100 4900 1150 1000
+S 9850 5050 1150 1000
 U 60C20C19
 F0 "Front Panel" 50
 F1 "frontpanel.sch" 50
 $EndSheet
+$Sheet
+S 8500 5050 1250 1000
+U 61810DC8
+F0 "Field" 50
+F1 "field.sch" 50
+$EndSheet
+Text GLabel 7450 1800 2    50   Input ~ 0
+~DEREF
+Wire Wire Line
+	7450 1800 7150 1800
 $EndSCHEMATC

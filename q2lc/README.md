@@ -296,6 +296,7 @@ The following built-in function are available:
 
  * `divmod(x, y, a, b)` - Computes `a = x / y` and `b = x % y`.
  * `memset(dest, count, value)` - Sets `count` words at `dest` to `value`.
+ * `memcpy(dest, src, count)` - Copy `count` words from `src` to `dest`.
  * `itoa(i)` - Return a pointer to a 5 word zero-terminated ASCII string representing `i`.
  * `clear()` - Reset and clear the LCD.
  * `puts(s)` - Write a zero-terminated string to the output device.
@@ -305,4 +306,13 @@ The following built-in function are available:
  * `i2c_stop()` - Stop an I2C transaction.
  * `i2c_write(v)` - Write byte v to the I2C interface.
  * `i2c_read()` - Read a byte from the I2C interface.
+
+## Include Files
+
+Include files are supported using the `include` keyword:
+
+```
+  include "path/file.q2l";
+```
+
 

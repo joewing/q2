@@ -1,7 +1,8 @@
 
 const MAX_VALUE = 256;
 
-fun show_primes()
+fun main()
+  clear();
   puts("Primes: ");
   const RESULTS = :MAX_VALUE;
   memset(RESULTS, MAX_VALUE, 1);
@@ -18,10 +19,5 @@ fun show_primes()
     end
     p = @p + 1;
   end
-end
-
-fun main()
-  clear();
-  show_primes();
 end
 

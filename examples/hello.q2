@@ -1,27 +1,67 @@
-
-  lea   cmds
-hello_loop:
-  sta   =x0
-  lda   @=x0
-  jfc   $+2
-  jmp   $     ; Halt when we hit 0
-
-  sta   @output
-  lea   =1
-  add   =x0
-  jmp   hello_loop
-output:
-  .dw   0xFFF
-
-
-cmds:
-  .dw   0x138   ; Function set (8-bits, 2-lines, 5x8)
-  .dw   0x10E   ; Display on, cursor on, blink off
-  .dw   0x106   ; Entry mode, increment, no shift
-  .dw   0x101   ; Clear screen
-  .dw   "Hello!"
-  .dw   0
-
-x0:
+  lea $+3
+  jmp @$+1
+  .dw main
+  jmp $
+  .org 128
+puts:
+  sta =4
+  jmp @L4
+L2:
+  lda @=5
+  sta @L5
+  lea =1
+  add =5
+  sta =5
+L1:
+  lda @=5
+  jfc L2
+L3:
+  jmp @=4
+clear:
+  sta =7
+  lea @L7
+  sta =5
+  lea @L9
+  jmp puts
+L8:
+  jmp @=7
+main:
+  sta =8
+  lea @L11
+  jmp clear
+L10:
+  lea @L13
+  sta =5
+  lea @L15
+  jmp puts
+L14:
+  jmp @=8
+L4:
+  .dw L1
+L7:
+  .dw L6
+L13:
+  .dw L12
+L11:
+  .dw L10
+L15:
+  .dw L14
+L5:
+  .dw 4095
+L9:
+  .dw L8
+  .align
+L6:
+  .dw 312
+  .dw 268
+  .dw 262
+  .dw 257
   .dw 0
-
+L12:
+  .dw 72
+  .dw 101
+  .dw 108
+  .dw 108
+  .dw 111
+  .dw 33
+  .dw 0

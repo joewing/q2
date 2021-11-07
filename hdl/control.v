@@ -39,8 +39,9 @@ module control(
   output wire fout,
   output wire s2in,
   inout wire io,
-  output wire nio,
+  output wire state_fetch,
   output wire nstate_exec,
+  output wire nstate_load,
   output wire dep
 );
 
@@ -55,18 +56,16 @@ module control(
   nfet #(2, 10000) q4(t2, s0, t3);
   nfet #(2, 10000) q5(t3, deref, nstate_deref);
 
-  wire nstate_load;
   wire t4, t5;
-  nfet #(2, 10000) q6(t1, s1, t4);
-  nfet #(2, 10000) q7(t4, ns0, t5);
-  nfet #(2, 10000) q8(t5, no2, nstate_load);
+  nfet #(3, 10000) q6(t1, s1, t4);
+  nfet #(3, 10000) q7(t4, ns0, t5);
+  nfet #(3, 10000) q8(t5, no2, nstate_load);
 
-  nfet #(5, 10000) q9(t4, s0, nstate_exec);
+  nfet #(6, 10000) q9(t4, s0, nstate_exec);
 
   wire state_exec;
   nfet #(14, 4700) q10(1'b0, nstate_exec, state_exec);
 
-  wire state_fetch;
   nfet #(13, 4700) q11(1'b0, nstate_fetch, state_fetch);
 
   wire nstate_alu;
@@ -120,12 +119,12 @@ module control(
   nfet #(2, 10000) q40(t22, nws, incp_clk);
 
   wire t12, t13, t14, t15;
-  nfet #(24, 1000) q41(1'b0, o2, t12);
-  nfet #(24, 1000) q42(t12, o1, t13);
-  nfet #(24, 1000) q43(t13, nf, t14);
-  nfet #(24, 1000) q44(t13, no0, t14);
-  nfet #(24, 1000) q45(t14, state_exec, t15);
-  nfet #(24, 1000) q46(t15, ws, nwrp);
+  nfet #(25, 1000) q41(1'b0, o2, t12);
+  nfet #(25, 1000) q42(t12, o1, t13);
+  nfet #(25, 1000) q43(t13, nf, t14);
+  nfet #(25, 1000) q44(t13, no0, t14);
+  nfet #(25, 1000) q45(t14, state_exec, t15);
+  nfet #(25, 1000) q46(t15, ws, nwrp);
 
   assign rdp = state_fetch;
   assign rdx = nstate_fetch;
@@ -154,8 +153,5 @@ module control(
   nfet #(1, 10000) q60(t20, no0, t19);
   nfet #(1, 10000) q61(t20, nx0, t19);
   nfet #(1, 10000) q62(t19, nstate_alu, fout);
-
-  nfet #(1, 10000) q63(1'b0, state_fetch, io);
-  nfet #(4, 10000) q64(1'b0, io, nio);
 
 endmodule

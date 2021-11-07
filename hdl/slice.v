@@ -99,7 +99,7 @@ module slice(
   nfet q1(1'b0, nrst, clrs);
 
   wire t1;
-  nfet #(3, 10000) q2(t1, dep, dbus);
-  nfet #(3, 10000) q3(1'b0, nsw, t1);
+  nfet #(5, 10000) q2(t1, dep, dbus);
+  nfet #(5, 10000) q3(1'b0, nsw, t1);
 
 endmodule

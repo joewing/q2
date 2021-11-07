@@ -165,8 +165,8 @@ const PUTINT: &str = concat!(
 );
 
 const I2C_EN: &str = "const I2C_EN = 0x800;";
-const I2C_SCL: &str = "const I2C_SCL = 0x400;";
-const I2C_SDA: &str = "const I2C_SDA = 0x200;";
+const I2C_SCL: &str = "const I2C_SCL = 0x200;";
+const I2C_SDA: &str = "const I2C_SDA = 0x100;";
 
 const I2C_START: &str = concat!(
     "fun i2c_start()\n",
