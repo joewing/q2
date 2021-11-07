@@ -318,11 +318,11 @@ place.
 
 Writes:
 
-  00 0 C DDDDDDDD - LCD
-  10 C D 00000000 - I2C (C for SCL, D for SDA)
-  11 0 0 0000000F - Field
+  * 00 0 C DDDDDDDD - LCD
+  * 10 C D 00000000 - I2C (C for SCL, D for SDA)
+  * 11 0 0 0000000F - Field
 
 Reads:
 
-  11 C D 111KKKKK
+  * 11 C D 111KKKKK
 
