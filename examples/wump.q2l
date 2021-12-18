@@ -187,10 +187,10 @@ fun move_menu()
     do_move(0); # Left
     return 1;
   elseif @key == 2 then
-    do_move(1); # Right
+    do_move(2); # Right
     return 1;
   elseif @key == 4 then
-    do_move(2); # Up
+    do_move(1); # Up
     return 1;
   end
   return 0;
@@ -207,10 +207,10 @@ fun shoot_menu()
     do_shoot(0);  # Left
     return 1;
   elseif @key == 2 then
-    do_shoot(1);  # Right
+    do_shoot(2);  # Right
     return 1;
   elseif @key == 4 then
-    do_shoot(2);  # Up
+    do_shoot(1);  # Up
     return 1;
   end
   return 0;

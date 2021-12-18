@@ -241,15 +241,15 @@ Fanout 2\nNeeds to be fast
 $Comp
 L Connector:TestPoint TP1
 U 1 1 60901458
-P 6350 4450
-F 0 "TP1" V 6304 4638 50  0000 L CNN
-F 1 "CLK" V 6395 4638 50  0000 L CNN
-F 2 "TestPoint:TestPoint_Loop_D2.50mm_Drill1.0mm" H 6550 4450 50  0001 C CNN
-F 3 "~" H 6550 4450 50  0001 C CNN
-	1    6350 4450
+P 9150 1800
+F 0 "TP1" V 9104 1988 50  0000 L CNN
+F 1 "CLK" V 9195 1988 50  0000 L CNN
+F 2 "TestPoint:TestPoint_Loop_D2.50mm_Drill1.0mm" H 9350 1800 50  0001 C CNN
+F 3 "~" H 9350 1800 50  0001 C CNN
+	1    9150 1800
 	0    1    1    0   
 $EndComp
-Text GLabel 6350 4450 0    50   Input ~ 0
+Text GLabel 9150 1800 0    50   Input ~ 0
 CLK
 Wire Wire Line
 	3700 6500 3700 6150
@@ -1727,4 +1727,6 @@ Wire Wire Line
 	1850 3350 2050 3350
 Wire Wire Line
 	1850 3550 2050 3550
+Text Notes 5750 2500 0    50   ~ 0
+CLK high when not running.
 $EndSCHEMATC

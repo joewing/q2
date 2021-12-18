@@ -19,7 +19,7 @@
 
   .org  0
   jmp   @$+1
-  .dw   0x800
+  .dw   0x080
 
   .org  18
 zero:
@@ -30,4 +30,6 @@ neg1:
   .dw   -1
 rseed:
   .dw   0
+
+  .org 0x080
 

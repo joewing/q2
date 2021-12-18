@@ -69,5 +69,5 @@ waitkey_loop2:
   jfc   waitkey_loop2
   jmp   @=x1
 waitkey_mask:
-  .dw   0x000
+  .dw   0xFE0
 

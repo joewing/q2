@@ -1,6 +1,6 @@
 
 ; Raster is 20x16 = 320 words
-.def  raster_buffer   0x100
+.def  raster_buffer   0x400
 
   .align  128
 

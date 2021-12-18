@@ -1,26 +1,12 @@
 
-
 .def  maze_width    20
 .def  maze_height   16
 
-  .align  128
-
 maze:
-  sta   =x11
-
-maze_gen:
-
-  lda   maze_clear_cmd
-  sta   @=neg1
-  lea   =1
-  lea   =1
-  lea   =1
-  lea   =1
   lea   maze_gen_str
   sta   =x0
-  lea   $+3
-  jmp   @$+1
-  .dw   puts
+  lea   $+2
+  jmp   @#puts
 
   ; Fill the maze array with 1s (walls).
   lda   maze_ptr
@@ -76,9 +62,8 @@ maze_init_tb:
   sta   =x9
   lda   maze_start
   sta   =x5
-  lea   $+3
-  jmp   @$+1
-  .dw   maze_carve
+  lea   $+2
+  jmp   @#maze_carve
 
   ; Carve out start/end
   lda   maze_entry
@@ -91,37 +76,21 @@ maze_init_tb:
   sta   @=x0
 
   ; Display the maze
-  lea   $+3
-  jmp   @$+1
-  .dw   raster_put
+  lea   $+2
+  jmp   @#raster_put
 
   lea   maze_str
   sta   =x0
-  lea   $+3
-  jmp   @$+1
-  .dw   puts
+  lea   $+2
+  jmp   @#puts
 
   ; Wait for a key press.
-maze_wait_loop:
-  lea   $+3
-  jmp   @$+1
-  .dw   waitkey
+  lea   maze
+  jmp   @#waitkey
 
-  shr   =x0
-  sta   =x0
-  jfc   maze_not_gen
-  jmp   maze_gen
-maze_not_gen:
-  shr   =x0
-  jfc   maze_wait_loop
-  
-  ; Return
-  jmp   @=x11
-
-maze_clear_cmd:
-  .dw   0x101
 maze_gen_str:
-  .dw   "Generating..."
+  .dw   0x101
+  .dw   "Carving..."
   .dw   0
 maze_size:
   .dw   maze_width * maze_height
@@ -136,14 +105,16 @@ maze_exit:
 maze_ptr:
   .dw   raster_buffer
 maze_stack:
-  .dw   0x7FF
+  .dw   0xFFE
 maze_str:
   .dw   0x180                               ; DDRAM address 0 (first line)
+  .dw   "      "
   .dw   0x08, 0x0A, 0x0C, 0x0E
-  .dw   "  0:New     "
+  .dw   "      "
   .dw   0x1C0                               ; DDRAM address 40 (second line)
+  .dw   "      "
   .dw   0x09, 0x0B, 0x0D, 0x0F
-  .dw   "  1:Exit    "
+  .dw   "      "
   .dw   0
 
   .align  128
@@ -164,9 +135,8 @@ maze_carve:
   sta   @=x5
 
   ; Get a random number in x8.
-  lea   $+3
-  jmp   @$+1
-  .dw   rand    ; Destroys x0-x4
+  lea   $+2
+  jmp   @#rand ; Destroys x0-x4
   sta   =x8
 
   lea   =4

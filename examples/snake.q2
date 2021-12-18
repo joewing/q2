@@ -10,9 +10,9 @@
 
 ; Snake data is an array of (x, y)
 ; Max length is 20x16 x2 = 640 = 0x280 words
-.def snake_data       0x300   ; to 0x57F
+.def snake_data       0x700   ; to 0x97F
 
-  .align  128
+menu:
 
 snake:
 
@@ -100,7 +100,7 @@ snake_delay_loop:
   add   =neg1
   sta   =x0
   lda   @=neg1
-  nor   =zero
+  nor   #0xFE0
   jfc   $+2
   jmp   $+2
   sta   =snake_dir
@@ -123,20 +123,23 @@ snake_move_no_left_wrap:
 snake_move_not_left:
   sta   =x0
   shr   =x0
-  jfc   snake_move_not_down
+  jfc   snake_move_not_right
 
-  ; Move down
-  lea   =15
+  ; Move right
+  lea   =19
   nor   =zero
-  sta   =x2
+  add   =snake_x
+  nor   =zero
+  jfc   snake_move_no_right_wrap
+  sta   =snake_x
+  jmp   snake_move_position_updated
+snake_move_no_right_wrap:
   lea   =1
-  add   =snake_y
-  nor   =zero
-  nor   =x2   ; (y + 1) & 15
-  sta   =snake_y
+  add   =snake_x
+  sta   =snake_x
   jmp   snake_move_position_updated
 
-snake_move_not_down:
+snake_move_not_right:
   sta   =x0
   shr   =x0
   jfc   snake_move_not_up
@@ -154,18 +157,16 @@ snake_move_no_up_wrap:
 
 snake_move_not_up:
 
-  ; Assumed to be right
-  lea   =19
+  ; Assumed to be down
+  lea   =15
   nor   =zero
-  add   =snake_x
-  nor   =zero
-  jfc   snake_move_no_right_wrap
-  sta   =snake_x
-  jmp   snake_move_position_updated
-snake_move_no_right_wrap:
+  sta   =x2
   lea   =1
-  add   =snake_x
-  sta   =snake_x
+  add   =snake_y
+  nor   =zero
+  nor   =x2   ; (y + 1) & 15
+  sta   =snake_y
+
 snake_move_position_updated:
 
   ; Check if we got food.
@@ -263,7 +264,7 @@ snake_shift:
   ; checked for food.
 
   lda   @=neg1
-  nor   =zero
+  nor   #0xFE0
   jfc   $+2
   jmp   $+2
   sta   =snake_dir
@@ -299,7 +300,7 @@ snake_shift_save_tail:
   sta   =snake_tail_index
 
   lda   @=neg1
-  nor   =zero
+  nor   #0xFE0
   jfc   $+2
   jmp   $+2
   sta   =snake_dir

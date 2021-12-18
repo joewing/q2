@@ -9,6 +9,7 @@
 
 .def  pong_paddle_len 6
 
+  jmp   @#pong
 
   .align  128
 
@@ -247,7 +248,7 @@ pong_game_over_wait:
   jfc   pong_game_over_wait
 
   jal   @#waitkey
-  jmp   @#menu
+  jmp   @#pong
 
 pong_neg20:
   .dw   -20
