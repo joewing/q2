@@ -52,6 +52,9 @@ $(ASM): q2asm/src/*.rs
 $(PROG): q2prog/src/*.rs
 	(cd q2prog && cargo build)
 
+$(Q2LC): q2lc/src/*.rs
+	(cd q2lc && cargo build)
+
 clean:
 	rm -f examples/*.lst examples/*.hex examples/*.q2p
 	rm -f hdl/test.hex
