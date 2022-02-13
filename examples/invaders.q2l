@@ -1,0 +1,401 @@
+
+# Sprite indices.
+const EMPTY         = 0;
+const SHIP          = 8;
+const SHIP_BULLET   = 9;
+const BULLET_TOP    = 10;
+const BULLET_BOTTOM = 11;
+const ALIEN1        = 12;
+const ALIEN1_BULLET = 13;
+const ALIEN2        = 14;
+const ALIEN2_BULLET = 15;
+
+const SPRITES = [
+
+    0b00000000,   # ship
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000100,
+    0b00001110,
+    0b00011111,
+
+    0b00000000,   # ship with bullet
+    0b00000100,
+    0b00000100,
+    0b00000000,
+    0b00000000,
+    0b00000100,
+    0b00001110,
+    0b00011111,
+
+    0b00000000,   # bullet top
+    0b00000100,
+    0b00000100,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    0b00000000,   # bullet bottom
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000100,
+    0b00000100,
+    0b00000000,
+    
+    0b00001010, # alien 1
+    0b00010101,
+    0b00001110,
+    0b00010001,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    0b00001010, # alien 1 with bullet
+    0b00010101,
+    0b00001110,
+    0b00010001,
+    0b00000000,
+    0b00000100,
+    0b00000100,
+    0b00000000,
+
+    0b00001010, # alien 2
+    0b00010101,
+    0b00001110,
+    0b00001010,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+
+    0b00001010, # alien 2 with bullet
+    0b00010101,
+    0b00001110,
+    0b00001010,
+    0b00000000,
+    0b00000100,
+    0b00000100,
+    0b00000000
+];
+
+var ship_position;
+var alien_offset;
+var alien_direction;
+var alien_bulletx;
+var alien_bullety;
+var ship_bulletx;
+var ship_bullety;
+var live_aliens;
+var game_over;
+var key;
+
+const MAX_LEVEL = 10;
+const ALIEN_COUNT = 8;
+const ALIENS = :ALIEN_COUNT;
+
+fun init_lcd()
+  clear();
+  OUTPUT = 0x140;
+  var i = 0;
+  while @i < 8 * 8 do
+    OUTPUT = @(SPRITES + @i);
+    i = @i + 1;
+  end
+end
+
+fun start_level()
+  var i = 0;
+  while @i < 8 do
+    ALIENS + @i = 1;
+    i = @i + 1;
+  end
+  ship_position = 7;
+  alien_offset = 2;
+  alien_direction = 1;
+  alien_bulletx = 0;
+  alien_bullety = 0;
+  live_aliens = ALIEN_COUNT;
+  ship_bulletx = 0;
+  ship_bullety = 0;
+  game_over = 0;
+  key = 0;
+end
+
+fun check_key()
+  var temp = ~(@OUTPUT | ~31);
+  if @temp then
+    key = @temp;
+  end
+end
+
+fun update_game()
+
+  # Draw/update aliens/bullets.
+  if @alien_offset then
+    OUTPUT = 0x180 + @alien_offset - 1;
+    OUTPUT = ' ';
+    if @ship_bulletx < @alien_offset then
+      OUTPUT = 0x180 + @ship_bulletx;
+      if @ship_bullety == 0 then
+        OUTPUT = ' ';
+      elseif @ship_bullety == 1 then
+        OUTPUT = BULLET_TOP;
+        ship_bullety = 0;
+      elseif @ship_bullety == 2 then
+        OUTPUT = BULLET_BOTTOM;
+        ship_bullety = 1;
+      end
+    end
+    if @alien_bulletx < @alien_offset then
+      if @alien_bullety == 2 then
+        OUTPUT = 0x180 + @alien_bulletx;
+        OUTPUT = BULLET_BOTTOM;
+        alien_bullety = 3;
+      else
+        OUTPUT = ' ';
+      end
+    end
+  end
+  OUTPUT = 0x180 + @alien_offset;
+  var i = 0;
+  var x = @alien_offset;
+  var alien_char = ALIEN1;
+  var alien_bullet_char = ALIEN1_BULLET;
+  if @alien_offset & 1 then
+    alien_char = ALIEN2;
+    alien_bullet_char = ALIEN2_BULLET;
+  end
+  while @i < ALIEN_COUNT do
+    var ptr = ALIENS + @i;
+    if @@ptr then
+      if @alien_bulletx == @x && @alien_bullety == 2 then
+        OUTPUT = @alien_bullet_char;
+        alien_bullety = 3;
+      elseif @ship_bulletx == @x && @ship_bullety == 1 then
+        @ptr = 0;
+        live_aliens = @live_aliens - 1;
+        OUTPUT = '*';
+        ship_bullety = 0;
+      elseif @ship_bulletx == @x && @ship_bullety == 2 then
+        OUTPUT = @alien_bullet_char;
+        ship_bullety = 1;
+      else
+        OUTPUT = @alien_char;
+      end
+    else
+      if @alien_bulletx == @x && @alien_bullety == 2 then
+        OUTPUT = BULLET_BOTTOM;
+        alien_bullety = 3;
+      elseif @ship_bulletx == @x && @ship_bullety == 1 then
+        OUTPUT = BULLET_TOP;
+        ship_bullety = 0;
+      elseif @ship_bulletx == @x && @ship_bullety == 2 then
+        OUTPUT = BULLET_BOTTOM;
+        ship_bullety = 1;
+      else
+        OUTPUT = ' ';
+      end
+    end
+    check_key();
+    i = @i + 1;
+    x = @x + 1;
+  end
+  OUTPUT = ' ';
+  if @ship_bulletx >= @x then
+    OUTPUT = 0x180 + @ship_bulletx;
+    if @ship_bullety == 1 then
+      OUTPUT = BULLET_TOP;
+      ship_bullety = 0;
+    elseif @ship_bullety == 2 then
+      OUTPUT = BULLET_BOTTOM;
+      ship_bullety = 1;
+    else
+      OUTPUT = ' ';
+    end
+  end
+  if @alien_bulletx >= @x then
+    OUTPUT = 0x180 + @alien_bulletx;
+    if @alien_bullety == 2 then
+      OUTPUT = BULLET_BOTTOM;
+      alien_bullety = 3;
+    else
+      OUTPUT = ' ';
+    end
+  end
+
+  # Draw/update ship/bullets.
+  if @ship_position then
+    OUTPUT = 0x180 + 0x40 + @ship_position - 1;
+    OUTPUT = ' ';
+    if @ship_bulletx < @ship_position then
+      OUTPUT = 0x180 + 0x40 + @ship_bulletx;
+      if @ship_bullety == 3 then
+        ship_bullety = 2;
+        OUTPUT = BULLET_TOP;
+      else
+        OUTPUT = ' ';
+      end
+    end
+    if @alien_bulletx < @ship_position then
+      OUTPUT = 0x180 + 0x40 + @alien_bulletx;
+      if @alien_bullety == 3 then
+        alien_bullety = 4;
+        OUTPUT = BULLET_TOP;
+      elseif @alien_bullety == 4 then
+        alien_bullety = 5;
+        OUTPUT = BULLET_BOTTOM;
+      elseif @alien_bullety == 5 then
+        alien_bullety = 0;
+        OUTPUT = ' ';
+      end
+    end
+  end
+  OUTPUT = 0x180 + 0x40 + @ship_position;
+  if @alien_bulletx == @ship_position && @alien_bullety == 3 then
+    alien_bullety = 4;
+    OUTPUT = SHIP_BULLET;
+  elseif @alien_bulletx == @ship_position && @alien_bullety == 4 then
+    game_over = 1;
+    alien_bullety = 0;
+    OUTPUT = '*';
+  elseif @ship_bulletx == @ship_position && @ship_bullety == 3 then
+    ship_bullety = 2;
+    OUTPUT = SHIP_BULLET;
+  else
+    OUTPUT = SHIP;
+  end
+  if @ship_position < 15 then
+    OUTPUT = ' ';
+    if @ship_bulletx > @ship_position then
+      if @ship_bullety == 3 then
+        ship_bullety = 2;
+        OUTPUT = 0x180 + 0x40 + @ship_bulletx;
+        OUTPUT = BULLET_TOP;
+      end
+    end
+    if @alien_bulletx > @ship_position then
+      OUTPUT = 0x180 + 0x40 + @alien_bulletx;
+      if @alien_bullety == 3 then
+        alien_bullety = 4;
+        OUTPUT = BULLET_TOP;
+      elseif @alien_bullety == 4 then
+        alien_bullety = 5;
+        OUTPUT = BULLET_BOTTOM;
+      elseif @alien_bullety == 5 then
+        alien_bullety = 0;
+        OUTPUT = ' ';
+      end
+    end
+  end
+
+end
+
+fun move_aliens()
+  if @alien_direction then
+    if @alien_offset + ALIEN_COUNT < 16 then
+      alien_offset = @alien_offset + 1;
+    else
+      alien_direction = 0;
+      alien_offset = @alien_offset - 1;
+    end
+  else
+    if @alien_offset > 0 then
+      alien_offset = @alien_offset - 1;
+    else
+      alien_direction = 1;
+      alien_offset = @alien_offset + 1;
+    end
+  end
+end
+
+fun fire()
+  if @alien_bullety == 0 then
+    alien_bulletx = rand() & (ALIEN_COUNT - 1);
+    if @(ALIENS + @alien_bulletx) then
+      alien_bullety = 2;
+      alien_bulletx = @alien_bulletx + @alien_offset;
+    end
+  end
+end
+
+fun move_ship()
+  if @key == 1 then
+    if @ship_position > 0 then
+      ship_position = @ship_position - 1;
+    end
+  elseif @key == 2 then
+    if @ship_position < 15 then
+      ship_position = @ship_position + 1;
+    end
+  elseif @key == 16 then
+    if @ship_bullety == 0 then
+      ship_bullety = 3;
+      ship_bulletx = @ship_position;
+    end
+  end
+  key = 0;
+end
+
+fun getkey()
+  return ~(@OUTPUT | ~31);
+end
+
+# Wait for a key press.
+fun waitkey()
+  while 1 do
+    var key = getkey();
+    if @key then
+      while getkey() do
+      end
+      return @key;
+    end
+  end
+end
+
+fun main()
+  init_lcd();
+  start_level();
+
+  var level = 0;
+  var move_count = 5;
+
+  live_aliens = 0;
+  game_over = 0;
+  while !@game_over do
+
+    if @live_aliens == 0 then
+      if @level < MAX_LEVEL then
+        level = @level + 1;
+      end
+      OUTPUT = 0x180;
+      puts("   Invaders    ");
+      OUTPUT = 0x180 + 0x40;
+      puts("  Level:  ");
+      putint(@level);
+      puts("  ");
+      waitkey();
+      clear();
+      start_level();
+    end
+
+    update_game();
+    move_ship();
+
+    if @move_count == 0 then
+      move_aliens();
+      fire();
+      move_count = MAX_LEVEL - @level;
+    else
+      move_count = @move_count - 1;
+    end
+
+  end
+end
+
