@@ -1,7 +1,7 @@
 
 # Q2
 
-A single-board 12-bit discrete transistor computer.
+A single-board 12-bit bit-serial discrete transistor computer.
 
 This repo contains the following subdirectories:
   - hdl - A Verilog model and test bench for simulating Q2 programs.
@@ -14,6 +14,9 @@ This repo contains the following subdirectories:
 
 See [joewing.net/projects/q2](https://joewing.net/projects/q2) for
 more information.
+
+Here's what it looks like:
+![Q4 revision 4](q2r4.png)
 
 ## Requirements
 
@@ -53,7 +56,7 @@ necessary surface-mount components. Due to the large number of components,
 I use a turn-key assembly service. Although numerous, all of the components
 are fairly standard making them cheap and widely available.
 
-The large number of components makes the price for assembly to
+The large number of components makes the price for assembly
 vary quite a bit from company to company. It's probably no surprise,
 but the cheapest I've found is JLCPCB. I've been
 satisfied with all the boards from them so far.
@@ -66,7 +69,7 @@ and positions correct.
 Component orientation can be mostly fixed using
 [JLCKicadTools](https://github.com/matthewlai/JLCKicadTools).
 However, I typically run into a few components that need to be
-fixed up when I try out new switches, etc.
+fixed up when trying out new switches, etc.
 
 Another issue with JLCPCB is that having more than 1000 of the same
 component appears to cause problems such that they reject the BOM.
