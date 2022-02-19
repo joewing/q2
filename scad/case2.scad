@@ -19,7 +19,8 @@ midpoint = 140;
 standoff_positions = [
     [screw_offset, screw_offset],
     [board_width - screw_offset, screw_offset],
-    [board_width / 2, 100],
+    [board_width / 2, 80],
+    [board_width / 2, 201],
     [screw_offset, board_height - screw_offset],
     [board_width - screw_offset, board_height - screw_offset],
 ];
@@ -138,5 +139,5 @@ module back_half() {
     }
 }
 
-front_half();
-//back_half();
+//front_half();
+back_half();

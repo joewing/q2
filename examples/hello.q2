@@ -38,18 +38,18 @@ L14:
   jmp @=8
 L4:
   .dw L1
-L7:
-  .dw L6
-L13:
-  .dw L12
-L11:
-  .dw L10
 L15:
   .dw L14
-L5:
-  .dw 4095
+L11:
+  .dw L10
+L13:
+  .dw L12
+L7:
+  .dw L6
 L9:
   .dw L8
+L5:
+  .dw 4095
   .align
 L6:
   .dw 312

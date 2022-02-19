@@ -20,7 +20,7 @@ P 5850 2500
 F 0 "J1" H 6500 3900 50  0000 C CNN
 F 1 "Programmer" H 6550 3800 50  0000 C CNN
 F 2 "Connector_IDC:IDC-Header_2x20_P2.54mm_Vertical" H 5850 2500 50  0001 C CNN
-F 3 "https://www.raspberrypi.org/documentation/hardware/raspberrypi/schematics/rpi_SCH_3bplus_1p0_reduced.pdf" H 5850 2500 50  0001 C CNN
+F 3 "" H 5850 2500 50  0001 C CNN
 	1    5850 2500
 	1    0    0    -1  
 $EndComp
@@ -143,8 +143,12 @@ AR Path="/6090BB51/60A02E3D" Ref="D49"  Part="1"
 F 0 "D49" V 2804 3530 50  0000 L CNN
 F 1 "BAT43W" V 2895 3530 50  0000 L CNN
 F 2 "Diode_SMD:D_SOD-123" H 2850 3275 50  0001 C CNN
-F 3 "http://www.vishay.com/docs/85660/bat42.pdf" H 2850 3450 50  0001 C CNN
+F 3 "" H 2850 3450 50  0001 C CNN
 F 4 "C19167" H 2850 3450 50  0001 C CNN "LCSC"
+F 5 "Changjiang Electronics Tech (CJ)" H 2850 3450 50  0001 C CNN "Manufacturer"
+F 6 "BAT43W" H 2850 3450 50  0001 C CNN "Part Number"
+F 7 "SOD-123" H 2850 3450 50  0001 C CNN "Package"
+F 8 "SMD" H 2850 3450 50  0001 C CNN "Type"
 	1    2850 3450
 	0    1    1    0   
 $EndComp
@@ -235,8 +239,12 @@ AR Path="/6090BB51/60C4E6FD" Ref="D51"  Part="1"
 F 0 "D51" V 3654 3530 50  0000 L CNN
 F 1 "BAT43W" V 3745 3530 50  0000 L CNN
 F 2 "Diode_SMD:D_SOD-123" H 3700 3275 50  0001 C CNN
-F 3 "http://www.vishay.com/docs/85660/bat42.pdf" H 3700 3450 50  0001 C CNN
+F 3 "" H 3700 3450 50  0001 C CNN
 F 4 "C19167" H 3700 3450 50  0001 C CNN "LCSC"
+F 5 "Changjiang Electronics Tech (CJ)" H 3700 3450 50  0001 C CNN "Manufacturer"
+F 6 "BAT43W" H 3700 3450 50  0001 C CNN "Part Number"
+F 7 "SOD-123" H 3700 3450 50  0001 C CNN "Package"
+F 8 "SMD" H 3700 3450 50  0001 C CNN "Type"
 	1    3700 3450
 	0    1    1    0   
 $EndComp
@@ -249,8 +257,12 @@ AR Path="/6090BB51/60C4F234" Ref="D50"  Part="1"
 F 0 "D50" V 3254 3530 50  0000 L CNN
 F 1 "BAT43W" V 3345 3530 50  0000 L CNN
 F 2 "Diode_SMD:D_SOD-123" H 3300 3275 50  0001 C CNN
-F 3 "http://www.vishay.com/docs/85660/bat42.pdf" H 3300 3450 50  0001 C CNN
+F 3 "" H 3300 3450 50  0001 C CNN
 F 4 "C19167" H 3300 3450 50  0001 C CNN "LCSC"
+F 5 "Changjiang Electronics Tech (CJ)" H 3300 3450 50  0001 C CNN "Manufacturer"
+F 6 "BAT43W" H 3300 3450 50  0001 C CNN "Part Number"
+F 7 "SOD-123" H 3300 3450 50  0001 C CNN "Package"
+F 8 "SMD" H 3300 3450 50  0001 C CNN "Type"
 	1    3300 3450
 	0    1    1    0   
 $EndComp
@@ -263,8 +275,12 @@ AR Path="/6090BB51/60C4FFDF" Ref="D52"  Part="1"
 F 0 "D52" V 4104 3530 50  0000 L CNN
 F 1 "BAT43W" V 4195 3530 50  0000 L CNN
 F 2 "Diode_SMD:D_SOD-123" H 4150 3275 50  0001 C CNN
-F 3 "http://www.vishay.com/docs/85660/bat42.pdf" H 4150 3450 50  0001 C CNN
+F 3 "" H 4150 3450 50  0001 C CNN
 F 4 "C19167" H 4150 3450 50  0001 C CNN "LCSC"
+F 5 "Changjiang Electronics Tech (CJ)" H 4150 3450 50  0001 C CNN "Manufacturer"
+F 6 "BAT43W" H 4150 3450 50  0001 C CNN "Part Number"
+F 7 "SOD-123" H 4150 3450 50  0001 C CNN "Package"
+F 8 "SMD" H 4150 3450 50  0001 C CNN "Type"
 	1    4150 3450
 	0    1    1    0   
 $EndComp
@@ -277,8 +293,12 @@ AR Path="/6090BB51/60C508CB" Ref="D53"  Part="1"
 F 0 "D53" V 7504 3830 50  0000 L CNN
 F 1 "BAT43W" V 7595 3830 50  0000 L CNN
 F 2 "Diode_SMD:D_SOD-123" H 7550 3575 50  0001 C CNN
-F 3 "http://www.vishay.com/docs/85660/bat42.pdf" H 7550 3750 50  0001 C CNN
+F 3 "" H 7550 3750 50  0001 C CNN
 F 4 "C19167" H 7550 3750 50  0001 C CNN "LCSC"
+F 5 "Changjiang Electronics Tech (CJ)" H 7550 3750 50  0001 C CNN "Manufacturer"
+F 6 "BAT43W" H 7550 3750 50  0001 C CNN "Part Number"
+F 7 "SOD-123" H 7550 3750 50  0001 C CNN "Package"
+F 8 "SMD" H 7550 3750 50  0001 C CNN "Type"
 	1    7550 3750
 	0    1    1    0   
 $EndComp
@@ -291,8 +311,12 @@ AR Path="/6090BB51/60C540DC" Ref="D54"  Part="1"
 F 0 "D54" V 7954 3830 50  0000 L CNN
 F 1 "BAT43W" V 8045 3830 50  0000 L CNN
 F 2 "Diode_SMD:D_SOD-123" H 8000 3575 50  0001 C CNN
-F 3 "http://www.vishay.com/docs/85660/bat42.pdf" H 8000 3750 50  0001 C CNN
+F 3 "" H 8000 3750 50  0001 C CNN
 F 4 "C19167" H 8000 3750 50  0001 C CNN "LCSC"
+F 5 "Changjiang Electronics Tech (CJ)" H 8000 3750 50  0001 C CNN "Manufacturer"
+F 6 "BAT43W" H 8000 3750 50  0001 C CNN "Part Number"
+F 7 "SOD-123" H 8000 3750 50  0001 C CNN "Package"
+F 8 "SMD" H 8000 3750 50  0001 C CNN "Type"
 	1    8000 3750
 	0    1    1    0   
 $EndComp
@@ -305,8 +329,12 @@ AR Path="/6090BB51/60C54A3B" Ref="D45"  Part="1"
 F 0 "D45" V 7454 1430 50  0000 L CNN
 F 1 "BAT43W" V 7545 1430 50  0000 L CNN
 F 2 "Diode_SMD:D_SOD-123" H 7500 1175 50  0001 C CNN
-F 3 "http://www.vishay.com/docs/85660/bat42.pdf" H 7500 1350 50  0001 C CNN
+F 3 "" H 7500 1350 50  0001 C CNN
 F 4 "C19167" H 7500 1350 50  0001 C CNN "LCSC"
+F 5 "Changjiang Electronics Tech (CJ)" H 7500 1350 50  0001 C CNN "Manufacturer"
+F 6 "BAT43W" H 7500 1350 50  0001 C CNN "Part Number"
+F 7 "SOD-123" H 7500 1350 50  0001 C CNN "Package"
+F 8 "SMD" H 7500 1350 50  0001 C CNN "Type"
 	1    7500 1350
 	0    -1   -1   0   
 $EndComp
@@ -319,8 +347,12 @@ AR Path="/6090BB51/60C57A78" Ref="D46"  Part="1"
 F 0 "D46" V 7854 1430 50  0000 L CNN
 F 1 "BAT43W" V 7945 1430 50  0000 L CNN
 F 2 "Diode_SMD:D_SOD-123" H 7900 1175 50  0001 C CNN
-F 3 "http://www.vishay.com/docs/85660/bat42.pdf" H 7900 1350 50  0001 C CNN
+F 3 "" H 7900 1350 50  0001 C CNN
 F 4 "C19167" H 7900 1350 50  0001 C CNN "LCSC"
+F 5 "Changjiang Electronics Tech (CJ)" H 7900 1350 50  0001 C CNN "Manufacturer"
+F 6 "BAT43W" H 7900 1350 50  0001 C CNN "Part Number"
+F 7 "SOD-123" H 7900 1350 50  0001 C CNN "Package"
+F 8 "SMD" H 7900 1350 50  0001 C CNN "Type"
 	1    7900 1350
 	0    -1   -1   0   
 $EndComp
@@ -333,8 +365,12 @@ AR Path="/6090BB51/60C583E5" Ref="D47"  Part="1"
 F 0 "D47" V 8304 1430 50  0000 L CNN
 F 1 "BAT43W" V 8395 1430 50  0000 L CNN
 F 2 "Diode_SMD:D_SOD-123" H 8350 1175 50  0001 C CNN
-F 3 "http://www.vishay.com/docs/85660/bat42.pdf" H 8350 1350 50  0001 C CNN
+F 3 "" H 8350 1350 50  0001 C CNN
 F 4 "C19167" H 8350 1350 50  0001 C CNN "LCSC"
+F 5 "Changjiang Electronics Tech (CJ)" H 8350 1350 50  0001 C CNN "Manufacturer"
+F 6 "BAT43W" H 8350 1350 50  0001 C CNN "Part Number"
+F 7 "SOD-123" H 8350 1350 50  0001 C CNN "Package"
+F 8 "SMD" H 8350 1350 50  0001 C CNN "Type"
 	1    8350 1350
 	0    -1   -1   0   
 $EndComp
@@ -347,8 +383,12 @@ AR Path="/6090BB51/60C58B50" Ref="D48"  Part="1"
 F 0 "D48" V 8754 1430 50  0000 L CNN
 F 1 "BAT43W" V 8845 1430 50  0000 L CNN
 F 2 "Diode_SMD:D_SOD-123" H 8800 1175 50  0001 C CNN
-F 3 "http://www.vishay.com/docs/85660/bat42.pdf" H 8800 1350 50  0001 C CNN
+F 3 "" H 8800 1350 50  0001 C CNN
 F 4 "C19167" H 8800 1350 50  0001 C CNN "LCSC"
+F 5 "Changjiang Electronics Tech (CJ)" H 8800 1350 50  0001 C CNN "Manufacturer"
+F 6 "BAT43W" H 8800 1350 50  0001 C CNN "Part Number"
+F 7 "SOD-123" H 8800 1350 50  0001 C CNN "Package"
+F 8 "SMD" H 8800 1350 50  0001 C CNN "Type"
 	1    8800 1350
 	0    -1   -1   0   
 $EndComp
@@ -361,8 +401,12 @@ AR Path="/6090BB51/60C5AFA1" Ref="D44"  Part="1"
 F 0 "D44" V 4404 1330 50  0000 L CNN
 F 1 "BAT43W" V 4495 1330 50  0000 L CNN
 F 2 "Diode_SMD:D_SOD-123" H 4450 1075 50  0001 C CNN
-F 3 "http://www.vishay.com/docs/85660/bat42.pdf" H 4450 1250 50  0001 C CNN
+F 3 "" H 4450 1250 50  0001 C CNN
 F 4 "C19167" H 4450 1250 50  0001 C CNN "LCSC"
+F 5 "Changjiang Electronics Tech (CJ)" H 4450 1250 50  0001 C CNN "Manufacturer"
+F 6 "BAT43W" H 4450 1250 50  0001 C CNN "Part Number"
+F 7 "SOD-123" H 4450 1250 50  0001 C CNN "Package"
+F 8 "SMD" H 4450 1250 50  0001 C CNN "Type"
 	1    4450 1250
 	0    -1   -1   0   
 $EndComp
@@ -375,8 +419,12 @@ AR Path="/6090BB51/60C5BCE8" Ref="D43"  Part="1"
 F 0 "D43" V 3854 1330 50  0000 L CNN
 F 1 "BAT43W" V 3945 1330 50  0000 L CNN
 F 2 "Diode_SMD:D_SOD-123" H 3900 1075 50  0001 C CNN
-F 3 "http://www.vishay.com/docs/85660/bat42.pdf" H 3900 1250 50  0001 C CNN
+F 3 "" H 3900 1250 50  0001 C CNN
 F 4 "C19167" H 3900 1250 50  0001 C CNN "LCSC"
+F 5 "Changjiang Electronics Tech (CJ)" H 3900 1250 50  0001 C CNN "Manufacturer"
+F 6 "BAT43W" H 3900 1250 50  0001 C CNN "Part Number"
+F 7 "SOD-123" H 3900 1250 50  0001 C CNN "Package"
+F 8 "SMD" H 3900 1250 50  0001 C CNN "Type"
 	1    3900 1250
 	0    -1   -1   0   
 $EndComp
@@ -389,8 +437,12 @@ AR Path="/6090BB51/60C5C763" Ref="D42"  Part="1"
 F 0 "D42" V 3354 1330 50  0000 L CNN
 F 1 "BAT43W" V 3445 1330 50  0000 L CNN
 F 2 "Diode_SMD:D_SOD-123" H 3400 1075 50  0001 C CNN
-F 3 "http://www.vishay.com/docs/85660/bat42.pdf" H 3400 1250 50  0001 C CNN
+F 3 "" H 3400 1250 50  0001 C CNN
 F 4 "C19167" H 3400 1250 50  0001 C CNN "LCSC"
+F 5 "Changjiang Electronics Tech (CJ)" H 3400 1250 50  0001 C CNN "Manufacturer"
+F 6 "BAT43W" H 3400 1250 50  0001 C CNN "Part Number"
+F 7 "SOD-123" H 3400 1250 50  0001 C CNN "Package"
+F 8 "SMD" H 3400 1250 50  0001 C CNN "Type"
 	1    3400 1250
 	0    -1   -1   0   
 $EndComp
@@ -403,8 +455,12 @@ AR Path="/6090BB51/60C5CF5E" Ref="D41"  Part="1"
 F 0 "D41" V 2904 1330 50  0000 L CNN
 F 1 "BAT43W" V 2995 1330 50  0000 L CNN
 F 2 "Diode_SMD:D_SOD-123" H 2950 1075 50  0001 C CNN
-F 3 "http://www.vishay.com/docs/85660/bat42.pdf" H 2950 1250 50  0001 C CNN
+F 3 "" H 2950 1250 50  0001 C CNN
 F 4 "C19167" H 2950 1250 50  0001 C CNN "LCSC"
+F 5 "Changjiang Electronics Tech (CJ)" H 2950 1250 50  0001 C CNN "Manufacturer"
+F 6 "BAT43W" H 2950 1250 50  0001 C CNN "Part Number"
+F 7 "SOD-123" H 2950 1250 50  0001 C CNN "Package"
+F 8 "SMD" H 2950 1250 50  0001 C CNN "Type"
 	1    2950 1250
 	0    -1   -1   0   
 $EndComp

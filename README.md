@@ -9,7 +9,7 @@ This repo contains the following subdirectories:
   - [q2asm](a2asm/README.md) - A Q2 assembler (in Rust).
   - [q2lc](q2lc/README.md) - A compiler for a simple language (in Rust).
   - [q2prog](q2prog/README.md) - A Q2 programmer (in Rust) for a Raspberry Pi.
-  - examples - Q2 assembly language examples.
+  - examples - Q2 example programs (assembly and Q2L).
   - pcb - Schematics and PCB in KiCad
 
 See [joewing.net/projects/q2](https://joewing.net/projects/q2) for
@@ -19,10 +19,8 @@ more information.
 
 ### For software development:
 
- * Rust - q2lc, q2asm, and q2prog are written in Rust.
-  Install instructions are available
-  [here](https://www.rust-lang.org/tools/install).
-  Note that rustup will also install cargo, which is required.
+ * Rust - q2lc, q2asm, and q2prog are written in
+  [Rust](https://www.rust-lang.org/tools/install).
 
 ### For programming:
 
@@ -45,6 +43,36 @@ more information.
   will also need a 3D printer and the necessary slicer program.
  * KiCad - The PCB and schematics are in
   [KiCad](https://kicad.org).
+
+## PCB Fabrication and Assembly
+
+The Q2 is a dual-layer PCB about the size of a sheet of paper allowing
+it to be fabricated just about anywhere.
+For assembly, the BOM is stored with the schematic to reference the
+necessary surface-mount components. Due to the large number of components,
+I use a turn-key assembly service. Although numerous, all of the components
+are fairly standard making them cheap and widely available.
+
+The large number of components makes the price for assembly to
+vary quite a bit from company to company. It's probably no surprise,
+but the cheapest I've found is JLCPCB. I've been
+satisfied with all the boards from them so far.
+
+Unfortunately, JLCPCB's online Gerber viewer is incapable of showing a
+board of this complexity.
+To work around this without taking too big a leap of faith, I typically
+upload several test boards to make sure I have component orientations
+and positions correct.
+Component orientation can be mostly fixed using
+[JLCKicadTools](https://github.com/matthewlai/JLCKicadTools).
+However, I typically run into a few components that need to be
+fixed up when I try out new switches, etc.
+
+Another issue with JLCPCB is that having more than 1000 of the same
+component appears to cause problems such that they reject the BOM.
+When necessary, I work around this by arbitrarily assigning different
+values to the components to cause them to spill into multiple rows
+in the BOM.
 
 ## q2lc
 
@@ -86,12 +114,13 @@ of the Raspberry Pi and the Q2 (be sure the pins line up correctly).
 Make sure all input switches on the Q2 are "off". Some of the data LEDs
 will glow, but that is just due to pull-downs on some of the GPIO pins.
 
-To write a program (examples/hello.q2) to the Q2 (this will also build
-examples/hello.q2p if necessary):
+To write a program (examples/hello.q2p) to the Q2:
 
 ```
 make prog-hello
 ```
+
+This will also build examples/hello.q2p if necessary.
 
 To verify that the program was correctly written:
 
@@ -110,14 +139,14 @@ Simulation of Q2 programs can be performed using the Verilog model.
 The model reads in "test.hex" and runs the simulation outputting
 a simulated 16x2 LCD (characters only) every time it is updated.
 
-For convenience, the Makefile will take care of setting everything
-up. Simply place the program to be simulated in the examples
-directory and run 'make sim-name'. This will assemble and
-simulate 'examples/name.q2'.
+For convenience, the Makefile will take care of setting everything up.
+Simply place the program to be simulated in the examples directory
+and run 'make sim-name'. This will assemble and simulate
+'examples/name.q2' (first compiling 'examples/name.q2l' if required).
 
 ## Instruction Set
 
-All instructions are 1 word with the following format
+All instructions are 1 word with the following format:
 
 ```
   FFF D Z XXXXXXX
@@ -325,4 +354,28 @@ Writes:
 Reads:
 
   * 11 C D 111KKKKK
+
+## Power Consumption
+
+The primary source of power consumption in the Q2 comes from pull-up
+networks. For simplicity, most of the pull-ups are simply resistors,
+though some of them have an LED in series to show the state.
+We can easily compute the worst-case power draw by assuming all
+pull-up networks are grounded.
+The power consumption varies depending on the value of the resistor
+and the presence of the LED:
+
+  * 75 LEDs (2V drop) with 1k resistors: 75 * (5 - 2) / 1000 = 225mA
+  * 7 1k resistors: 35mA
+  * 342 10k resistors: 171mA
+  * 30 100k resistors: 1.5mA
+  * 9 4.7k resistors: 9.5mA
+
+In addition to the pull-up network, the Q2 has the following components
+that draw power:
+
+  * The SRAMs each use 10mA (20mA total).
+  * The LCD is assumed to use around 25mA.
+
+This gives us a total power consumption of about 487mA.
 

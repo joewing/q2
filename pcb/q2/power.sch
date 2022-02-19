@@ -20,7 +20,7 @@ P 5000 2950
 F 0 "J2" H 5057 3417 50  0000 C CNN
 F 1 "USB_B" H 5057 3326 50  0000 C CNN
 F 2 "Connector_USB:USB_B_OST_USB-B1HSxx_Horizontal" H 5150 2900 50  0001 C CNN
-F 3 " ~" H 5150 2900 50  0001 C CNN
+F 3 "" H 5150 2900 50  0001 C CNN
 	1    5000 2950
 	1    0    0    -1  
 $EndComp
@@ -72,8 +72,12 @@ AR Path="/60A72A52/609294A7" Ref="C18"  Part="1"
 F 0 "C18" H 6185 2904 50  0000 R CNN
 F 1 "1u" H 6185 2995 50  0000 R CNN
 F 2 "Capacitor_SMD:C_0805_2012Metric" H 6338 2800 50  0001 C CNN
-F 3 "~" H 6300 2950 50  0001 C CNN
+F 3 "" H 6300 2950 50  0001 C CNN
 F 4 "C28323" H 6300 2950 50  0001 C CNN "LCSC"
+F 5 "Samsung Electro-Mechanics" H 6300 2950 50  0001 C CNN "Manufacturer"
+F 6 "CL21B105KBFNNNE" H 6300 2950 50  0001 C CNN "Part Number"
+F 7 "0805" H 6300 2950 50  0001 C CNN "Package"
+F 8 "SMD" H 6300 2950 50  0001 C CNN "Type"
 	1    6300 2950
 	-1   0    0    1   
 $EndComp
@@ -113,8 +117,12 @@ AR Path="/60A72A52/6092AC1B" Ref="C19"  Part="1"
 F 0 "C19" H 6585 2904 50  0000 R CNN
 F 1 "1u" H 6585 2995 50  0000 R CNN
 F 2 "Capacitor_SMD:C_0805_2012Metric" H 6738 2800 50  0001 C CNN
-F 3 "~" H 6700 2950 50  0001 C CNN
+F 3 "" H 6700 2950 50  0001 C CNN
 F 4 "C28323" H 6700 2950 50  0001 C CNN "LCSC"
+F 5 "Samsung Electro-Mechanics" H 6700 2950 50  0001 C CNN "Manufacturer"
+F 6 "CL21B105KBFNNNE" H 6700 2950 50  0001 C CNN "Part Number"
+F 7 "0805" H 6700 2950 50  0001 C CNN "Package"
+F 8 "SMD" H 6700 2950 50  0001 C CNN "Type"
 	1    6700 2950
 	-1   0    0    1   
 $EndComp
@@ -154,8 +162,12 @@ AR Path="/60A72A52/6092B7B0" Ref="C20"  Part="1"
 F 0 "C20" H 6985 2904 50  0000 R CNN
 F 1 "1u" H 6985 2995 50  0000 R CNN
 F 2 "Capacitor_SMD:C_0805_2012Metric" H 7138 2800 50  0001 C CNN
-F 3 "~" H 7100 2950 50  0001 C CNN
+F 3 "" H 7100 2950 50  0001 C CNN
 F 4 "C28323" H 7100 2950 50  0001 C CNN "LCSC"
+F 5 "Samsung Electro-Mechanics" H 7100 2950 50  0001 C CNN "Manufacturer"
+F 6 "CL21B105KBFNNNE" H 7100 2950 50  0001 C CNN "Part Number"
+F 7 "0805" H 7100 2950 50  0001 C CNN "Package"
+F 8 "SMD" H 7100 2950 50  0001 C CNN "Type"
 	1    7100 2950
 	-1   0    0    1   
 $EndComp
@@ -195,8 +207,12 @@ AR Path="/60A72A52/6092C339" Ref="C21"  Part="1"
 F 0 "C21" H 7335 2904 50  0000 R CNN
 F 1 "1u" H 7335 2995 50  0000 R CNN
 F 2 "Capacitor_SMD:C_0805_2012Metric" H 7488 2800 50  0001 C CNN
-F 3 "~" H 7450 2950 50  0001 C CNN
+F 3 "" H 7450 2950 50  0001 C CNN
 F 4 "C28323" H 7450 2950 50  0001 C CNN "LCSC"
+F 5 "Samsung Electro-Mechanics" H 7450 2950 50  0001 C CNN "Manufacturer"
+F 6 "CL21B105KBFNNNE" H 7450 2950 50  0001 C CNN "Part Number"
+F 7 "0805" H 7450 2950 50  0001 C CNN "Package"
+F 8 "SMD" H 7450 2950 50  0001 C CNN "Type"
 	1    7450 2950
 	-1   0    0    1   
 $EndComp
@@ -232,7 +248,7 @@ P 1550 2000
 F 0 "H2" V 1504 2150 50  0000 L CNN
 F 1 "MountingHole_Pad" V 1595 2150 50  0000 L CNN
 F 2 "MountingHole:MountingHole_3.2mm_M3_Pad_Via" H 1550 2000 50  0001 C CNN
-F 3 "~" H 1550 2000 50  0001 C CNN
+F 3 "" H 1550 2000 50  0001 C CNN
 	1    1550 2000
 	0    1    1    0   
 $EndComp
@@ -243,7 +259,7 @@ P 1550 2250
 F 0 "H3" V 1504 2400 50  0000 L CNN
 F 1 "MountingHole_Pad" V 1595 2400 50  0000 L CNN
 F 2 "MountingHole:MountingHole_3.2mm_M3_Pad_Via" H 1550 2250 50  0001 C CNN
-F 3 "~" H 1550 2250 50  0001 C CNN
+F 3 "" H 1550 2250 50  0001 C CNN
 	1    1550 2250
 	0    1    1    0   
 $EndComp
@@ -254,7 +270,7 @@ P 1550 2500
 F 0 "H4" V 1504 2650 50  0000 L CNN
 F 1 "MountingHole_Pad" V 1595 2650 50  0000 L CNN
 F 2 "MountingHole:MountingHole_3.2mm_M3_Pad_Via" H 1550 2500 50  0001 C CNN
-F 3 "~" H 1550 2500 50  0001 C CNN
+F 3 "" H 1550 2500 50  0001 C CNN
 	1    1550 2500
 	0    1    1    0   
 $EndComp
@@ -265,19 +281,19 @@ P 1550 2750
 F 0 "H5" V 1504 2900 50  0000 L CNN
 F 1 "MountingHole_Pad" V 1595 2900 50  0000 L CNN
 F 2 "MountingHole:MountingHole_3.2mm_M3_Pad_Via" H 1550 2750 50  0001 C CNN
-F 3 "~" H 1550 2750 50  0001 C CNN
+F 3 "" H 1550 2750 50  0001 C CNN
 	1    1550 2750
 	0    1    1    0   
 $EndComp
 $Comp
 L power:GND #PWR0693
 U 1 1 60BE0152
-P 1350 2900
-F 0 "#PWR0693" H 1350 2650 50  0001 C CNN
-F 1 "GND" H 1355 2727 50  0000 C CNN
-F 2 "" H 1350 2900 50  0001 C CNN
-F 3 "" H 1350 2900 50  0001 C CNN
-	1    1350 2900
+P 1350 3100
+F 0 "#PWR0693" H 1350 2850 50  0001 C CNN
+F 1 "GND" H 1355 2927 50  0000 C CNN
+F 2 "" H 1350 3100 50  0001 C CNN
+F 3 "" H 1350 3100 50  0001 C CNN
+	1    1350 3100
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
@@ -297,8 +313,6 @@ Wire Wire Line
 Wire Wire Line
 	1450 2750 1350 2750
 Connection ~ 1350 2750
-Wire Wire Line
-	1350 2750 1350 2900
 $Comp
 L Mechanical:MountingHole_Pad H1
 U 1 1 609C8CF7
@@ -306,7 +320,7 @@ P 1550 1750
 F 0 "H1" V 1504 1900 50  0000 L CNN
 F 1 "MountingHole_Pad" V 1595 1900 50  0000 L CNN
 F 2 "MountingHole:MountingHole_3.2mm_M3_Pad_Via" H 1550 1750 50  0001 C CNN
-F 3 "~" H 1550 1750 50  0001 C CNN
+F 3 "" H 1550 1750 50  0001 C CNN
 	1    1550 1750
 	0    1    1    0   
 $EndComp
@@ -315,4 +329,22 @@ Wire Wire Line
 Wire Wire Line
 	1350 1750 1350 2000
 Connection ~ 1350 2000
+$Comp
+L Mechanical:MountingHole_Pad H6
+U 1 1 620CBF22
+P 1550 3000
+F 0 "H6" V 1504 3150 50  0000 L CNN
+F 1 "MountingHole_Pad" V 1595 3150 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3_Pad_Via" H 1550 3000 50  0001 C CNN
+F 3 "" H 1550 3000 50  0001 C CNN
+	1    1550 3000
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	1350 2750 1350 3000
+Wire Wire Line
+	1450 3000 1350 3000
+Connection ~ 1350 3000
+Wire Wire Line
+	1350 3000 1350 3100
 $EndSCHEMATC
