@@ -15,6 +15,8 @@ pub enum Statement {
     Expression(Expression),
     Break,
     Block(Vec<Statement>),
+    MoveField(Expression, Expression, Expression, Expression),
+    JumpField(Expression, Expression)
 }
 
 impl Statement {
@@ -49,6 +51,10 @@ impl Statement {
                 }
                 Ok(())
             },
+            Statement::MoveField(dest, dest_field, src, src_field) =>
+                emit::emit_move_field(state, dest, dest_field, src, src_field),
+            Statement::JumpField(dest, dest_field) =>
+                emit::emit_jump_field(state, dest, dest_field),
         }
     }
 

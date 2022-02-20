@@ -110,6 +110,21 @@ pub trait StatementVisitor {
         self.visit_while_default(cond, body)
     }
 
+    fn visit_move(&mut self, dest: &Expression, dest_field: &Expression,
+        src: &Expression, src_field: &Expression) -> Result<Statement, String> {
+        let new_dest = self.visit_expr(dest)?;
+        let new_dest_field = self.visit_expr(dest_field)?;
+        let new_src = self.visit_expr(src)?;
+        let new_src_field = self.visit_expr(src_field)?;
+        Ok(Statement::MoveField(new_dest, new_dest_field, new_src, new_src_field))
+    }
+
+    fn visit_jump(&mut self, dest: &Expression, dest_field: &Expression) -> Result<Statement, String> {
+        let new_dest = self.visit_expr(dest)?;
+        let new_dest_field = self.visit_expr(dest_field)?;
+        Ok(Statement::JumpField(new_dest, new_dest_field))
+    }
+
     fn visit_expr_statement(&mut self, expr: &Expression) -> Result<Statement, String> {
         let new_expr = self.visit_expr(expr)?;
         Ok(Statement::Expression(new_expr))
@@ -165,6 +180,9 @@ pub trait StatementVisitor {
             Statement::Block(ss) => self.visit_block(ss),
             Statement::Return(expr) => self.visit_return(expr),
             Statement::While(cond, body) => self.visit_while(cond, body),
+            Statement::MoveField(dest, dest_field, src, src_field) =>
+                self.visit_move(dest, dest_field, src, src_field),
+            Statement::JumpField(dest, dest_field) => self.visit_jump(dest, dest_field),
         }
     }
 

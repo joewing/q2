@@ -18,6 +18,8 @@ const RETURN: &str = "return";
 const INCLUDE: &str = "include";
 const CONST: &str = "const";
 const VAR: &str = "var";
+const MOVE_FIELD: &str = "move_field";
+const JUMP_FIELD: &str = "jump_field";
 const LPAREN: &str = "(";
 const RPAREN: &str = ")";
 const EOF: &str = "";
@@ -49,8 +51,7 @@ fn parse_ident(tokenizer: &mut Tokenizer) -> Result<String, String> {
     }
 }
 
-fn parse_var(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
-    let _ = tokenizer.expect(VAR)?;
+fn parse_var_inner(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
     let ident = parse_ident(tokenizer)?;
     let expr_opt = if tokenizer.check("=") {
         tokenizer.next_token();
@@ -59,17 +60,46 @@ fn parse_var(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
     } else {
         None
     };
-    let _ = tokenizer.expect(TERM)?;
     Ok(Statement::Var(ident, expr_opt))
 }
 
-fn parse_const(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
-    let _ = tokenizer.expect(CONST)?;
+fn parse_var(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
+    let mut result = Vec::new();
+    let _ = tokenizer.expect(VAR)?;
+    result.push(parse_var_inner(tokenizer)?);
+    while tokenizer.check(",") {
+        tokenizer.next_token();
+        result.push(parse_var_inner(tokenizer)?);
+    }
+    let _ = tokenizer.expect(TERM)?;
+    if result.len() == 1 {
+        Ok(result.pop().unwrap())
+    } else {
+        Ok(Statement::Block(result))
+    }
+}
+
+fn parse_const_inner(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
     let ident = parse_ident(tokenizer)?;
     let _ = tokenizer.expect("=")?;
     let expr = parse_expr(tokenizer)?;
-    let _ = tokenizer.expect(TERM)?;
     Ok(Statement::Const(ident, expr))
+}
+
+fn parse_const(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
+    let mut result = Vec::new();
+    let _ = tokenizer.expect(CONST)?;
+    result.push(parse_const_inner(tokenizer)?);
+    while tokenizer.check(",") {
+        tokenizer.next_token();
+        result.push(parse_const_inner(tokenizer)?);
+    }
+    let _ = tokenizer.expect(TERM)?;
+    if result.len() == 1 {
+        Ok(result.pop().unwrap())
+    } else {
+        Ok(Statement::Block(result))
+    }
 }
 
 fn parse_bin(tokenizer: &mut Tokenizer) -> Result<Word, String> {
@@ -390,6 +420,28 @@ fn parse_include(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
     parse_file(name.as_str())
 }
 
+fn parse_move_field(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
+    let _ = tokenizer.expect(MOVE_FIELD)?;
+    let dest = parse_expr(tokenizer)?;
+    let _ = tokenizer.expect(",")?;
+    let dest_field = parse_expr(tokenizer)?;
+    let _ = tokenizer.expect("=")?;
+    let src = parse_expr(tokenizer)?;
+    let _ = tokenizer.expect(",")?;
+    let src_field = parse_expr(tokenizer)?;
+    let _ = tokenizer.expect(TERM)?;
+    Ok(Statement::MoveField(dest, dest_field, src, src_field))
+}
+
+fn parse_jump_field(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
+    let _ = tokenizer.expect(JUMP_FIELD)?;
+    let dest = parse_expr(tokenizer)?;
+    let _ = tokenizer.expect(",")?;
+    let dest_field = parse_expr(tokenizer)?;
+    let _ = tokenizer.expect(TERM)?;
+    Ok(Statement::JumpField(dest, dest_field))
+}
+
 fn parse_assign(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
     let lhs = parse_expr(tokenizer)?;
     let statement = if tokenizer.check("=") {
@@ -413,6 +465,8 @@ const STATEMENT_PARSERS: &[(&str, fn(&mut Tokenizer) -> Result<Statement, String
     (BREAK, parse_break),
     (INCLUDE, parse_include),
     (RETURN, parse_return),
+    (MOVE_FIELD, parse_move_field),
+    (JUMP_FIELD, parse_jump_field),
 ];
 
 fn parse_block(tokenizer: &mut Tokenizer) -> Result<Statement, String> {

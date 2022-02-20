@@ -60,6 +60,67 @@ pub fn emit_assign(state: &mut SymbolTable, dest: &Expression, src: &Expression)
     }
 }
 
+pub fn emit_move_field(
+    state: &mut SymbolTable,
+    dest: &Expression,
+    dest_field: &Expression,
+    src: &Expression,
+    src_field: &Expression
+) -> Result<(), String> {
+
+    // The assumption here is that anything using this function would run from field 0.
+
+    let dest_field_id = extract_constant(dest_field, "destination field")?;
+    let src_field_id = extract_constant(src_field, "source field")?;
+    let code_field_id = 0;
+
+    let _ = dest.emit(state)?;
+    let dest_addr = state.allocate_temp();
+    let _ = emit_store(state, &dest_addr)?;
+    let src_addr = state.allocate_temp();
+    let _ = src.emit(state)?;
+    let _ = emit_store(state, &src_addr)?;
+    let value = state.allocate_temp();
+
+    if src_field_id != code_field_id {
+        let _ = state.append_code(LEA, &Symbol::Constant(0xC00 | src_field_id))?;
+        let _ = state.append_code(STA, &Symbol::Constant(0xFFF))?;
+    }
+    let _ = state.append_code_indirect(LDA, &src_addr)?;
+    if src_field_id != dest_field_id {
+        let _ = state.append_code(STA, &value)?;
+        let _ = state.append_code(LEA, &Symbol::Constant(0xC00 | dest_field_id))?;
+        let _ = state.append_code(STA, &Symbol::Constant(0xFFF))?;
+        let _ = state.append_code(LDA, &value)?;
+    }
+    let _ = state.append_code_indirect(STA, &dest_addr)?;
+    if dest_field_id != code_field_id {
+        let _ = state.append_code(LEA, &Symbol::Constant(0xC00 | code_field_id))?;
+        let _ = state.append_code(STA, &Symbol::Constant(0xFFF))?;
+    }
+
+    state.release_temp();
+    state.release_temp();
+    state.release_temp();
+    Ok(())
+}
+
+pub fn emit_jump_field(
+    state: &mut SymbolTable,
+    dest: &Expression,
+    dest_field: &Expression
+) -> Result<(), String> {
+    let dest_field_id = extract_constant(dest_field, "destination field")?;
+    let _ = dest.emit(state)?;
+    let dest_addr = state.allocate_temp();
+    let _ = state.append_code(STA, &dest_addr)?;
+    let _ = state.append_code(LEA, &Symbol::Constant(0xC00 | dest_field_id))?;
+    let _ = state.append_code(STA, &Symbol::Constant(0xFFF))?;
+    let _ = state.append_code_indirect(JMP, &dest_addr)?;
+    state.release_temp();
+    Ok(())
+}
+
 fn load(state: &mut SymbolTable, expr: &Expression) -> Result<Symbol, String> {
     let temp = state.allocate_temp();
 
@@ -441,13 +502,10 @@ pub fn emit_function(
 }
 
 pub fn emit_array_decl(state: &mut SymbolTable, expr: &Expression) -> Result<bool, String> {
-    if let Expression::Constant(size) = expr {
-        let addr = state.append_heap(*size)?;
-        let _ = state.append_code_immediate(LDA, addr)?;
-        Ok(true)
-    } else {
-        Err(format!("array size must be constant"))
-    }
+    let size = extract_constant(expr, "array size")?;
+    let addr = state.append_heap(size)?;
+    let _ = state.append_code_immediate(LDA, addr)?;
+    Ok(true)
 }
 
 pub fn emit_array_literal(state: &mut SymbolTable, exprs: &Vec<Expression>) -> Result<bool, String> {
@@ -459,4 +517,12 @@ pub fn emit_array_literal(state: &mut SymbolTable, exprs: &Vec<Expression>) -> R
 pub fn emit_constant(state: &mut SymbolTable, value: Word) -> Result<bool, String> {
     let _ = state.append_code(LEA, &Symbol::Constant(value));
     Ok(false)
+}
+
+fn extract_constant(expr: &Expression, msg: &str) -> Result<Word, String> {
+    if let Expression::Constant(w) = expr {
+        Ok(*w)
+    } else {
+        Err(format!("{} must be constant", msg))
+    }
 }
