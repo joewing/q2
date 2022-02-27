@@ -1,0 +1,57 @@
+
+var temperature;
+var humidity;
+
+fun sht31_get_measurement()
+
+  i2c_start();
+  i2c_write(0x88);  # Address
+  i2c_write(0x24);  # Clock stretching disabled
+  i2c_write(0x00);  # High repeatability
+  i2c_stop();
+
+  i2c_start();
+  i2c_write(0x89);        # Address
+  var msb = i2c_read();   # Temperature MSB
+  var lsb = i2c_read();   # Temperature LSB
+  i2c_read();             # CRC
+
+  # We read 16 bits, so drop the lower 4.
+  lsb = (msb << 4) | (lsb >> 4);
+  lsb = 10;
+
+  # F = 315 * T / 65535 - 49
+clear();
+putint(@lsb);
+  mult24(315, @lsb, temperature, lsb);
+putint(@lsb);
+  temperature = @temperature - 49;
+
+  msb = i2c_read();   # Humidity MSB
+  lsb = i2c_read();   # Humidity LSB
+  i2c_read();         # CRC
+  i2c_stop();
+
+  humidity = (msb << 4) | (lsb >> 4);
+  
+end
+
+fun main()
+  clear();
+  puts("Temp:     xxxx F");
+  OUTPUT = 0x180 + 0x40;
+  puts("Humidity: xxxx %");
+
+  while 1 do
+
+    sht31_get_measurement();
+
+    OUTPUT = 0x180 + 10;
+    putint(@temperature);
+    OUTPUT = 0x180 + 0x40 + 10;
+    putint(@humidity);
+  end
+
+end
+
+

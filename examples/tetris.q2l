@@ -1,0 +1,268 @@
+
+# Board is 10 pixels wide (2 characters) and 16 tall (2 characters).
+
+# Each block is 4x4 words
+# These are left-aligned such that every rotation touches the 11th bit
+# so they can be shifted (some rotations go higher, but that's ok).
+const BLOCKS = [
+
+  0b000000000000, # T1
+  0b010000000000,
+  0b111000000000,
+  0b000000000000,
+           
+  0b100000000000, # T2
+  0b110000000000,
+  0b100000000000,
+  0b000000000000,
+           
+  0b111000000000, # T3
+  0b010000000000,
+  0b000000000000,
+  0b000000000000,
+           
+  0b001000000000, # T4
+  0b011000000000,
+  0b001000000000,
+  0b000000000000,
+
+  # Square
+  0b011000000000, # 1
+  0b011000000000,
+  0b000000000000,
+  0b000000000000,
+          
+  0b011000000000, # 2
+  0b011000000000,
+  0b000000000000,
+  0b000000000000,
+          
+  0b011000000000, # 3
+  0b011000000000,
+  0b000000000000,
+  0b000000000000,
+          
+  0b011000000000, # 4
+  0b011000000000,
+  0b000000000000,
+  0b000000000000,
+
+  # Straight
+  0b000000000000, # 0
+  0b111100000000,
+  0b000000000000,
+  0b000000000000,
+          
+  0b010000000000, # 1
+  0b010000000000,
+  0b010000000000,
+  0b010000000000,
+          
+  0b000000000000, # 2
+  0b111100000000,
+  0b000000000000,
+  0b000000000000,
+          
+  0b010000000000, # 3
+  0b010000000000,
+  0b010000000000,
+  0b010000000000,
+
+  # J
+  0b001000000000,
+  0b001000000000,
+  0b011000000000,
+  0b000000000000,
+
+  0b000000000000,
+  0b100000000000,
+  0b111000000000,
+  0b000000000000,
+
+  0b110000000000,
+  0b100000000000,
+  0b100000000000,
+  0b000000000000,
+
+  0b111000000000,
+  0b001000000000,
+  0b000000000000,
+  0b000000000000
+
+];
+
+const BOARD = :20;
+
+var x, y;
+var block;
+var rotation;
+var lines;
+var game_over;
+
+fun render()
+
+  var key = 0;
+
+  OUTPUT = 0x140 + 0;
+
+  # Each character is 5 bits wide.
+  # We render top-left, bottom-left, top-right, bottom-right.
+  var i = 0;
+  while @i < 16 do
+    var row = @(BOARD + @i);
+    row = @row >> 1;
+    row = @row >> 1;
+    row = @row >> 1;
+    row = @row >> 1;
+    row = @row >> 1;
+    row = @row >> 1;
+    OUTPUT = @row;
+
+    key = @key | ~@OUTPUT;
+
+    i = @i + 1;
+  end
+  i = 0;
+  while @i < 16 do
+    OUTPUT = (@(BOARD + @i) >> 1) & 0x1F;
+    key = @key | ~@OUTPUT;
+    i = @i + 1;
+  end
+
+  return @key & 0x1F;
+end
+
+fun put_block()
+  var collision = 0;
+  var src = BLOCKS + @block + @rotation;
+  var dest = BOARD + @y;
+  var i = 4;
+  while @i do
+    var shifted = @@src >> @x;
+    var prev = @@dest;
+    if @shifted & @prev then
+      collision = 1;
+    end
+    @dest = @shifted ^ @prev;
+    src = @src + 1;
+    dest = @dest + 1;
+    i = @i - 1;
+  end
+  return @collision;
+end
+
+fun check_lines()
+  var i = 15;
+  while @i do
+    while @(BOARD + @i) == 0xFFF do
+      var j = @i;
+      while @j > 1 do
+        BOARD + @j = @(BOARD + @j - 1);
+        j = @j - 1;
+      end
+      BOARD = 0x801;
+      lines = @lines + 1;
+    end
+    i = @i - 1;
+  end
+end
+
+fun new_block()
+  check_lines();
+  OUTPUT = 0x180 + 0x40 + 8;
+  putint(@lines);
+  block = rand() & 3;
+  block = @block << 4;  # x16
+  rotation = 0;
+  x = 4;
+  y = 0;
+  if put_block() then
+    game_over = 1;
+  end
+end
+
+fun rotate_block()
+  put_block();
+  rotation = @rotation + 4;
+  if @rotation == 16 then
+    rotation = 0;
+  end
+  if put_block() then
+    put_block();
+    if @rotation == 0 then
+      rotation = 12;
+    else
+      rotation = @rotation - 4;
+    end
+    put_block();
+  end
+end
+
+fun move_down()
+  put_block();
+  y = @y + 1;
+  if put_block() then
+    put_block();
+    y = @y - 1;
+    put_block();
+    new_block();
+  end
+end
+
+fun move_right()
+  put_block();
+  x = @x + 1;
+  if put_block() then
+    put_block();
+    x = @x - 1;
+    put_block();
+  end
+end
+
+fun move_left()
+  if @x then
+    put_block();
+    x = @x - 1;
+    if put_block() then
+      put_block();
+      x = @x + 1;
+      put_block();
+    end
+  end
+end
+
+fun main()
+
+  game_over = 0;
+  lines = 0;
+  clear();
+  memset(BOARD, 16, 0x801);
+  memset(BOARD + 16, 4, 0xFFF);
+
+  puts([0x180 + 0x00, 0xFF, 8, 10, 0xFF, 0]);
+  puts(" - Tetris - ");
+  puts([0x180 + 0x40, 0xFF, 9, 11, 0xFF, 0]);
+  puts("    xxxx    ");
+
+  new_block();
+  while @game_over == 0 do
+    var i = 3;
+    while @i do
+      var key = render();
+      if @key == 1 then
+        move_left();
+      elseif @key == 2 then
+        move_right();
+      elseif @key == 4 then
+        rotate_block();
+      elseif @key == 8 then
+        move_down();
+      end
+      i = @i - 1;
+    end
+    move_down();
+  end
+
+end
+
+

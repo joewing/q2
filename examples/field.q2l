@@ -1,0 +1,46 @@
+
+const HELLO = [
+  0x80B,
+  0xA82,
+  0x182,
+  0xE05,
+  0xC04,
+  0xB0A,
+  0x881,
+  0x482,
+  0xA82,
+  0xC02,
+  0xFFF,
+  0x048,
+  0x065,
+  0x06C,
+  0x06C,
+  0x06F,
+  0x021,
+  0x000
+];
+
+const FIELD0  = 0xC00;
+const FIELD1  = 0xC01;
+const ORG     = 0x080;
+
+fun main()
+
+  clear();
+
+  var i = 0;
+  var dest = ORG;
+  var temp = 1;
+  while @temp do
+    temp = @(HELLO + @i);
+    OUTPUT = FIELD1;
+    @dest = @temp;
+    OUTPUT = FIELD0;
+    dest = @dest + 1;
+    i = @i + 1;
+  end
+
+  OUTPUT = FIELD1;
+  (ORG)();
+
+end

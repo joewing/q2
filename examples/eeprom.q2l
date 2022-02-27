@@ -1,0 +1,32 @@
+
+const ROM_ADDR = 0x050;
+
+fun rom_load(addr, dest, len)
+
+  # ROM is byte addressable, so we treat
+  # two bytes as a word, taking 4 bits from
+  # the first byte as the high bits of the word.
+
+  # High and low bytes of the (word) address.
+  var addr_high = @addr >> 7;
+  var addr_low  = (@addr << 1) & 0xFF;
+
+  i2c_start();
+  i2c_write(ROM_ADDR);
+  i2c_write(@addr_high);
+  i2c_write(@addr_low);
+  i2c_start();
+  i2c_write(ROM_ADDR | 1);
+  while @len do
+    var msb = i2c_read();
+    var lsb = i2c_read();
+    @dest = (@msb << 4) | @lsb;
+    len = @len - 1;
+  end
+  i2c_stop();
+end
+
+fun main()
+  rom_load(5, 0x800, 256);
+end
+
