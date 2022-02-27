@@ -8,15 +8,14 @@ pub enum Statement {
     Const(String, Expression),
     Assign(Expression, Expression),
     If(Expression, Box<Statement>, Box<Statement>),
-    IfCarry(Expression, Box<Statement>, Box<Statement>),
+    IfCarry(Box<Statement>, Box<Statement>),
     While(Expression, Box<Statement>),
     Function(String, Vec<String>, Box<Statement>),
     Return(Expression),
     Expression(Expression),
     Break,
     Block(Vec<Statement>),
-    MoveField(Expression, Expression, Expression, Expression),
-    JumpField(Expression, Expression)
+    Asm(String, Expression),
 }
 
 impl Statement {
@@ -36,7 +35,7 @@ impl Statement {
             Statement::Const(name, expr) => emit_const(state, name, expr),
             Statement::Assign(dest, src) => emit::emit_assign(state, dest, src),
             Statement::If(cond, t, f) => emit::emit_if(state, cond, t, f),
-            Statement::IfCarry(cond, t, f) => emit::emit_ifcarry(state, cond, t, f),
+            Statement::IfCarry(t, f) => emit::emit_ifcarry(state, t, f),
             Statement::While(cond, body) => emit::emit_while(state, cond, body),
             Statement::Function(_, _, _) => Ok(()),
             Statement::Expression(expr) => {
@@ -51,10 +50,7 @@ impl Statement {
                 }
                 Ok(())
             },
-            Statement::MoveField(dest, dest_field, src, src_field) =>
-                emit::emit_move_field(state, dest, dest_field, src, src_field),
-            Statement::JumpField(dest, dest_field) =>
-                emit::emit_jump_field(state, dest, dest_field),
+            Statement::Asm(opcode, dest) => emit::emit_asm(state, opcode, dest),
         }
     }
 

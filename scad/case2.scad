@@ -9,7 +9,7 @@ screw_head_radius = 2.8;
 screw_head_height = 3;
 screw_offset = 3.5;
 standoff_height = 8;
-standoff_radius = screw_head_radius * 1.6;
+standoff_radius = screw_head_radius * 1.25;
 
 case_width = board_width + (wall_width + tol) * 2;
 case_height = board_height + (wall_width + tol) * 2;
@@ -19,8 +19,8 @@ midpoint = 140;
 standoff_positions = [
     [screw_offset, screw_offset],
     [board_width - screw_offset, screw_offset],
-    [board_width / 2, 80],
-    [board_width / 2, 201],
+    [board_width / 2, 79.9],
+    [board_width / 2, 201.2],
     [screw_offset, board_height - screw_offset],
     [board_width - screw_offset, board_height - screw_offset],
 ];
@@ -61,43 +61,64 @@ module screw_hole(x, y) {
     }
 }
 
+module clip() {
+    base_radius = 4;
+    board_width = 1.6;
+    hole_radius = 1.4;
+    difference() {
+        union() {
+            cylinder(d=hole_radius * 2, h=board_width, $fn=64);
+            translate([0, 0, board_width]) {
+                intersection() {
+                    union() {
+                        translate([0, 0, 0.5]) {
+                            cylinder(d1 = hole_radius * 2.5, d2 = hole_radius * 1.5, h = 2, $fn=64);
+                        }
+                        cylinder(d1 = hole_radius * 2, d2 = hole_radius * 2.5, h = 0.5, $fn=64);
+                    }
+                    cube([hole_radius * 2, base_radius * 2, base_radius * 2], center=true);
+                }
+            }
+        }
+        translate([0, 0, (board_width + 20) / 2])cube([20, 0.4, 20], center=true);
+    }
+}
+
 module standoff(x, y) {
     translate([x + wall_width, y + wall_width, wall_width]) {
         cylinder(standoff_height, standoff_radius, standoff_radius, $fn=32);
+    }
+    translate([x + wall_width, y + wall_width, wall_width + standoff_height]) {
+        clip();
     }
 }
 
 
 module full_case() {
-    difference() {
-        union() {
-            difference() {
-                rounded_cube(case_width, case_height, case_depth);
-                translate([wall_width + board_overlap, wall_width + board_overlap, wall_width]) {
-                    rounded_cube(
-                        case_width - board_overlap * 2 - wall_width * 2,
-                        case_height - board_overlap * 2 - wall_width * 2 + tol,
-                        standoff_height
-                    );
-                }
-                translate([
-                    wall_width - tol,
-                    wall_width - tol,
-                    standoff_height + wall_width
-                ]) {
-                    rounded_cube(
-                        board_width + tol,
-                        board_height + tol,
-                        case_depth - standoff_height
-                    );
-                }
+    union() {
+        difference() {
+            rounded_cube(case_width, case_height, case_depth);
+            translate([wall_width + board_overlap, wall_width + board_overlap, wall_width]) {
+                rounded_cube(
+                    case_width - board_overlap * 2 - wall_width * 2,
+                    case_height - board_overlap * 2 - wall_width * 2 + tol,
+                    standoff_height
+                );
             }
-            for (pos = standoff_positions) {
-                standoff(pos[0], pos[1]);
+            translate([
+                wall_width - tol,
+                wall_width - tol,
+                standoff_height + wall_width
+            ]) {
+                rounded_cube(
+                    board_width + tol,
+                    board_height + tol,
+                    case_depth - standoff_height
+                );
             }
         }
         for (pos = standoff_positions) {
-            screw_hole(pos[0], pos[1]);
+            standoff(pos[0], pos[1]);
         }
     }
 }
@@ -118,7 +139,7 @@ module front_half() {
         intersection() {
             full_case();
             union() {
-                cube([case_width, midpoint, case_depth]);
+                cube([case_width, midpoint, case_depth * 2]);
                 interlock();
             }
         }
@@ -131,7 +152,7 @@ module back_half() {
             full_case();
             difference() {
                 translate([0, midpoint, 0]) {
-                    cube([case_width, case_height - midpoint, case_depth]);
+                    cube([case_width, case_height - midpoint, case_depth * 2]);
                 }
                 interlock();
             }

@@ -18,8 +18,6 @@ const RETURN: &str = "return";
 const INCLUDE: &str = "include";
 const CONST: &str = "const";
 const VAR: &str = "var";
-const MOVE_FIELD: &str = "move_field";
-const JUMP_FIELD: &str = "jump_field";
 const LPAREN: &str = "(";
 const RPAREN: &str = ")";
 const EOF: &str = "";
@@ -358,8 +356,6 @@ fn parse_if(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
 
 fn parse_ifcarry(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
     let _ = tokenizer.expect(IFCARRY)?;
-    let cond = parse_expr(tokenizer)?;
-    let _ = tokenizer.expect(THEN)?;
     let t = parse_block(tokenizer)?;
     let f = if tokenizer.check(ELSE) {
         tokenizer.next_token();
@@ -368,7 +364,7 @@ fn parse_ifcarry(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
         Statement::Block(Vec::new())
     };
     let _ = tokenizer.expect(END)?;
-    Ok(Statement::IfCarry(cond, Box::from(t), Box::from(f)))
+    Ok(Statement::IfCarry(Box::from(t), Box::from(f)))
 }
 
 fn parse_function(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
@@ -420,26 +416,14 @@ fn parse_include(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
     parse_file(name.as_str())
 }
 
-fn parse_move_field(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
-    let _ = tokenizer.expect(MOVE_FIELD)?;
+fn parse_asm(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
+    let opcode_tok = tokenizer.peek_token();
+    let mut opcode = opcode_tok.value;
+    opcode.remove(0);
+    tokenizer.next_token();
     let dest = parse_expr(tokenizer)?;
-    let _ = tokenizer.expect(",")?;
-    let dest_field = parse_expr(tokenizer)?;
-    let _ = tokenizer.expect("=")?;
-    let src = parse_expr(tokenizer)?;
-    let _ = tokenizer.expect(",")?;
-    let src_field = parse_expr(tokenizer)?;
     let _ = tokenizer.expect(TERM)?;
-    Ok(Statement::MoveField(dest, dest_field, src, src_field))
-}
-
-fn parse_jump_field(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
-    let _ = tokenizer.expect(JUMP_FIELD)?;
-    let dest = parse_expr(tokenizer)?;
-    let _ = tokenizer.expect(",")?;
-    let dest_field = parse_expr(tokenizer)?;
-    let _ = tokenizer.expect(TERM)?;
-    Ok(Statement::JumpField(dest, dest_field))
+    Ok(Statement::Asm(opcode, dest))
 }
 
 fn parse_assign(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
@@ -465,8 +449,14 @@ const STATEMENT_PARSERS: &[(&str, fn(&mut Tokenizer) -> Result<Statement, String
     (BREAK, parse_break),
     (INCLUDE, parse_include),
     (RETURN, parse_return),
-    (MOVE_FIELD, parse_move_field),
-    (JUMP_FIELD, parse_jump_field),
+    ("_lea", parse_asm),
+    ("_sta", parse_asm),
+    ("_lda", parse_asm),
+    ("_nor", parse_asm),
+    ("_add", parse_asm),
+    ("_shr", parse_asm),
+    ("_jmp", parse_asm),
+    ("_jfc", parse_asm),
 ];
 
 fn parse_block(tokenizer: &mut Tokenizer) -> Result<Statement, String> {

@@ -81,14 +81,13 @@ pub trait StatementVisitor {
         self.visit_var_default(name, expr_opt)
     }
 
-    fn visit_ifcarry_default(&mut self, cond: &Expression, t: &Statement, f: &Statement) -> Result<Statement, String> {
-        let new_cond = self.visit_expr(cond)?;
+    fn visit_ifcarry_default(&mut self, t: &Statement, f: &Statement) -> Result<Statement, String> {
         let new_t = self.visit_statement(t)?;
         let new_f = self.visit_statement(f)?;
-        Ok(Statement::IfCarry(new_cond, Box::new(new_t), Box::new(new_f)))
+        Ok(Statement::IfCarry(Box::new(new_t), Box::new(new_f)))
     }
-    fn visit_ifcarry(&mut self, cond: &Expression, t: &Statement, f: &Statement) -> Result<Statement, String> {
-        self.visit_ifcarry_default(cond, t, f)
+    fn visit_ifcarry(&mut self, t: &Statement, f: &Statement) -> Result<Statement, String> {
+        self.visit_ifcarry_default(t, f)
     }
 
     fn visit_if_default(&mut self, cond: &Expression, t: &Statement, f: &Statement) -> Result<Statement, String> {
@@ -110,19 +109,9 @@ pub trait StatementVisitor {
         self.visit_while_default(cond, body)
     }
 
-    fn visit_move(&mut self, dest: &Expression, dest_field: &Expression,
-        src: &Expression, src_field: &Expression) -> Result<Statement, String> {
+    fn visit_asm(&mut self, opcode: &String, dest: &Expression) -> Result<Statement, String> {
         let new_dest = self.visit_expr(dest)?;
-        let new_dest_field = self.visit_expr(dest_field)?;
-        let new_src = self.visit_expr(src)?;
-        let new_src_field = self.visit_expr(src_field)?;
-        Ok(Statement::MoveField(new_dest, new_dest_field, new_src, new_src_field))
-    }
-
-    fn visit_jump(&mut self, dest: &Expression, dest_field: &Expression) -> Result<Statement, String> {
-        let new_dest = self.visit_expr(dest)?;
-        let new_dest_field = self.visit_expr(dest_field)?;
-        Ok(Statement::JumpField(new_dest, new_dest_field))
+        Ok(Statement::Asm(opcode.clone(), new_dest))
     }
 
     fn visit_expr_statement(&mut self, expr: &Expression) -> Result<Statement, String> {
@@ -172,7 +161,7 @@ pub trait StatementVisitor {
             Statement::Const(name, expr) => self.visit_const(name, expr),
             Statement::Var(name, expr_opt) => self.visit_var(name, expr_opt),
             Statement::Function(name, params, body) => self.visit_function(name, params, body),
-            Statement::IfCarry(cond, t, f) => self.visit_ifcarry(cond, t, f),
+            Statement::IfCarry(t, f) => self.visit_ifcarry(t, f),
             Statement::If(cond, t, f) => self.visit_if(cond, t, f),
             Statement::Expression(expr) => self.visit_expr_statement(expr),
             Statement::Break => self.visit_break(),
@@ -180,9 +169,7 @@ pub trait StatementVisitor {
             Statement::Block(ss) => self.visit_block(ss),
             Statement::Return(expr) => self.visit_return(expr),
             Statement::While(cond, body) => self.visit_while(cond, body),
-            Statement::MoveField(dest, dest_field, src, src_field) =>
-                self.visit_move(dest, dest_field, src, src_field),
-            Statement::JumpField(dest, dest_field) => self.visit_jump(dest, dest_field),
+            Statement::Asm(opcode, dest) => self.visit_asm(opcode, dest),
         }
     }
 

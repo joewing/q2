@@ -17,19 +17,20 @@ fun mult24(a, b, result)
 
   var bhigh = 0;
   while @a do
-    ifcarry @a >> 1 then
-      ifcarry @@result + @b then
+    a = @a >> 1;
+    ifcarry
+      var temp = @@result + @b;
+      ifcarry
         @result + 1 = @(@result + 1) + 1;
       end
-      @result = @@result + @b;
+      @result = @temp;
       @result + 1 = @(@result + 1) + @bhigh;
     end
     bhigh = @bhigh << 1;
-    ifcarry @b << 1 then
+    b = @b << 1;
+    ifcarry
       bhigh = @bhigh + 1;
     end
-    b = @b << 1;
-    a = @a >> 1;
   end
 end
 
@@ -179,10 +180,10 @@ fun fdiv(x, y, result)
   var n = 10;
   while @n do
     num_high = @num_high << 1;
-    ifcarry @num_low << 1 then
+    num_low = @num_low << 1;
+    ifcarry
       num_high = @num_high + 1;
     end
-    num_low = @num_low << 1;
     n = @n + -1;
   end
 
@@ -195,14 +196,14 @@ fun fdiv(x, y, result)
     absx = @absx << 1;
     rem = @rem << 1;
 
-    ifcarry @num_high << 1 then
+    num_high = @num_high << 1;
+    ifcarry
       rem = @rem + 1;
     end
-    num_high = @num_high << 1;
-    ifcarry @num_low << 1 then
+    num_low = @num_low << 1;
+    ifcarry
       num_high = @num_high + 1;
     end
-    num_low = @num_low << 1;
 
     if @rem >= @absy then
       rem = @rem - @absy;

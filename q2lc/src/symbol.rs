@@ -2,8 +2,7 @@ use std::collections::{HashMap, HashSet};
 
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Watermark {
-    pub(crate) stack: Word,
-    heap: Word,
+    pub(crate) stack: Word
 }
 
 use crate::expr::{Expression, Word};
@@ -18,13 +17,8 @@ pub enum Symbol {
 impl Watermark {
     pub fn combine(&self, other: Watermark) -> Watermark {
         Watermark {
-            heap: Word::min(self.heap, other.heap),
-            stack: Word::max(self.stack, other.stack),
+            stack: Word::max(self.stack, other.stack)
         }
-    }
-
-    pub fn update_heap(&mut self, heap: Word) {
-        self.heap = Word::min(self.heap, heap);
     }
 
     pub fn update_stack(&mut self, stack: Word) {
@@ -36,7 +30,6 @@ struct Scope {
     symbols: HashMap<String, Symbol>,
     watermark: Watermark,
     stack: Word,
-    heap: Word,
     return_address: Symbol,
     break_label: Option<String>,
 }
@@ -50,6 +43,7 @@ pub struct SymbolTable {
     scopes: Vec<Scope>,
     index: usize,
     page: Word,
+    heap: Word,
 }
 
 impl SymbolTable {
@@ -58,16 +52,15 @@ impl SymbolTable {
     pub const PAGE_COUNT: Word = 32;
     pub const ORIGIN: Word = SymbolTable::PAGE_SIZE;
     pub const ENTRYPOINT: &'static str = "main";
+    pub const BASE_HEAP: Word = 0xFFF;
     const BASE_WATERMARK: Watermark = Watermark {
-        stack: 4,
-        heap: 0xFFF,
+        stack: 4
     };
 
     pub fn new() -> SymbolTable {
         let global_scope = Scope {
             symbols: HashMap::new(),
             watermark: SymbolTable::BASE_WATERMARK,
-            heap: SymbolTable::BASE_WATERMARK.heap,
             stack: SymbolTable::BASE_WATERMARK.stack,
             return_address: Symbol::Constant(0),
             break_label: None,
@@ -81,6 +74,7 @@ impl SymbolTable {
             words: 0,
             index: 0,
             page: 0,
+            heap: SymbolTable::BASE_HEAP,
         }
     }
 
@@ -120,13 +114,13 @@ impl SymbolTable {
         }
         let scope = self.scopes.last().unwrap();
         let total_words = SymbolTable::PAGE_COUNT * SymbolTable::PAGE_SIZE - 1;
-        let usage = (total_words - scope.watermark.heap)
+        let usage = (total_words - self.heap)
             + (self.page - 1) * SymbolTable::PAGE_SIZE
             + scope.watermark.stack;
         println!("memory usage:    {:4} / {:4}", usage, total_words);
         println!("zero-page words: {:4} / {:4}", scope.watermark.stack, SymbolTable::PAGE_SIZE);
         println!("code pages:      {:4} / {:4}", self.page - 1, SymbolTable::PAGE_COUNT - 1);
-        println!("heap words:      {:4} / {:4}", total_words - scope.watermark.heap, total_words);
+        println!("heap words:      {:4} / {:4}", total_words - self.heap, total_words);
         if scope.watermark.stack > SymbolTable::PAGE_SIZE {
             return Err(format!("too many vars: {}", scope.watermark.stack));
         }
@@ -134,9 +128,9 @@ impl SymbolTable {
             return Err(format!("code requires too many pages: {}", self.page));
         }
         let code_end = self.page * SymbolTable::PAGE_SIZE;
-        if code_end > scope.watermark.heap {
+        if code_end > self.heap {
             return Err(
-                format!("heap (0x{:x}) and code (0x{:x}) overlap", scope.watermark.heap, code_end)
+                format!("heap (0x{:x}) and code (0x{:x}) overlap", self.heap, code_end)
             );
         }
         Ok(())
@@ -277,15 +271,13 @@ impl SymbolTable {
     }
 
     pub fn append_heap(&mut self, size: Word) -> Result<Word, String> {
-        let mut scope = self.scopes.last_mut().unwrap();
-        scope.heap = match scope.heap.overflowing_sub(size) {
+        self.heap = match self.heap.overflowing_sub(size) {
             (v, false) => v,
             (_, true) => {
                 return Err(format!("out of heap space"));
             },
         };
-        scope.watermark.update_heap(scope.heap);
-        Ok(scope.heap)
+        Ok(self.heap)
     }
 
     pub fn enter(&mut self) {
@@ -298,7 +290,6 @@ impl SymbolTable {
                 symbols: HashMap::new(),
                 watermark: watermark,
                 stack: watermark.stack,
-                heap: watermark.heap,
                 return_address: return_address,
                 break_label: break_label,
             }
@@ -327,7 +318,6 @@ impl SymbolTable {
                 symbols: HashMap::new(),
                 watermark: watermark,
                 stack: watermark.stack,
-                heap: watermark.heap,
                 return_address: return_address,
                 break_label: Some(break_label.clone()),
             }
@@ -342,15 +332,12 @@ impl SymbolTable {
     }
 
     pub fn enter_function(&mut self, watermark: Watermark) -> Symbol {
-        let last = self.scopes.last().unwrap();
-        let return_address = last.return_address.clone();
         self.scopes.push(
             Scope {
                 symbols: HashMap::new(),
                 watermark: watermark,
                 stack: watermark.stack,
-                heap: watermark.heap,
-                return_address: return_address,
+                return_address: Symbol::Constant(0),
                 break_label: None,
             }
         );
@@ -383,8 +370,7 @@ impl SymbolTable {
     pub fn current_watermark(&self) -> Watermark {
         let scope = self.scopes.last().unwrap();
         Watermark {
-            stack: scope.stack,
-            heap: scope.heap,
+            stack: scope.stack
         }
     }
 
