@@ -21,7 +21,7 @@ const SET_PIN: u32 = 22;
 const DEPOSIT_PIN: u32 = 23;
 
 const DELAY_SHORT: Duration = Duration::from_millis(5);
-const DELAY_LONG: Duration = Duration::from_millis(95);
+const DELAY_LONG: Duration = Duration::from_millis(25);
 
 pub struct ProgError {
     message: String
@@ -185,6 +185,7 @@ fn do_verify(device_path: &str, filename: &str) -> Result<usize, ProgError> {
             let word = parse_word(parts[1])?;
             let actual = panel.read_word(addr)?;
             if word != actual {
+                panel.cleanup()?;
                 return Err(ProgError { message: format!("ERROR: verification failed at {:03X}: expected {:03X}, got {:03X}", addr, word, actual) })
             };
             count += 1;

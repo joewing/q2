@@ -1,34 +1,17 @@
 use std::collections::{HashMap, HashSet};
 
-#[derive(Clone, Copy, PartialEq, Eq, Hash)]
-pub struct Watermark {
-    pub(crate) stack: Word
-}
-
 use crate::expr::{Expression, Word};
 
 #[derive(Hash, PartialEq, Eq, Clone)]
 pub enum Symbol {
-    Function(Watermark, Vec<Word>),
+    Function(Word, Vec<Word>),
     Constant(Word),
     Label(String),
 }
 
-impl Watermark {
-    pub fn combine(&self, other: Watermark) -> Watermark {
-        Watermark {
-            stack: Word::max(self.stack, other.stack)
-        }
-    }
-
-    pub fn update_stack(&mut self, stack: Word) {
-        self.stack = Word::max(self.stack, stack);
-    }
-}
-
 struct Scope {
     symbols: HashMap<String, Symbol>,
-    watermark: Watermark,
+    watermark: Word,
     stack: Word,
     return_address: Symbol,
     break_label: Option<String>,
@@ -52,16 +35,14 @@ impl SymbolTable {
     pub const PAGE_COUNT: Word = 32;
     pub const ORIGIN: Word = SymbolTable::PAGE_SIZE;
     pub const ENTRYPOINT: &'static str = "main";
-    pub const BASE_HEAP: Word = 0xFFF;
-    const BASE_WATERMARK: Watermark = Watermark {
-        stack: 4
-    };
+    const BASE_HEAP: Word = 0xFFF;
+    const BASE_WATERMARK: Word = 0x004;
 
     pub fn new() -> SymbolTable {
         let global_scope = Scope {
             symbols: HashMap::new(),
             watermark: SymbolTable::BASE_WATERMARK,
-            stack: SymbolTable::BASE_WATERMARK.stack,
+            stack: SymbolTable::BASE_WATERMARK,
             return_address: Symbol::Constant(0),
             break_label: None,
         };
@@ -116,13 +97,13 @@ impl SymbolTable {
         let total_words = SymbolTable::PAGE_COUNT * SymbolTable::PAGE_SIZE - 1;
         let usage = (total_words - self.heap)
             + (self.page - 1) * SymbolTable::PAGE_SIZE
-            + scope.watermark.stack;
+            + scope.watermark;
         println!("memory usage:    {:4} / {:4}", usage, total_words);
-        println!("zero-page words: {:4} / {:4}", scope.watermark.stack, SymbolTable::PAGE_SIZE);
+        println!("zero-page words: {:4} / {:4}", scope.watermark, SymbolTable::PAGE_SIZE);
         println!("code pages:      {:4} / {:4}", self.page - 1, SymbolTable::PAGE_COUNT - 1);
         println!("heap words:      {:4} / {:4}", total_words - self.heap, total_words);
-        if scope.watermark.stack > SymbolTable::PAGE_SIZE {
-            return Err(format!("too many vars: {}", scope.watermark.stack));
+        if scope.watermark > SymbolTable::PAGE_SIZE {
+            return Err(format!("too many vars: {}", scope.watermark));
         }
         if self.page - 1 > SymbolTable::PAGE_COUNT {
             return Err(format!("code requires too many pages: {}", self.page));
@@ -289,7 +270,7 @@ impl SymbolTable {
             Scope {
                 symbols: HashMap::new(),
                 watermark: watermark,
-                stack: watermark.stack,
+                stack: watermark,
                 return_address: return_address,
                 break_label: break_label,
             }
@@ -299,14 +280,14 @@ impl SymbolTable {
     pub fn leave(&mut self) {
         let last = self.scopes.pop().unwrap();
         let current = self.scopes.last_mut().unwrap();
-        current.watermark = last.watermark.combine(current.watermark);
+        current.watermark = Word::max(last.watermark, current.watermark);
     }
 
     /** Update current stack to account for an argument to a function call. */
     pub fn update_stack(&mut self, param: Word) {
         let mut last = self.scopes.last_mut().unwrap();
         last.stack = Word::max(last.stack, param + 1);
-        last.watermark.update_stack(last.stack);
+        last.watermark = Word::max(last.watermark, last.stack);
     }
 
     pub fn enter_loop(&mut self, break_label: &String) {
@@ -317,7 +298,7 @@ impl SymbolTable {
             Scope {
                 symbols: HashMap::new(),
                 watermark: watermark,
-                stack: watermark.stack,
+                stack: watermark,
                 return_address: return_address,
                 break_label: Some(break_label.clone()),
             }
@@ -331,12 +312,12 @@ impl SymbolTable {
         Ok(())
     }
 
-    pub fn enter_function(&mut self, watermark: Watermark) -> Symbol {
+    pub fn enter_function(&mut self, watermark: Word) -> Symbol {
         self.scopes.push(
             Scope {
                 symbols: HashMap::new(),
                 watermark: watermark,
-                stack: watermark.stack,
+                stack: watermark,
                 return_address: Symbol::Constant(0),
                 break_label: None,
             }
@@ -351,7 +332,7 @@ impl SymbolTable {
         let watermark = func_scope.watermark;
         let symbol = Symbol::Function(watermark, args);
         let scope = self.scopes.last_mut().unwrap();
-        scope.watermark = scope.watermark.combine(watermark);
+        scope.watermark = Word::max(scope.watermark, watermark);
         scope.symbols.insert(name.clone(), symbol);
     }
 
@@ -359,7 +340,7 @@ impl SymbolTable {
         let mut scope = self.scopes.last_mut().unwrap();
         let addr = scope.stack;
         scope.stack += 1;
-        scope.watermark.update_stack(scope.stack);
+        scope.watermark = Word::max(scope.watermark, scope.stack);
         Symbol::Constant(addr)
     }
 
@@ -367,11 +348,8 @@ impl SymbolTable {
         self.scopes.last_mut().unwrap().stack -= 1;
     }
 
-    pub fn current_watermark(&self) -> Watermark {
-        let scope = self.scopes.last().unwrap();
-        Watermark {
-            stack: scope.stack
-        }
+    pub fn current_watermark(&self) -> Word {
+        self.scopes.last().unwrap().stack
     }
 
     pub fn declare_var(&mut self, name: &String, value: Option<Symbol>) -> Result<(), String> {
