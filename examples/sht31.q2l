@@ -35,8 +35,8 @@ fun sht31_get_measurement(temperature, humidity)
   i2c_read();         # CRC
   i2c_stop();
 
-  @humidity = (msb << 4) | (lsb >> 4);
-  
+  lsb = (@msb << 4) | (@lsb >> 4);
+  mult24(100, @lsb, @humidity, lsb);
 end
 
 fun main()
