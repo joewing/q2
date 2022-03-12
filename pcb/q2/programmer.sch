@@ -21,6 +21,11 @@ F 0 "J1" H 6500 3900 50  0000 C CNN
 F 1 "Programmer" H 6550 3800 50  0000 C CNN
 F 2 "Connector_IDC:IDC-Header_2x20_P2.54mm_Vertical" H 5850 2500 50  0001 C CNN
 F 3 "" H 5850 2500 50  0001 C CNN
+F 4 "C9138" H 5850 2500 50  0001 C CNN "LCSC"
+F 5 "BOOMELE(Boom Precision Elec)" H 5850 2500 50  0001 C CNN "Manufacturer"
+F 6 "2X20P" H 5850 2500 50  0001 C CNN "Package"
+F 7 "C9138" H 5850 2500 50  0001 C CNN "Part Number"
+F 8 "PTH" H 5850 2500 50  0001 C CNN "Type"
 	1    5850 2500
 	1    0    0    -1  
 $EndComp

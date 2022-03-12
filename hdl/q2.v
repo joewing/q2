@@ -81,6 +81,27 @@ module q2(
     .sc(sc)
   );
 
+  // Report clock frequency.
+  realtime start;
+  integer freq_count;
+  always @(posedge clk) begin
+    if (~nrst) begin
+      freq_count <= 0;
+    end else if (freq_count == 0) begin
+      start <= $realtime;
+      freq_count <= 1;
+    end else if (freq_count == 1000) begin
+      $display(
+        "Clock frequency: %g kHz",
+        (1000.0 * 1000000.0 / ($realtime - start)) / freq_count
+      );
+      freq_count <= 1001;
+      start <= $realtime;
+    end else begin
+      freq_count <= freq_count + 1;
+    end
+  end
+
   // Halt condition for simulation.
   // Halt when executing "jmp $".
   wire [11:0] p = ~np;
@@ -166,7 +187,9 @@ module q2(
     .s1(s1),
     .ns1(ns1),
     .s2(s2),
+    .ns2(ns2),
     .s3(s3),
+    .ns3(ns3),
     .nf(nf),
     .deref(deref),
     .o0(o0),
@@ -198,7 +221,6 @@ module q2(
     .wrf(wrf),
     .fout(f_in),
     .s2in(s2in),
-    .io(io),
     .state_fetch(state_fetch),
     .nstate_exec(nstate_exec),
     .nstate_load(nstate_load),

@@ -54,10 +54,10 @@ module field(
 
   wire t9;
   nfet q22(1'b0, use_df, t9);
-  nfet q23(t9, ndf0, abus12);
+  nfet #(.DRIVERS(2)) q23(t9, ndf0, abus12);
 
   wire t10;
   nfet q24(1'b0, use_if, t10);
-  nfet q25(t10, nif0, abus12);
+  nfet #(.DRIVERS(2)) q25(t10, nif0, abus12);
 
 endmodule

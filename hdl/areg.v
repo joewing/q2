@@ -22,7 +22,7 @@ module areg(
     .nq(naout)
   );
   wire t1;
-  nfet #(5, 10000) q1(t1, naout, dbus);
-  nfet #(5, 10000) q2(1'b0, rda, t1);
+  nfet #(5, 10000, 5, 4) q1(t1, naout, dbus);
+  nfet #(5, 10000, 5, 4) q2(1'b0, rda, t1);
 
 endmodule

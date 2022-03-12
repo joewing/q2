@@ -29,10 +29,10 @@ module alu(
   nfet #(2) q8(1'b0, t2, t3);
 
   wire alu_carry;
+  wire t4;
   nfet #(1) q9(1'b0, alu_nor, alu_carry);
   nfet #(1) q10(1'b0, t4, alu_carry);
 
-  wire t4;
   nfet #(3) q11(1'b0, t3, t4);
   nfet #(3) q12(1'b0, f, t4);
 

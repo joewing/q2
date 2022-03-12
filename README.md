@@ -369,10 +369,10 @@ The power consumption varies depending on the value of the resistor
 and the presence of the LED:
 
   * 75 LEDs (2V drop) with 1k resistors: 75 * (5 - 2) / 1000 = 225mA
-  * 7 1k resistors: 35mA
-  * 342 10k resistors: 171mA
+  * 6 1k resistors: 30mA
+  * 341 10k resistors: 170.5mA
   * 31 100k resistors: 1.5mA
-  * 9 4.7k resistors: 9.5mA
+  * 10 4.7k resistors: 10.6mA
 
 In addition to the pull-up network, the Q2 has the following components
 that draw power:
@@ -380,5 +380,5 @@ that draw power:
   * The SRAMs each use 10mA (20mA total).
   * The LCD is assumed to use around 25mA.
 
-This gives us a total power consumption of about 487mA.
+This gives us a total power consumption of about 483mA.
 

@@ -87,6 +87,7 @@ module slice(
   // ncdiv fanout:  2
   // nscl fanout:   1
   // nsda fanout:   1
+  wire clrs;
   dff #(6, 6) sreg(
     .clk(wrs),
     .d(sin),
@@ -95,7 +96,6 @@ module slice(
     .q(sout),
     .nq(nsout)
   );
-  wire clrs;
   nfet q1(1'b0, nrst, clrs);
 
   wire t1;
