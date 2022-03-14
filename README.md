@@ -378,7 +378,7 @@ In addition to the pull-up network, the Q2 has the following components
 that draw power:
 
   * The SRAMs each use 10mA (20mA total).
-  * The LCD is assumed to use around 25mA.
+  * The LCD is assumed to use around 20mA.
 
-This gives us a total power consumption of about 483mA.
+This gives us a total power consumption of about 478mA.
 
