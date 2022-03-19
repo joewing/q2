@@ -1,0 +1,191 @@
+
+const RASTER_SIZE = 4 * 16;
+const MAX_SNAKE_LENGTH = 20 * 16;
+
+const RASTER = :RASTER_SIZE;
+const SNAKE = :(MAX_SNAKE_LENGTH * 2);  # (x, y) tuples
+
+const LEFT = 1;
+const RIGHT = 2;
+const UP = 4;
+const DOWN = 8;
+
+var snake_level;
+var snake_dir;
+var snake_x, snake_y;
+var snake_tail_index;
+var food_x, food_y;
+var game_over;
+
+fun raster_xor(x, y)
+  const MASKS = [ 0x010, 0x008, 0x004, 0x002, 0x001 ];
+  const DIVS_16 = [
+    0, 0, 0, 0, 0, 16, 16, 16, 16, 16, 32, 32, 32, 32, 32, 48, 48, 48, 48, 48
+  ];
+  const MODS = [
+    0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 0, 1, 2, 3, 4
+  ];
+  var word = @(DIVS_16 + @x) + @y;
+  var bit = @(MODS + @x);
+  OUTPUT = 0x140 + @word;
+  word = RASTER + @word;
+  bit = @(MASKS + @bit);
+  var result = @@word & @bit;
+  var updated = @@word ^ @bit;
+  @word = @updated;
+  OUTPUT = @updated;
+  return @result;
+end
+
+fun raster_clear()
+  OUTPUT = 0x140;
+  var i = RASTER_SIZE;
+  while @i do
+    i = @i - 1;
+    RASTER + @i = 0;
+    OUTPUT = 0;
+  end
+end
+
+fun place_food()
+  while 1 do
+    while 1 do
+      food_x = rand() & 31;
+      if @food_x < 20 then
+        break;
+      end
+    end
+    food_y = rand() & 15;
+    if raster_xor(@food_x, @food_y) == 0 then
+      break;
+    end
+    raster_xor(@food_x, @food_y);
+  end
+end
+
+fun move()
+
+  # Delay and check for a change in direction.
+  var delay = 15;
+  while @delay do
+    var key = ~@OUTPUT & 31;
+    if @key then
+      snake_dir = @key;
+    end
+    delay = @delay - 1;
+  end
+
+  # Move the head.
+  if @snake_dir == LEFT then
+    if @snake_x == 0 then
+      snake_x = 19;
+    else
+      snake_x = @snake_x - 1;
+    end
+  elseif @snake_dir == RIGHT then
+    if @snake_x == 19 then
+      snake_x = 0;
+    else
+      snake_x = @snake_x + 1;
+    end
+  elseif @snake_dir == UP then
+    if @snake_y == 0 then
+      snake_y = 15;
+    else
+      snake_y = @snake_y - 1;
+    end
+  elseif @snake_dir == DOWN then
+    if @snake_y == 15 then
+      snake_y = 0;
+    else
+      snake_y = @snake_y + 1;
+    end
+  else
+    # Assume paused.
+    return 0;
+  end
+
+  # Clear the old tail if there is one to clear.
+  var ptr = SNAKE + (@snake_tail_index << 1);
+  var old_x = @@ptr;
+  if @old_x != 0xFFF then
+    var old_y = @(@ptr + 1);
+    raster_xor(@old_x, @old_y);
+  end
+
+  @ptr = @snake_x;
+  @ptr + 1 = @snake_y;
+
+  # Update the tail index.
+  if @snake_tail_index == @snake_level then
+    snake_tail_index = 0;
+  else
+    snake_tail_index = @snake_tail_index + 1;
+  end
+
+  # Check for food
+  if @snake_x == @food_x && @snake_y == @food_y then
+    # Got food; leave the pixel on to become part of the snake.
+    OUTPUT = 0x180 + 0x40 + 10;
+    putint(@snake_level);
+    snake_level = @snake_level + 1;
+    SNAKE + @snake_level + @snake_level = 0xFFF; # Mark the end.
+    place_food();
+  else
+    # Did not get food; turn on the new head.
+    if raster_xor(@snake_x, @snake_y) then
+      game_over = 1;
+    end
+  end
+
+end
+
+fun main()
+
+  snake_level = 1;  # level 1 is length 2.
+  snake_dir = RIGHT;
+  snake_tail_index = 0;
+  game_over = 0;
+
+  clear();
+  puts([
+    0x180 + 0x00, ' ', 0xFF, 0x08, 0x0A, 0x0C, 0x0E, 0xFF,
+      ' ', ' ', 'S', 'n', 'a', 'k', 'e', ' ', ' ',
+    0x180 + 0x40, ' ', 0xFF, 0x09, 0x0B, 0x0D, 0x0F, 0xFF,
+      ' ', ' ', '0', '0', '0', '0', '0', ' ', ' ',
+    0
+  ]);
+  raster_clear();
+
+  # Tail (5, 7)
+  SNAKE = 5;
+  SNAKE + 1 = 7;
+  raster_xor(5, 7);
+
+  # Head (6, 7)
+  snake_x = 6;
+  snake_y = 7;
+  SNAKE + 2 = 6;
+  SNAKE + 3 = 7;
+  raster_xor(6, 7);
+  
+  SNAKE + 4 = 0xFFF;
+  
+  place_food();
+
+  while !@game_over do
+    move();
+  end
+
+  puts(
+    [
+      0x180 + 2, 'G', 'A', 'M', 'E',
+      0x180 + 0x42, 'O', 'V', 'E', 'R',
+      0
+    ]
+  );
+
+  waitkey();
+
+end
+

@@ -25,14 +25,14 @@ impl StatementVisitor for FunctionEmitter<'_> {
     }
 }
 
-const LDA: &str = "lda";
-const NOR: &str = "nor";
-const ADD: &str = "add";
-const SHR: &str = "shr";
-const LEA: &str = "lea";
-const STA: &str = "sta";
-const JFC: &str = "jfc";
-const JMP: &str = "jmp";
+pub const LDA: &str = "lda";
+pub const NOR: &str = "nor";
+pub const ADD: &str = "add";
+pub const SHR: &str = "shr";
+pub const LEA: &str = "lea";
+pub const STA: &str = "sta";
+pub const JFC: &str = "jfc";
+pub const JMP: &str = "jmp";
 
 pub fn emit_store(state: &mut SymbolTable, symbol: &Symbol) -> Result<(), String> {
     state.append_code(STA, symbol)
@@ -62,13 +62,6 @@ pub fn emit_assign(state: &mut SymbolTable, dest: &Expression, src: &Expression)
 
 fn load(state: &mut SymbolTable, expr: &Expression) -> Result<Symbol, String> {
     let temp = state.allocate_temp();
-
-    if let Expression::Unary(UnaryOperator::Deref, inner) = expr {
-        if let Expression::Symbol(name) = inner.as_ref() {
-            return state.lookup(name);
-        }
-    }
-
     let _ = expr.emit(state)?;
     let _ = emit_store(state, &temp)?;
     Ok(temp)
@@ -176,6 +169,9 @@ pub fn emit_add(lhs: &Expression, rhs: &Expression, state: &mut SymbolTable) -> 
     if let Some(lhs_symbol) = extract_deref(state, lhs)? {
         let _ = rhs.emit(state)?;
         let _ = state.append_code(ADD, &lhs_symbol)?;
+    } else if let Some(rhs_symbol) = extract_deref(state, rhs)? {
+        let _ = lhs.emit(state)?;
+        let _ = state.append_code(ADD, &rhs_symbol)?;
     } else {
         let temp = load(state, rhs)?;
         let _ = lhs.emit(state)?;
@@ -186,12 +182,19 @@ pub fn emit_add(lhs: &Expression, rhs: &Expression, state: &mut SymbolTable) -> 
 }
 
 pub fn emit_sub(lhs: &Expression, rhs: &Expression, state: &mut SymbolTable) -> Result<bool, String> {
-    let temp = load(state, rhs)?;
-    let _ = lhs.emit(state)?;
-    let _ = state.append_code_immediate(NOR, 0)?;
-    let _ = state.append_code(ADD, &temp)?;
-    let _ = state.append_code_immediate(NOR, 0)?;
-    release(state);
+    if let Some(rhs_symbol) = extract_deref(state, rhs)? {
+        let _ = lhs.emit(state)?;
+        let _ = state.append_code_immediate(NOR, 0)?;
+        let _ = state.append_code(ADD, &rhs_symbol)?;
+        let _ = state.append_code_immediate(NOR, 0)?;
+    } else {
+        let temp = load(state, rhs)?;
+        let _ = lhs.emit(state)?;
+        let _ = state.append_code_immediate(NOR, 0)?;
+        let _ = state.append_code(ADD, &temp)?;
+        let _ = state.append_code_immediate(NOR, 0)?;
+        release(state);
+    }
     Ok(true)
 }
 
@@ -219,39 +222,74 @@ pub fn emit_and(lhs: &Expression, rhs: &Expression, state: &mut SymbolTable) -> 
 }
 
 pub fn emit_or(lhs: &Expression, rhs: &Expression, state: &mut SymbolTable) -> Result<bool, String> {
-    let temp = load(state, lhs)?;
-    let _ = rhs.emit(state)?;
-    let _ = state.append_code(NOR, &temp)?;
-    let _ = state.append_code_immediate(NOR, 0)?;
-    release(state);
+    if let Some(lhs_symbol) = extract_deref(state, lhs)? {
+        let _ = rhs.emit(state)?;
+        let _ = state.append_code(NOR, &lhs_symbol)?;
+        let _ = state.append_code_immediate(NOR, 0)?;
+    } else if let Some(rhs_symbol) = extract_deref(state, rhs)? {
+        let _ = lhs.emit(state)?;
+        let _ = state.append_code(NOR, &rhs_symbol)?;
+        let _ = state.append_code_immediate(NOR, 0)?;
+    } else {
+        let temp = load(state, lhs)?;
+        let _ = rhs.emit(state)?;
+        let _ = state.append_code(NOR, &temp)?;
+        let _ = state.append_code_immediate(NOR, 0)?;
+        release(state);
+    }
     Ok(true)
 }
 
-pub fn emit_xor(lhs: &Expression, rhs: &Expression, state: &mut SymbolTable) -> Result<bool, String> {
+fn emit_xor_inner(state: &mut SymbolTable, lhs_addr: &Symbol, rhs_addr: &Symbol) -> Result<bool, String> {
     let temp = state.allocate_temp();
-    let rhs_temp = load(state, rhs)?;
-    let lhs_temp = load(state, lhs)?;
-    let _ = state.append_code(LDA, &lhs_temp)?;     // A = lhs
+    let _ = state.append_code(LDA, &lhs_addr)?;     // A = lhs
     let _ = state.append_code_immediate(NOR, 0)?;   // A = ~lhs
     let _ = emit_store(state, &temp)?;              // temp = ~lhs
-    let _ = state.append_code(LDA, &rhs_temp)?;     // A = rhs
+    let _ = state.append_code(LDA, &rhs_addr)?;     // A = rhs
     let _ = state.append_code_immediate(NOR, 0)?;   // A = ~rhs
     let _ = state.append_code(NOR, &temp)?;         // A = ~rhs NOR ~lhs
     let _ = emit_store(state, &temp)?;              // temp = ~lhs NOR ~rhs
-    let _ = state.append_code(LDA, &rhs_temp)?;
-    let _ = state.append_code(NOR, &lhs_temp)?;
+    let _ = state.append_code(LDA, &rhs_addr)?;
+    let _ = state.append_code(NOR, &lhs_addr)?;
     let _ = state.append_code(NOR, &temp)?;      // temp = (~lhs NOR ~rhs) NOR (lhs NOR rhs)
-    release(state);
-    release(state);
     state.release_temp();
     Ok(true)
 }
 
+pub fn emit_xor(lhs: &Expression, rhs: &Expression, state: &mut SymbolTable) -> Result<bool, String> {
+    if let Some(lhs_symbol) = extract_deref(state, lhs)? {
+        let rhs_temp = load(state, rhs)?;
+        let result = emit_xor_inner(state, &lhs_symbol, &rhs_temp)?;
+        release(state);
+        Ok(result)
+    } else if let Some(rhs_symbol) = extract_deref(state, rhs)? {
+        let lhs_temp = load(state, lhs)?;
+        let result = emit_xor_inner(state, &lhs_temp, &rhs_symbol)?;
+        release(state);
+        Ok(result)
+    } else {
+        let rhs_temp = load(state, rhs)?;
+        let lhs_temp = load(state, lhs)?;
+        let result = emit_xor_inner(state, &rhs_temp, &lhs_temp)?;
+        release(state);
+        release(state);
+        Ok(result)
+    }
+}
+
 pub fn emit_nor(lhs: &Expression, rhs: &Expression, state: &mut SymbolTable) -> Result<bool, String> {
-    let temp = load(state, lhs)?;
-    let _ = rhs.emit(state)?;
-    let _ = state.append_code(NOR, &temp)?;
-    release(state);
+    if let Some(lhs_symbol) = extract_deref(state, lhs)? {
+        let _ = rhs.emit(state)?;
+        let _ = state.append_code(NOR, &lhs_symbol)?;
+    } else if let Some(rhs_symbol) = extract_deref(state, rhs)? {
+        let _ = lhs.emit(state)?;
+        let _ = state.append_code(NOR, &rhs_symbol)?;
+    } else {
+        let temp = load(state, lhs)?;
+        let _ = rhs.emit(state)?;
+        let _ = state.append_code(NOR, &temp)?;
+        release(state);
+    }
     Ok(true)
 }
 
@@ -267,9 +305,13 @@ pub fn emit_shr(lhs: &Expression, rhs: &Expression, state: &mut SymbolTable) -> 
     match rhs {
         Expression::Constant(w) if *w == 0 => Ok(false),
         Expression::Constant(w) if *w == 1 => {
-            let temp = load(state, lhs)?;
-            let _ = state.append_code(SHR, &temp)?;
-            release(state);
+            if let Some(lhs_symbol) = extract_deref(state, lhs)? {
+                let _ = state.append_code(SHR, &lhs_symbol)?;
+            } else {
+                let temp = load(state, lhs)?;
+                let _ = state.append_code(SHR, &temp)?;
+                release(state);
+            }
             Ok(false)
         },
         _ => emit_call_builtin(state, SHIFT_RIGHT_NAME, lhs, rhs)
@@ -398,17 +440,31 @@ pub fn emit_ifcarry(state: &mut SymbolTable, t: &Statement, f: &Statement) -> Re
 }
 
 pub fn emit_while(state: &mut SymbolTable, cond: &Expression, body: &Statement) -> Result<(), String> {
-    let cond_label = state.next_label();
-    let top_label = state.next_label();
-    let break_label = state.next_label();
-    let _ = state.append_code(JMP, &Symbol::Label(cond_label.clone()))?;
-    state.append_label(&top_label);
-    state.enter_loop(&break_label);
-    let _ = body.emit(state)?;
-    state.append_label(&cond_label);
-    let _ = emit_test(state, cond)?;
-    let _ = state.append_code(JFC, &Symbol::Label(top_label))?;
-    state.leave_loop()
+    if let Expression::Constant(w) = cond {
+        if *w != 0 {
+            let top_label = state.next_label();
+            let break_label = state.next_label();
+            state.append_label(&top_label);
+            state.enter_loop(&break_label);
+            let _ = body.emit(state)?;
+            let _ = state.append_code(JMP, &Symbol::Label(top_label))?;
+            state.leave_loop()
+        } else {
+            Ok(())
+        }
+    } else {
+        let cond_label = state.next_label();
+        let top_label = state.next_label();
+        let break_label = state.next_label();
+        let _ = state.append_code(JMP, &Symbol::Label(cond_label.clone()))?;
+        state.append_label(&top_label);
+        state.enter_loop(&break_label);
+        let _ = body.emit(state)?;
+        state.append_label(&cond_label);
+        let _ = emit_test(state, cond)?;
+        let _ = state.append_code(JFC, &Symbol::Label(top_label))?;
+        state.leave_loop()
+    }
 }
 
 pub fn emit_break(state: &mut SymbolTable) -> Result<(), String> {

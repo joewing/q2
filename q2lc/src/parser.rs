@@ -1,4 +1,5 @@
-
+use std::fs::File;
+use std::io::{BufRead, BufReader};
 use std::str::FromStr;
 use crate::expr::{BinaryOperator, Expression, UnaryOperator, Word};
 use crate::statement::Statement;
@@ -407,13 +408,50 @@ fn parse_break(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
     Ok(Statement::Break)
 }
 
+const HEX_SUFFIX: &'static str = ".hex";
+
+fn parse_module(name: String) -> Result<Statement, String> {
+    let start = name.rfind('/').map(|x| x + 1).unwrap_or(0);
+    let mod_name = &name[start..name.len() - HEX_SUFFIX.len()];
+    let f = File::open(name.as_str()).or(Err(format!("could not open {}", name)))?;
+    let br = BufReader::new(f);
+    let mut exprs = Vec::new();
+    let mut line_number = 0;
+    let mut word_count = 0;
+    for line_opt in br.lines() {
+        line_number += 1;
+        if line_number > 128 {
+            let line = line_opt.unwrap();
+            if line.starts_with("XX") {
+                exprs.push(Expression::Constant(0x000));
+            } else {
+                let word = Word::from_str_radix(&line[0..3], 16).unwrap();
+                exprs.push(Expression::Constant(word));
+            }
+            word_count += 1;
+        }
+    }
+    Ok(
+        Statement::Block(
+            vec![
+                Statement::Const(format!("{}", mod_name), Expression::ArrayLiteral(exprs)),
+                Statement::Const(format!("{}_size", mod_name), Expression::Constant(word_count))
+            ]
+        )
+    )
+}
+
 fn parse_include(tokenizer: &mut Tokenizer) -> Result<Statement, String> {
     let _ = tokenizer.expect(INCLUDE)?;
     let tok = tokenizer.peek_token();
     tokenizer.next_token();
     let name: String = tok.value.chars().skip(1).take_while(|c| *c != '\"').collect();
     let _ = tokenizer.expect(TERM)?;
-    parse_file(name.as_str())
+    if name.ends_with(HEX_SUFFIX) {
+        parse_module(name)
+    } else {
+        parse_file(name.as_str())
+    }
 }
 
 fn parse_asm(tokenizer: &mut Tokenizer) -> Result<Statement, String> {

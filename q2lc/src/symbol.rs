@@ -69,7 +69,7 @@ impl SymbolTable {
         }
     }
 
-    fn new_page(&mut self) {
+    fn finish_page(&mut self) {
         let mut temp = Vec::new();
         for (symbol, label) in self.immediates.iter() {
             temp.push(format!("{}:", label));
@@ -81,10 +81,13 @@ impl SymbolTable {
             temp.push(format!("  .dw {}", s));
         }
         self.extend(temp);
-
-        self.append(format!("  .align"));
         self.local_labels.clear();
         self.immediates.clear();
+    }
+
+    fn new_page(&mut self) {
+        self.finish_page();
+        self.append(format!("  .align"));
         self.words = 0;
         self.page += 1;
     }
@@ -117,17 +120,33 @@ impl SymbolTable {
         Ok(())
     }
 
+    pub fn emit_prelude(&mut self) -> Result<(), String> {
+
+        // Zero-page bootstrap.
+        // This will just run the program over and over.
+        self.append_word(format!("  lea =0"));
+        self.append_word(format!("  jmp @$+1"));
+        self.append_word(format!("  .dw {}", SymbolTable::ENTRYPOINT));
+
+        // Entry point.
+        // This will return to the zero page.
+        self.new_page();
+        self.append(format!("  .org {}", SymbolTable::ORIGIN));
+        let entrypoint_label = self.append_immediate(&Symbol::Label(SymbolTable::ENTRYPOINT.to_string()));
+        let field0_label = self.append_immediate(&Symbol::Constant(0xC00));
+        let neg1_label = self.append_immediate(&Symbol::Constant(0xFFF));
+        self.append_word(format!("  lea $+2"));
+        self.append_word(format!("  jmp @{}", entrypoint_label));
+        self.append_word(format!("  lda {}", field0_label));
+        self.append_word(format!("  sta @{}", neg1_label));
+        self.append_word(format!("  jmp =0"));
+        Ok(())
+    }
+
     pub fn emit(&mut self) -> Result<Vec<String>, String> {
-        let mut result = vec![
-            format!("  lea $+3"),
-            format!("  jmp @$+1"),
-            format!("  .dw {}", SymbolTable::ENTRYPOINT),
-            format!("  jmp $"),
-            format!("  .org {}", SymbolTable::ORIGIN),
-        ];
-        self.new_page();
+        let mut result = Vec::new();
+        self.finish_page();
         result.extend(self.code.iter().cloned());
-        self.new_page();
         for (label, symbols) in self.data.iter() {
             result.push(format!("{}:", label));
             for symbol in symbols {
@@ -137,7 +156,16 @@ impl SymbolTable {
                     _ => panic!("internal error"),
                 };
                 result.push(format!("  .dw {}", value));
+                self.words += 1;
+                if self.words >= SymbolTable::PAGE_SIZE {
+                    self.page += 1;
+                    self.words -= SymbolTable::PAGE_SIZE;
+                }
             }
+        }
+        while self.words > 0 {
+            self.page += 1;
+            self.words -= Word::min(self.words, SymbolTable::PAGE_SIZE);
         }
         self.data.clear();
         let _ = self.check_size()?;
@@ -199,6 +227,11 @@ impl SymbolTable {
             self.words += 1;
             label
         }
+    }
+
+    fn append_word(&mut self, value: String) {
+        self.append(value);
+        self.words += 1;
     }
 
     pub fn append_label(&mut self, label: &String) {

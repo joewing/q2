@@ -56,6 +56,7 @@ fn compile(input_name: &str) -> Result<(), Box<dyn Error>> {
     // Prune unused functions.
     let pruned = Statement::Block(Pruner::prune(&promoted)?);
 
+    let _ = state.emit_prelude()?;
     let _ = pruned.emit_globals(&mut state)?;
     let mut output_file = fs::File::create(output_name(input_name))?;
     for line in state.emit()? {

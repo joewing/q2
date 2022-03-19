@@ -1,63 +1,80 @@
-  lea $+3
-  jmp @$+1
+  lea @L1
+  jmp @L1
+L1:
   .dw main
-  jmp $
+  .align
   .org 128
+  .dw __end - 128
+  .dw 'h'
+  .dw 'e'
+  .dw 'l'
+  .dw 'l'
+  .dw 'o'
+  .dw 0
+  lea $+2
+  jmp @L2
+  lda L3
+  sta @L4
+  jmp =0
 puts:
   sta =4
-  jmp @L4
-L2:
+  jmp @L8
+L6:
   lda @=5
-  sta @L5
+  sta @L4
   lea =1
   add =5
   sta =5
-L1:
+L5:
   lda @=5
-  jfc L2
-L3:
+  jfc L6
+L7:
   jmp @=4
 clear:
   sta =7
-  lea @L7
+  lea @L10
   sta =5
-  lea @L9
+  lea @L12
   jmp puts
-L8:
+L11:
   jmp @=7
 main:
   sta =8
-  lea @L11
+  lea @L14
   jmp clear
-L10:
-  lea @L13
-  sta =5
-  lea @L15
-  jmp puts
-L14:
-  jmp @=8
-L4:
-  .dw L1
-L15:
-  .dw L14
-L11:
-  .dw L10
 L13:
-  .dw L12
-L7:
-  .dw L6
-L9:
-  .dw L8
-L5:
+  lea @L16
+  sta =5
+  lea @L18
+  jmp puts
+L17:
+  jmp @=8
+L3:
+  .dw 3072
+L4:
   .dw 4095
+L12:
+  .dw L11
+L16:
+  .dw L15
+L10:
+  .dw L9
+L8:
+  .dw L5
+L2:
+  .dw main
+L14:
+  .dw L13
+L18:
+  .dw L17
   .align
-L6:
+L9:
   .dw 312
   .dw 268
   .dw 262
   .dw 257
   .dw 0
-L12:
+L15:
   .dw 72
   .dw 101
   .dw 108
@@ -65,3 +82,4 @@ L12:
   .dw 111
   .dw 33
   .dw 0
+__end:

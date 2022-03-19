@@ -1,0 +1,101 @@
+
+# This is at the top since we need to prevent page changes.
+fun run_program(entry)
+  var src = @(@entry + 1);
+  var len = @(@entry + 2);
+  var ptr = @src;
+  var dest = 0x080;
+  var status = 0;
+  while @len do
+    var temp = @@ptr;
+
+    if @status == 0 then
+      OUTPUT = 0x180 + 0x40;
+      putint(@len);
+      status = 50;
+    end
+    status = @status - 1;
+
+    OUTPUT = 0xC01;
+    @dest = @temp;
+    OUTPUT = 0xC00;
+
+    dest = @dest + 1;
+    ptr = @ptr + 1;
+    len = @len - 1;
+  end
+
+  OUTPUT = 0xC01;
+  (0x080)();
+end
+
+include "examples/tetris.hex";
+include "examples/life.hex";
+include "examples/wump.hex";
+include "examples/maze.hex";
+include "examples/snake.hex";
+include "examples/pong.hex";
+
+const PROGRAMS = [
+  [ "Tetris", tetris, tetris_size ],
+  [ "Maze",   maze,   maze_size   ],
+#  [ "Snake",  snake,  snake_size  ],
+#  [ "Wumpus", wump,   wump_size  ],
+  [ "Life",   life,   life_size   ],
+  [ "Pong",   pong,   pong_size   ],
+  0
+];
+
+var index = 0;
+
+fun show_name()
+  OUTPUT = 0x180 + 0x40;
+  puts(" < > ");
+  var left = 11;
+  var ptr = @@(PROGRAMS + @index);
+  while @@ptr do
+    OUTPUT = @@ptr;
+    ptr = @ptr + 1;
+    left = @left - 1;
+  end
+  while @left do
+    OUTPUT = ' ';
+    left = @left - 1;
+  end
+end
+
+fun next_program()
+  index = @index + 1;
+  if @(PROGRAMS + @index) == 0 then
+    index = 0;
+  end
+  show_name();
+end
+
+fun prev_program()
+  if @index then
+    index = @index - 1;
+  else
+    while @(PROGRAMS + @index + 1) do
+      index = @index + 1;
+    end
+  end
+  show_name();
+end
+
+fun main()
+  clear();
+  puts("- Q2 Demo v0.2 -");
+  show_name();
+  while 1 do
+    var key = waitkey();
+    if @key == 1 then
+      prev_program();
+    elseif @key == 2 then
+      next_program();
+    elseif @key == 16 then
+      run_program(@(PROGRAMS + @index));
+    end
+  end
+end
+

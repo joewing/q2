@@ -238,7 +238,10 @@ fun new_block()
   while @block == 7 do
     block = rand() & 7;
   end
-  block = @block << 4;  # x16
+  block = @block << 1;
+  block = @block << 1;
+  block = @block << 1;
+  block = @block << 1;
   rotation = 0;
   x = 4;
   y = 0;
@@ -305,10 +308,13 @@ fun main()
   memset(BOARD, 16, 0x801);
   memset(BOARD + 16, 4, 0xFFF);
 
-  puts([0x180 + 0x00, 0xFF, 8, 10, 0xFF, 0]);
-  puts(" - Tetris - ");
-  puts([0x180 + 0x40, 0xFF, 9, 11, 0xFF, 0]);
-  puts("    xxxx    ");
+  puts(
+    [
+      0x180 + 0x00, 0xFF, 8, 10, 0xFF,
+      ' ', '-', ' ', 'T', 'e', 't', 'r', 'i', 's', ' ', '-',
+      0x180 + 0x40, 0xFF, 9, 11, 0xFF, 0
+    ]
+  );
 
   new_block();
   while @game_over == 0 do
@@ -328,7 +334,8 @@ fun main()
     end
     move_down();
   end
+  puts([0x180 + 1, 'X', 'X', 0x180 + 0x41, 'X', 'X', 0]);
+  waitkey();
 
 end
-
 

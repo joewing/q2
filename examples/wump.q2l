@@ -67,23 +67,6 @@ var monster_room;   # Room with the monster.
 var current_room;   # Our room.
 var game_over;      # Game over indicator.
 
-# Read the keypad.
-fun getkey()
-  return ~(@OUTPUT | ~31);
-end
-
-# Wait for a key press.
-fun waitkey()
-  while 1 do
-    var key = getkey();
-    if @key then
-      while getkey() do
-      end
-      return @key;
-    end
-  end
-end
-
 # Initialize the LCD and load custom sprites.
 fun init_lcd()
   clear();
@@ -272,5 +255,6 @@ fun main()
       show_menu();
     end
   end
+  waitkey();
 end
 

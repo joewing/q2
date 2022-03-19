@@ -1,0 +1,161 @@
+
+const RASTER_SIZE = 4 * 16;
+const RASTER = :RASTER_SIZE;
+
+fun raster_xor(x, y)
+  const MASKS = [ 0x010, 0x008, 0x004, 0x002, 0x001 ];
+  const DIVS_16 = [
+    0, 0, 0, 0, 0, 16, 16, 16, 16, 16, 32, 32, 32, 32, 32, 48, 48, 48, 48, 48
+  ];
+  const MODS = [
+    0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 0, 1, 2, 3, 4
+  ];
+  var word = @(DIVS_16 + @x) + @y;
+  var bit = @(MODS + @x);
+  OUTPUT = 0x140 + @word;
+  word = RASTER + @word;
+  bit = @(MASKS + @bit);
+  var result = @@word & @bit;
+  var updated = @@word ^ @bit;
+  @word = @updated;
+  OUTPUT = @updated;
+  return @result;
+end
+
+fun raster_clear()
+  OUTPUT = 0x140;
+  var i = RASTER_SIZE;
+  while @i do
+    i = @i - 1;
+    RASTER + @i = 0;
+    OUTPUT = 0;
+  end
+end
+
+const PADDLE_LEN = 5;
+
+var ballx, bally;
+var dx, dy;
+var paddle;
+var game_over;
+var score;
+
+fun move_left()
+  if @paddle > 0 then
+    paddle = @paddle - 1;
+    raster_xor(@paddle + PADDLE_LEN, 15);
+    raster_xor(@paddle, 15);
+  end
+end
+
+fun move_right()
+  if @paddle < 20 - PADDLE_LEN then
+    raster_xor(@paddle, 15);
+    raster_xor(@paddle + PADDLE_LEN, 15);
+    paddle = @paddle + 1;
+  end
+end
+
+fun check_keys()
+  var multiplier = 2;
+  while @multiplier do
+    var delay = 10;
+    var key = 0;
+    while @delay do
+      var temp = getkey();
+      if @temp then
+        key = @temp;
+      end
+      delay = @delay - 1;
+    end
+    if @key == 1 then
+      move_left();
+    elseif @key == 2 then
+      move_right();
+    end
+    multiplier = @multiplier - 1;
+  end
+end
+
+fun move_ball()
+  var newx, newy;
+  while 1 do
+    newx = @ballx + @dx;
+    newy = @bally + @dy;
+    if @newx < 0 || @newx > 19 then
+      dx = -@dx;
+    elseif @newy < 0 || @newy > 14 then
+      if @newy > 14 then
+        if @ballx < @paddle then
+          game_over = 1;
+        elseif @ballx >= @paddle + PADDLE_LEN then
+          game_over = 1;
+        else
+          if @ballx == @paddle then
+            dx = -2;
+          elseif @ballx == @paddle + PADDLE_LEN - 1 then
+            dx = 2;
+          elseif @dx == 2 then
+            dx = 1;
+          elseif @dx == -2 then
+            dx = -1;
+          end
+          score = @score + 1;
+          OUTPUT = 0x180 + 0x40 + 9;
+          putint(@score);
+        end
+      end
+      dy = -@dy;
+    else
+      break;
+    end
+  end
+  raster_xor(@ballx, @bally);
+  raster_xor(@newx, @newy);
+  ballx = @newx;
+  bally = @newy;
+end
+
+fun main()
+
+  clear();
+  puts([
+    0x180 + 0x00, 0xFF, 0x08, 0x0A, 0x0C, 0x0E, 0xFF,
+      ' ', '-', ' ', 'P', 'o', 'n', 'g', ' ', '-',
+    0x180 + 0x40, 0xFF, 0x09, 0x0B, 0x0D, 0x0F, 0xFF,
+      ' ', ' ', ' ', '0', '0', '0', '0', 0
+  ]);
+  raster_clear();
+
+  paddle = 0;
+  game_over = 0;
+  ballx = 1;
+  bally = 1;
+  dx = 1;
+  dy = 1;
+  score = 0;
+
+  var i = PADDLE_LEN;
+  while @i do
+    i = @i - 1;
+    raster_xor(@paddle + @i, 15);
+  end
+  raster_xor(@ballx, @bally);
+
+  while !@game_over do
+    check_keys();
+    move_ball();
+  end
+
+  puts(
+    [
+      0x180 + 1, 'G', 'A', 'M', 'E',
+      0x180 + 0x41, 'O', 'V', 'E', 'R',
+      0
+    ]
+  );
+
+  waitkey();
+
+end
+

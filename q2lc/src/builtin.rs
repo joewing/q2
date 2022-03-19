@@ -28,6 +28,8 @@ const BUILTINS: &[&str] = &[
     I2C_WRITE,
     I2C_READ,
     CLEAR,
+    GETKEY,
+    WAITKEY,
 ];
 
 pub const SHIFT_RIGHT_NAME: &str = "shift_right";
@@ -258,5 +260,23 @@ const I2C_READ: &str = concat!(
 const CLEAR: &str = concat!(
     "fun clear()\n",
     "  puts([0x138, 0x10C, 0x106, 0x101, 0x000]);\n",
+    "end\n",
+);
+
+const GETKEY: &str = concat!(
+    "fun getkey()\n",
+    "  return ~@OUTPUT & 31;\n",
+    "end\n",
+);
+
+const WAITKEY: &str = concat!(
+    "fun waitkey()\n",
+    "  var key = 0;\n",
+    "  while @key == 0 do\n",
+    "    key = getkey();\n",
+    "  end\n",
+    "  while getkey() do\n",
+    "  end\n",
+    "  return @key;\n",
     "end\n",
 );

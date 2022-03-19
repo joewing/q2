@@ -1,7 +1,7 @@
 
 # Q2
 
-A single-board 12-bit bit-serial discrete transistor computer.
+A 12-bit bit-serial single-board discrete transistor computer.
 
 This repo contains the following subdirectories:
   - hdl - A Verilog model and test bench for simulating Q2 programs.
@@ -16,7 +16,7 @@ See [joewing.net/projects/q2](https://joewing.net/projects/q2) for
 more information.
 
 Here's what it looks like:
-![Q4 revision 4](q2r4.png)
+![Q4 revision 4b](q2r4b.png)
 
 ## Requirements
 
@@ -277,7 +277,7 @@ func:
 
 ```
 ; Long call
-  lea   $+1
+  lea   $+2
   jmp   @#addr
 ```
 

@@ -1,0 +1,131 @@
+
+const RASTER_SIZE = (16 + 2) * (20 + 2);
+const RASTER0 = :RASTER_SIZE;
+const RASTER1 = :RASTER_SIZE;
+
+var generation;
+var cells;
+
+# Organization is:
+#   0 2 4 6
+#   1 3 5 7
+fun render_raster(base_ptr)
+  OUTPUT = 0x140;
+  var col = 4;
+  while @col do
+    var ptr = @base_ptr;
+    var row = 16;
+    while @row do
+      var temp = 0;
+      var bit = 5;
+      while @bit do
+        temp = (@temp << 1) + @@ptr;
+        ptr = @ptr + 1;
+        bit = @bit - 1;
+      end
+      OUTPUT = @temp;
+      ptr = @ptr + (22 - 5);
+      row = @row - 1;
+    end
+    base_ptr = @base_ptr + 5;
+    col = @col - 1;
+  end
+end
+
+fun run_generation(dest, src)
+  const OFFSETS = [ -23, -22, -21, -1, 1, 21, 22, 23, 0 ];
+  var y = 16;
+  cells = 0;
+  while @y  do
+    var x = 20;
+    while @x do
+      var count = 0;
+      var offset = OFFSETS;
+      var key = 0;
+      while @@offset do
+        count = @count + @(@src + @@offset);
+        offset = @offset + 1;
+        key = @key + ~@OUTPUT;
+      end
+      if @key & 31 then
+        return 1;
+      end
+      if @count == 3 then
+        @dest = 1;
+        cells = @cells + 1;
+      elseif @count == 2 && @@src then
+        @dest = 1;
+        cells = @cells + 1;
+      else
+        @dest = 0;
+      end
+      x = @x - 1;
+      src = @src + 1;
+      dest = @dest + 1;
+    end
+    src = @src + 2;
+    dest = @dest + 2;
+    y = @y - 1;
+  end
+  return 0;
+end
+
+fun init_raster()
+  memset(RASTER0, RASTER_SIZE, 0);
+  memset(RASTER1, RASTER_SIZE, 0);
+  cells = 0;
+  generation = 0;
+  var ptr = RASTER0 + (22 + 1);
+  var y = 16;
+  while @y do
+    var x1 = 2;
+    while @x1 do
+      var x2 = 10;
+      var temp = rand();
+      while @x2 do
+        temp = @temp + @temp;
+        ifcarry
+          @ptr = 1;
+          cells = @cells + 1;
+        end
+        ptr = @ptr + 1;
+        x2 = @x2 - 1;
+      end
+      x1 = @x1 - 1;
+    end
+    ptr = @ptr + 2;
+    y = @y - 1;
+  end
+end
+
+fun main()
+
+  clear();
+  puts(
+    [
+      0x180, 0x08, 0x0A, 0x0C, 0x0E,
+      ' ', '-', '-', ' ', 'L', 'i', 'f', 'e', ' ', '-', '-', ' ',
+      0x180 + 0x40, 0x09, 0x0B, 0x0D, 0x0F,
+      ' ', '0', '0', '0', '0', ' ', ' ', '-', '-', '-', '-', ' ', 0
+    ]
+  );
+  init_raster();
+  var src = RASTER0 + (22 + 1);
+  var dest = RASTER1 + (22 + 1);
+  while 1 do
+    render_raster(@src);
+    OUTPUT = 0x180 + 0x40 + 5;
+    putint(@generation);
+    OUTPUT = 0x180 + 0x40 + 11;
+    putint(@cells);
+    if run_generation(@dest, @src) then
+      break;
+    end
+    var temp = @src;
+    src = @dest;
+    dest = @temp;
+    generation = @generation + 1;
+  end
+
+end
+
