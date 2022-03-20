@@ -1,5 +1,5 @@
 
-const MAX_VALUE = 256;
+const MAX_VALUE = 1024;
 
 fun main()
   clear();
@@ -19,5 +19,6 @@ fun main()
     end
     p = @p + 1;
   end
+  waitkey();
 end
 

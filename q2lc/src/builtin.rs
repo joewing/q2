@@ -131,7 +131,7 @@ const MULT24: &str = concat!(
 );
 
 const RAND: &str = concat!(
-    "var rseed = 1;\n",
+    "const rseed = :1;\n",
     "fun rand()\n",
     "  rseed = @rseed * 2917 + 353;\n",
     "  return @rseed;",
@@ -172,16 +172,21 @@ const PUTS: &str = concat!(
 
 const ITOA: &str = concat!(
     "fun itoa(v)\n",
-    "  var temp = :5;\n",
-    "  var i = 4;\n",
-    "  while @i do\n",
-    "    i = @i - 1;\n",
-    "    var m;\n",
-    "    divmod(@v, 10, v, m);\n",
-    "    @temp + @i = @m + '0';\n",
+    "  const BUFFER = :5;\n",
+    "  var shift = [ 1000, 100, 10, 1, 0 ];\n",
+    "  var ptr = BUFFER;\n",
+    "  while @@shift do\n",
+    "    @ptr = '0';\n",
+    "    var s = @@shift;\n",
+    "    while @v >= @s do\n",
+    "      @ptr = @@ptr + 1;\n",
+    "      v = @v - @s;\n",
+    "    end\n",
+    "    ptr = @ptr + 1;\n",
+    "    shift = @shift + 1;\n",
     "  end\n",
-    "  @temp + 4 = 0;\n",
-    "  return @temp;\n",
+    "  @ptr = 0;\n",
+    "  return BUFFER;\n",
     "end\n",
 );
 
@@ -271,6 +276,8 @@ const GETKEY: &str = concat!(
 
 const WAITKEY: &str = concat!(
     "fun waitkey()\n",
+    "  while getkey() do\n",
+    "  end\n",
     "  var key = 0;\n",
     "  while @key == 0 do\n",
     "    key = getkey();\n",

@@ -62,6 +62,20 @@ impl StatementVisitor for Simplifier {
                     BinaryOperator::Lor => wrap(if *a != 0 || *b != 0 { 1 } else { 0 }),
                 }
             },
+            (_, Expression::Constant(b)) => {
+                match op {
+                    BinaryOperator::Mul if *b == 0 => wrap(0),
+                    BinaryOperator::Mul if *b == 1 => Ok(new_lhs),
+                    BinaryOperator::Sub => Ok(
+                        Expression::Binary(
+                            BinaryOperator::Add,
+                            Box::new(new_lhs),
+                            Box::new(Expression::Constant(b.wrapping_neg()))
+                        )
+                    ),
+                    _ => Ok(Expression::Binary(op, Box::new(new_lhs), Box::new(new_rhs)))
+                }
+            },
             _ => Ok(Expression::Binary(op, Box::new(new_lhs), Box::new(new_rhs)))
         }
     }

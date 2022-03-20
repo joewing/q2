@@ -39,10 +39,10 @@ include "examples/pong.hex";
 const PROGRAMS = [
   [ "Tetris", tetris, tetris_size ],
   [ "Maze",   maze,   maze_size   ],
-#  [ "Snake",  snake,  snake_size  ],
+  [ "Snake",  snake,  snake_size  ],
 #  [ "Wumpus", wump,   wump_size  ],
   [ "Life",   life,   life_size   ],
-  [ "Pong",   pong,   pong_size   ],
+#  [ "Pong",   pong,   pong_size   ],
   0
 ];
 

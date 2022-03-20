@@ -381,5 +381,8 @@ fun main()
     end
 
   end
+
+  waitkey();
+
 end
 
