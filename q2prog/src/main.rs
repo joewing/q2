@@ -197,6 +197,12 @@ fn do_verify(device_path: &str, filename: &str) -> Result<usize, ProgError> {
     Ok(count)
 }
 
+fn do_reset(device_path: &str) -> Result<(), ProgError> {
+    let panel = create_frontpanel(device_path, false)?;
+    panel.cleanup()?;
+    Ok(())
+}
+
 fn do_read(device_path: &str, filename: &str, start: u16, end: u16) -> Result<usize, ProgError> {
     let panel = create_frontpanel(device_path, true)?;
     let mut data = String::new();
@@ -223,6 +229,7 @@ fn main() {
     let write_action = "write";
     let read_action= "read";
     let verify_action= "verify";
+    let reset_action = "reset";
     let file_key = "FILE";
     let start_key = "START";
     let end_key = "END";
@@ -234,7 +241,7 @@ fn main() {
         .max_term_width(80)
         .arg(
             Arg::with_name(action_key)
-                .possible_values(&[write_action, read_action, verify_action])
+                .possible_values(&[write_action, read_action, verify_action, reset_action])
                 .required(true)
                 .help("Action to perform")
         )
@@ -278,6 +285,11 @@ fn main() {
         match do_verify(device_path, filename) {
             Ok(count) => eprintln!("verified {} words", count),
             Err(e) => eprintln!("verification failed: {}", e.message)
+        }
+    } else if matches.value_of(action_key).unwrap() == reset_action {
+        match do_reset(device_path) {
+            Ok(()) => eprintln!("reset complete"),
+            Err(e) => eprintln!("reset failed: {}", e.message)
         }
     } else {
         let start_str = matches.value_of(start_key).unwrap();
