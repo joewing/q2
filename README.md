@@ -15,7 +15,7 @@ This repo contains the following subdirectories:
 See [joewing.net/projects/q2](https://joewing.net/projects/q2) for
 more information.
 
-Here's what it looks like:
+This is what it looks like:
 ![Q4 revision 4b](q2r4b.png)
 
 ## Requirements

@@ -3,7 +3,7 @@ use std::io::{BufRead, BufReader};
 use std::str::FromStr;
 use crate::expr::{BinaryOperator, Expression, UnaryOperator, Word};
 use crate::statement::Statement;
-use crate::tokenizer::Tokenizer;
+use crate::tokenizer::{Token, Tokenizer};
 
 const IF: &str = "if";
 const IFCARRY: &str = "ifcarry";
@@ -141,13 +141,40 @@ fn parse_hex(tokenizer: &mut Tokenizer) -> Result<Word, String> {
     }
 }
 
+fn parse_hex_digit(tok: &Token, ch: char) -> Result<Word, String> {
+    match ch {
+        '0'..='9' => Ok((ch as Word) - ('0' as Word)),
+        'a'..='f' => Ok((ch as Word) - ('a' as Word) + 10),
+        'A'..='F' => Ok((ch as Word) - ('A' as Word) + 10),
+        _ => tok.error(format!("invalid hex character: {}", ch))
+    }
+}
+
+fn parse_escape_char(ch: char) -> Word {
+    match ch {
+        'n' | 'N' => '\n' as Word,
+        _ => ch as Word
+    }
+}
+
 fn parse_char(tokenizer: &mut Tokenizer) -> Result<Word, String> {
     let tok = tokenizer.peek_token();
     tokenizer.next_token();
     let chars: Vec<char> = tok.value.chars().collect();
-    if chars.len() == 3 && *chars.get(0).unwrap() == '\'' && *chars.get(2).unwrap() == '\'' {
-        let ch = *chars.get(1).unwrap() as Word;
-        Ok(ch)
+    if chars.len() == 3 {
+        // 'X'
+        Ok(*chars.get(1).unwrap() as Word)
+    } else if chars.len() == 4 && *chars.get(1).unwrap() == '\\' {
+        // '\X'
+        Ok(parse_escape_char(*chars.get(2).unwrap()))
+    } else if chars.len() == 7 && *chars.get(1).unwrap() == '\n' && *chars.get(2).unwrap() == 'x' {
+        // '\xXXX'
+        let mut w = 0;
+        for i in 3..6 {
+            let digit = parse_hex_digit(&tok, *chars.get(i).unwrap())?;
+            w = (w << 4) | digit;
+        }
+        Ok(w)
     } else {
         tok.error(format!("invalid character literal: {}", tok.value))
     }
@@ -156,7 +183,43 @@ fn parse_char(tokenizer: &mut Tokenizer) -> Result<Word, String> {
 fn parse_string_literal(tokenizer: &mut Tokenizer) -> Result<Expression, String> {
     let tok = tokenizer.peek_token();
     tokenizer.next_token();
-    let mut words: Vec<Expression> = tok.value.chars().skip(1).take_while(|c| *c != '\"').map(|c| Expression::Constant(c as Word)).collect();
+    let mut words = Vec::new();
+    let mut in_control = false;
+    let mut in_hex = 0;
+    let mut hex_word: Word = 0;
+    let mut i = 1;
+    while i < tok.value.len() - 1 {
+        let ch = tok.value.as_bytes()[i] as char;
+        match ch {
+            _ if in_hex > 0 => {
+                let digit = parse_hex_digit(&tok, ch)?;
+                hex_word = (hex_word << 4) | digit;
+                in_hex -= 1;
+                if in_hex == 0 {
+                    words.push(Expression::Constant(hex_word));
+                }
+            },
+            'x' | 'X' if in_control => {
+                in_control = false;
+                in_hex = 3;
+                hex_word = 0;
+            },
+            'n' | 'N' if in_control => {
+                in_control = false;
+                words.push(Expression::Constant('\n' as Word));
+            },
+            _ if in_control => {
+                words.push(Expression::Constant(ch as Word));
+            },
+            '\\' => {
+                in_control = true;
+            },
+            _ => {
+                words.push(Expression::Constant(ch as Word));
+            }
+        }
+        i += 1;
+    }
     words.push(Expression::Constant(0));
     Ok(Expression::ArrayLiteral(words))
 }
@@ -578,6 +641,15 @@ pub(crate) mod tests {
                     Box::from(Expression::Constant(15))
                 )
             )
+        )
+    )]
+    #[test_case("\"\\xAb1q\"",
+        Expression::ArrayLiteral(
+            vec![
+                Expression::Constant(0x0ab1),
+                Expression::Constant('q' as Word),
+                Expression::Constant(0)
+            ]
         )
     )]
     fn parse_expr_tests(input: &str, expected: Expression) {

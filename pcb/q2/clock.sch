@@ -1648,30 +1648,28 @@ F 8 "SMD" H 4550 5350 50  0001 C CNN "Type"
 	0    1    1    0   
 $EndComp
 Wire Wire Line
-	5500 5000 5750 5000
-Wire Wire Line
-	5500 4900 5500 5000
-Text GLabel 5500 4600 1    50   Input ~ 0
-~RST
+	5250 4900 5250 5000
+Text GLabel 5250 4600 1    50   Input ~ 0
+~POR
 $Comp
 L Diode:BAT43W-V D?
 U 1 1 621344BD
-P 5500 4750
+P 5250 4750
 AR Path="/60A44A82/621344BD" Ref="D?"  Part="1" 
 AR Path="/609C40CC/621344BD" Ref="D?"  Part="1" 
 AR Path="/60C20C19/621344BD" Ref="D?"  Part="1" 
 AR Path="/60A0BC91/621344BD" Ref="D93"  Part="1" 
 AR Path="/620E339C/621344BD" Ref="D93"  Part="1" 
-F 0 "D93" V 5454 4830 50  0000 L CNN
-F 1 "BAT43W" V 5545 4830 50  0000 L CNN
-F 2 "Diode_SMD:D_SOD-123" H 5500 4575 50  0001 C CNN
-F 3 "" H 5500 4750 50  0001 C CNN
-F 4 "C19167" H 5500 4750 50  0001 C CNN "LCSC"
-F 5 "Changjiang Electronics Tech (CJ)" H 5500 4750 50  0001 C CNN "Manufacturer"
-F 6 "BAT43W" H 5500 4750 50  0001 C CNN "Part Number"
-F 7 "SOD-123" H 5500 4750 50  0001 C CNN "Package"
-F 8 "SMD" H 5500 4750 50  0001 C CNN "Type"
-	1    5500 4750
+F 0 "D93" V 5204 4830 50  0000 L CNN
+F 1 "BAT43W" V 5295 4830 50  0000 L CNN
+F 2 "Diode_SMD:D_SOD-123" H 5250 4575 50  0001 C CNN
+F 3 "" H 5250 4750 50  0001 C CNN
+F 4 "C19167" H 5250 4750 50  0001 C CNN "LCSC"
+F 5 "Changjiang Electronics Tech (CJ)" H 5250 4750 50  0001 C CNN "Manufacturer"
+F 6 "BAT43W" H 5250 4750 50  0001 C CNN "Part Number"
+F 7 "SOD-123" H 5250 4750 50  0001 C CNN "Package"
+F 8 "SMD" H 5250 4750 50  0001 C CNN "Type"
+	1    5250 4750
 	0    1    1    0   
 $EndComp
 Wire Wire Line
@@ -1682,49 +1680,6 @@ Text GLabel 5350 5150 2    50   Input ~ 0
 ~STOP
 Wire Wire Line
 	5750 5150 5750 5000
-Connection ~ 5250 5150
-Wire Wire Line
-	5250 5250 5250 5150
-Connection ~ 5500 5000
-Wire Wire Line
-	5250 5000 5500 5000
-$Comp
-L power:GND #PWR?
-U 1 1 621344CB
-P 5250 5550
-AR Path="/60A44A82/621344CB" Ref="#PWR?"  Part="1" 
-AR Path="/609C40CC/621344CB" Ref="#PWR?"  Part="1" 
-AR Path="/60C20C19/621344CB" Ref="#PWR?"  Part="1" 
-AR Path="/60A0BC91/621344CB" Ref="#PWR0884"  Part="1" 
-AR Path="/620E339C/621344CB" Ref="#PWR0884"  Part="1" 
-F 0 "#PWR0884" H 5250 5300 50  0001 C CNN
-F 1 "GND" H 5255 5377 50  0000 C CNN
-F 2 "" H 5250 5550 50  0001 C CNN
-F 3 "" H 5250 5550 50  0001 C CNN
-	1    5250 5550
-	1    0    0    -1  
-$EndComp
-$Comp
-L Device:C C24
-U 1 1 621344D6
-P 5250 5400
-AR Path="/60A0BC91/621344D6" Ref="C24"  Part="1" 
-AR Path="/60A44A82/621344D6" Ref="C?"  Part="1" 
-AR Path="/609C40CC/621344D6" Ref="C?"  Part="1" 
-AR Path="/60C20C19/621344D6" Ref="C?"  Part="1" 
-AR Path="/620E339C/621344D6" Ref="C24"  Part="1" 
-F 0 "C24" H 5135 5354 50  0000 R CNN
-F 1 "0.1u" H 5135 5445 50  0000 R CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 5288 5250 50  0001 C CNN
-F 3 "" H 5250 5400 50  0001 C CNN
-F 4 "C49678" H 5250 5400 50  0001 C CNN "LCSC"
-F 5 "YAGEO" H 5250 5400 50  0001 C CNN "Manufacturer"
-F 6 "CC0805KRX7R9BB104" H 5250 5400 50  0001 C CNN "Part Number"
-F 7 "0805" H 5250 5400 50  0001 C CNN "Package"
-F 8 "SMD" H 5250 5400 50  0001 C CNN "Type"
-	1    5250 5400
-	-1   0    0    1   
-$EndComp
 $Comp
 L power:GND #PWR?
 U 1 1 621344DC
@@ -1799,27 +1754,6 @@ F 8 "SMD" H 6800 4800 50  0001 C CNN "Type"
 	1    6800 4800
 	-1   0    0    1   
 $EndComp
-$Comp
-L Device:C C25
-U 1 1 6214EF07
-P 6300 5450
-AR Path="/60A0BC91/6214EF07" Ref="C25"  Part="1" 
-AR Path="/60A44A82/6214EF07" Ref="C?"  Part="1" 
-AR Path="/609C40CC/6214EF07" Ref="C?"  Part="1" 
-AR Path="/60C20C19/6214EF07" Ref="C?"  Part="1" 
-AR Path="/620E339C/6214EF07" Ref="C25"  Part="1" 
-F 0 "C25" H 6185 5404 50  0000 R CNN
-F 1 "0.1u" H 6185 5495 50  0000 R CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 6338 5300 50  0001 C CNN
-F 3 "" H 6300 5450 50  0001 C CNN
-F 4 "C49678" H 6300 5450 50  0001 C CNN "LCSC"
-F 5 "YAGEO" H 6300 5450 50  0001 C CNN "Manufacturer"
-F 6 "CC0805KRX7R9BB104" H 6300 5450 50  0001 C CNN "Part Number"
-F 7 "0805" H 6300 5450 50  0001 C CNN "Package"
-F 8 "SMD" H 6300 5450 50  0001 C CNN "Type"
-	1    6300 5450
-	-1   0    0    1   
-$EndComp
 Text Notes 6900 5150 0    50   ~ 0
 Fanout 25
 Wire Wire Line
@@ -1830,27 +1764,8 @@ Text GLabel 6400 5200 2    50   Input ~ 0
 ~RST
 Wire Wire Line
 	6800 5200 6800 5050
-Connection ~ 6300 5200
-Wire Wire Line
-	6300 5300 6300 5200
 Wire Wire Line
 	6300 5050 6800 5050
-$Comp
-L power:GND #PWR?
-U 1 1 6214EF15
-P 6300 5600
-AR Path="/60A44A82/6214EF15" Ref="#PWR?"  Part="1" 
-AR Path="/609C40CC/6214EF15" Ref="#PWR?"  Part="1" 
-AR Path="/60C20C19/6214EF15" Ref="#PWR?"  Part="1" 
-AR Path="/60A0BC91/6214EF15" Ref="#PWR0882"  Part="1" 
-AR Path="/620E339C/6214EF15" Ref="#PWR0882"  Part="1" 
-F 0 "#PWR0882" H 6300 5350 50  0001 C CNN
-F 1 "GND" H 6305 5427 50  0000 C CNN
-F 2 "" H 6300 5600 50  0001 C CNN
-F 3 "" H 6300 5600 50  0001 C CNN
-	1    6300 5600
-	1    0    0    -1  
-$EndComp
 Connection ~ 6800 5050
 Wire Wire Line
 	6800 5050 6800 4950
@@ -1871,22 +1786,6 @@ F 1 "VCC" H 6815 4823 50  0000 C CNN
 F 2 "" H 6800 4650 50  0001 C CNN
 F 3 "" H 6800 4650 50  0001 C CNN
 	1    6800 4650
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:VCC #PWR?
-U 1 1 6214EF25
-P 6300 4650
-AR Path="/60A44A82/6214EF25" Ref="#PWR?"  Part="1" 
-AR Path="/609C40CC/6214EF25" Ref="#PWR?"  Part="1" 
-AR Path="/60C20C19/6214EF25" Ref="#PWR?"  Part="1" 
-AR Path="/60A0BC91/6214EF25" Ref="#PWR0881"  Part="1" 
-AR Path="/620E339C/6214EF25" Ref="#PWR0881"  Part="1" 
-F 0 "#PWR0881" H 6300 4500 50  0001 C CNN
-F 1 "VCC" H 6315 4823 50  0000 C CNN
-F 2 "" H 6300 4650 50  0001 C CNN
-F 3 "" H 6300 4650 50  0001 C CNN
-	1    6300 4650
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -2091,4 +1990,35 @@ Wire Wire Line
 	2850 1800 2850 2150
 Text Notes 1700 1250 0    50   ~ 0
 3-stage ring oscillator with adjustable delay.
+Text GLabel 6300 4650 1    50   Input ~ 0
+~POR
+Connection ~ 5250 5000
+Wire Wire Line
+	5250 5000 5750 5000
+Text GLabel 5750 4600 1    50   Input ~ 0
+~RST
+$Comp
+L Diode:BAT43W-V D?
+U 1 1 624285F3
+P 5750 4750
+AR Path="/60A44A82/624285F3" Ref="D?"  Part="1" 
+AR Path="/609C40CC/624285F3" Ref="D?"  Part="1" 
+AR Path="/60C20C19/624285F3" Ref="D?"  Part="1" 
+AR Path="/60A0BC91/624285F3" Ref="D40"  Part="1" 
+AR Path="/620E339C/624285F3" Ref="D?"  Part="1" 
+F 0 "D40" V 5704 4830 50  0000 L CNN
+F 1 "BAT43W" V 5795 4830 50  0000 L CNN
+F 2 "Diode_SMD:D_SOD-123" H 5750 4575 50  0001 C CNN
+F 3 "" H 5750 4750 50  0001 C CNN
+F 4 "C19167" H 5750 4750 50  0001 C CNN "LCSC"
+F 5 "Changjiang Electronics Tech (CJ)" H 5750 4750 50  0001 C CNN "Manufacturer"
+F 6 "BAT43W" H 5750 4750 50  0001 C CNN "Part Number"
+F 7 "SOD-123" H 5750 4750 50  0001 C CNN "Package"
+F 8 "SMD" H 5750 4750 50  0001 C CNN "Type"
+	1    5750 4750
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	5750 4900 5750 5000
+Connection ~ 5750 5000
 $EndSCHEMATC

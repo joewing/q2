@@ -308,3 +308,22 @@ fun putf(v)
   puts(ftoa(@v));
 end
 
+# Floating-point square root.
+fun fsqrt(x, result)
+  const two = :2;
+  itof(2, two);
+
+  const s = :2;
+  memcpy(s, @x, 2);
+  memcpy(@result, two, 2);
+
+  const temp = :2;
+  var i = 5;
+  while @i do
+    fdiv(s, @result, temp);
+    fadd(@result, temp, temp);
+    fdiv(temp, two, @result);
+    i = @i - 1;
+  end
+end
+

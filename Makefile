@@ -46,6 +46,9 @@ prog-%: $(PROG) examples/%.q2p
 verify-%: $(PROG) examples/%.q2p
 	$(PROG) verify -f examples/$*.q2p
 
+reset: $(PROG)
+	$(PROG) reset
+
 $(ASM): q2asm/src/*.rs
 	(cd q2asm && cargo build)
 

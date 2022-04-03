@@ -66,6 +66,8 @@ impl Tokenizer {
         let mut in_comment = false;
         let mut in_string = false;
         let mut in_char = false;
+        let mut in_control = false;
+        let mut in_hex = 0;
         let mut in_op = false;
         loop {
             match self.peek_char() {
@@ -75,17 +77,34 @@ impl Tokenizer {
                         in_comment = false;
                     }
                 },
+                Some(c) if in_hex > 0 => {
+                    let _ = self.next_char();
+                    result.push(c);
+                    in_hex = in_hex - 1;
+                },
+                Some(c) if in_control => {
+                    let _ = self.next_char();
+                    result.push(c);
+                    in_control = false;
+                    if c == 'x' || c == 'X' {
+                        in_hex = 3;
+                    }
+                },
                 Some(c) if in_string => {
                     let _ = self.next_char();
                     result.push(c);
-                    if c == '\"' {
+                    if c == '\\' {
+                        in_control = true;
+                    } else if c == '\"' {
                         break;
                     }
                 },
                 Some(c) if in_char => {
                     let _ = self.next_char();
                     result.push(c);
-                    if c == '\'' {
+                    if c == '\\' {
+                        in_control = true;
+                    } else if c == '\'' {
                         break;
                     }
                 },

@@ -70,10 +70,7 @@ var game_over;      # Game over indicator.
 # Initialize the LCD and load custom sprites.
 fun init_lcd()
   clear();
-  puts("Hunt the Wumpus!");
-  OUTPUT = 0x180 + 0x40;
-  puts("Creating map... ");
-  OUTPUT = 0x140 + 0;
+  puts("Hunt the Wumpus!\x1C0Creating map...\x140");
   var i = 0;
   while @i < 3 * 8 do
     OUTPUT = @(SPRITES + @i);
@@ -146,12 +143,10 @@ fun do_shoot(x)
   var pos = @(@(MAP + @current_room) + @x);
   var occupant = @(CAVE + @pos);
   if @occupant == MONSTER then
-    OUTPUT = 0x180 + 0x40;
-    puts("Got the Wumpus! ");
+    puts("\x1C0Got the Wumpus! ");
     game_over = 1;
   else
-    OUTPUT = 0x180 + 0x40;
-    puts("    Missed!     ");
+    puts("\x1C0    Missed!     ");
     var move = rand() & 3;
     if @move then
       monster_room = @(@(MAP + @monster_room) + @move - 1);
@@ -163,7 +158,7 @@ end
 # Returns 1 if an action was taken, 0 to switch menus.
 fun move_menu()
   OUTPUT = 0x180 + 0x40;
-  puts("  Move?         ");
+  puts("\x1C0  Move?         ");
   show_directions();
   var key = waitkey();
   if @key == 1 then
@@ -182,8 +177,7 @@ end
 # Show the shoot menu and wait for input.
 # Returns 1 if an action was taken, 0 to switch menus.
 fun shoot_menu()
-  OUTPUT = 0x180 + 0x40;
-  puts(" Shoot?         ");
+  puts("\x1C0 Shoot?         ");
   show_directions();
   var key = waitkey();
   if @key == 1 then
@@ -213,9 +207,7 @@ end
 
 # Show the current room and check for hazards.
 fun show_room()
-  OUTPUT = 0x180 + 0;
-  puts(" Room           ");
-  OUTPUT = 0x180 + 6;
+  puts("\x180 Room           \x186");
   OUTPUT = @(ROOMS + @current_room);
 
   if check_hazard(MONSTER) then
