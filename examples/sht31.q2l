@@ -9,6 +9,26 @@ fun putints(signed)
   end
 end
 
+# Turn on the heater for some number of iterations through a delay loop.
+fun sht31_heat(cycles)
+
+  i2c_start();
+  i2c_write(0x88);  # Address
+  i2c_write(0x30);  # Heater
+  i2c_write(0x6D);  # Enable
+  i2c_stop();
+
+  while @cycles do
+    cycles = @cycles - 1;
+  end
+
+  i2c_start();
+  i2c_write(0x88);  # Address
+  i2c_write(0x30);  # Heater
+  i2c_write(0x66);  # Disable
+  i2c_stop();
+end
+
 fun sht31_get_measurement(temperature, humidity)
 
   i2c_start();
@@ -18,25 +38,26 @@ fun sht31_get_measurement(temperature, humidity)
   i2c_stop();
 
   i2c_start();
-  i2c_write(0x89);        # Address
-  var msb = i2c_read();   # Temperature MSB
-  var lsb = i2c_read();   # Temperature LSB
-  i2c_read();             # CRC
-
-  # We read 16 bits, so drop the lower 4.
-  lsb = (@msb << 4) | (@lsb >> 4);
-
-  # F = 315 * T / 65535 - 49
-  mult24(315, @lsb, msb, lsb);
-  @temperature = @msb - 49;
-
-  msb = i2c_read();   # Humidity MSB
-  lsb = i2c_read();   # Humidity LSB
-  i2c_read();         # CRC
+  i2c_write(0x89);              # Address
+  var temp_msb = i2c_read(1);   # Temperature MSB
+  var temp_lsb = i2c_read(1);   # Temperature LSB
+  i2c_read(1);                  # CRC
+  var hum_msb = i2c_read(1);    # Humidity MSB
+  var hum_lsb = i2c_read(1);    # Humidity LSB
+  i2c_read(0);
   i2c_stop();
 
-  lsb = (@msb << 4) | (@lsb >> 4);
-  mult24(100, @lsb, @humidity, lsb);
+  # We read 16 bits, so drop the lower 4.
+  temp_lsb = (@temp_msb << 4) | (@temp_lsb >> 4);
+  hum_lsb  = (@hum_msb  << 4) | (@hum_lsb  >> 4);
+
+  # F = 315 * T / 65535 - 49
+  mult24(315, @temp_lsb, temp_msb, temp_lsb);
+  @temperature = @temp_msb - 49;
+
+  # H = 100 * S / 65535
+  mult24(100, @hum_lsb, @humidity, hum_lsb);
+
 end
 
 fun main()
@@ -45,8 +66,16 @@ fun main()
   OUTPUT = 0x180 + 0x40;
   puts("Humidity: xxxx %");
 
+  var iter = 1;
   while 1 do
     var temperature, humidity;
+
+    iter = @iter - 1;
+    if @iter == 0 then
+      sht31_heat(0x400);
+      iter = 100;
+    end
+
     sht31_get_measurement(temperature, humidity);
 
     OUTPUT = 0x180 + 9;

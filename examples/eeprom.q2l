@@ -18,8 +18,8 @@ fun rom_load(addr, dest, len)
   i2c_start();
   i2c_write(ROM_ADDR | 1);
   while @len do
-    var msb = i2c_read();
-    var lsb = i2c_read();
+    var msb = i2c_read(1);
+    var lsb = i2c_read(1);
     @dest = (@msb << 4) | @lsb;
     len = @len - 1;
   end

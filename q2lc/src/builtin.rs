@@ -243,7 +243,7 @@ const I2C_WRITE: &str = concat!(
 );
 
 const I2C_READ: &str = concat!(
-    "fun i2c_read()\n",
+    "fun i2c_read(ack)\n",
     "  var result = 0;\n",
     "  var i = 8;\n",
     "  while @i do\n",
@@ -256,7 +256,13 @@ const I2C_READ: &str = concat!(
     "    i = @i - 1;\n",
     "  end\n",
     "  OUTPUT = I2C_EN | I2C_SCL;\n",
-    "  OUTPUT = I2C_EN;\n",
+    "  if @ack then\n",
+    "    OUTPUT = I2C_EN | I2C_SCL | I2C_SDA;\n",
+    "    OUTPUT = I2C_EN | I2C_SDA;\n",
+    "    OUTPUT = I2C_EN | I2C_SCL | I2C_SDA;\n",
+    "  else\n",
+    "    OUTPUT = I2C_EN;\n",
+    "  end\n",
     "  OUTPUT = I2C_EN | I2C_SCL;\n",
     "  return @result;\n",
     "end\n",
