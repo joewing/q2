@@ -2,7 +2,7 @@
 
 .include  examples/zeropage.q2
 
-  .org  0x800
+  .org  0x080
 
   lda   #35
   sta   =x0

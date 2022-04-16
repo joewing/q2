@@ -4,10 +4,10 @@ EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 91 109
-Title ""
-Date ""
-Rev "4"
-Comp ""
+Title "Q2 Computer"
+Date "2022-04-16"
+Rev "4c"
+Comp "joewing.net"
 Comment1 ""
 Comment2 ""
 Comment3 ""
@@ -160,9 +160,9 @@ F 3 "" H 4800 3700 50  0001 C CNN
 	1    4800 3700
 	1    0    0    -1  
 $EndComp
-Text GLabel 7400 4050 0    50   Input ~ 0
+Text GLabel 7400 3950 0    50   Input ~ 0
 I2C_SCL
-Text GLabel 7400 3850 0    50   Input ~ 0
+Text GLabel 7400 4050 0    50   Input ~ 0
 I2C_SDA
 Text GLabel 4400 4100 0    50   Input ~ 0
 I2C_SCL_OUT
@@ -350,7 +350,7 @@ Connection ~ 4800 4100
 $Comp
 L power:GND #PWR?
 U 1 1 610ED952
-P 6950 4150
+P 6800 4100
 AR Path="/608D9BDD/608D9C42/608D9C9B/610ED952" Ref="#PWR?"  Part="1" 
 AR Path="/608D9BDD/608D9C42/610ED952" Ref="#PWR?"  Part="1" 
 AR Path="/608D9BDD/610ED952" Ref="#PWR?"  Part="1" 
@@ -361,11 +361,11 @@ AR Path="/60A0BC91/610ED952" Ref="#PWR?"  Part="1"
 AR Path="/60A44A82/610ED952" Ref="#PWR?"  Part="1" 
 AR Path="/60AE7F64/610ED952" Ref="#PWR?"  Part="1" 
 AR Path="/60B6F292/610ED952" Ref="#PWR0717"  Part="1" 
-F 0 "#PWR0717" H 6950 3900 50  0001 C CNN
-F 1 "GND" H 6955 3977 50  0000 C CNN
-F 2 "" H 6950 4150 50  0001 C CNN
-F 3 "" H 6950 4150 50  0001 C CNN
-	1    6950 4150
+F 0 "#PWR0717" H 6800 3850 50  0001 C CNN
+F 1 "GND" H 6805 3927 50  0000 C CNN
+F 2 "" H 6800 4100 50  0001 C CNN
+F 3 "" H 6800 4100 50  0001 C CNN
+	1    6800 4100
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -502,23 +502,6 @@ Wire Wire Line
 Wire Wire Line
 	7400 3750 6800 3750
 $Comp
-L Connector_Generic:Conn_01x04 J3
-U 1 1 610F831C
-P 7600 3850
-F 0 "J3" H 7680 3842 50  0000 L CNN
-F 1 "I2C" H 7680 3751 50  0000 L CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Horizontal" H 7600 3850 50  0001 C CNN
-F 3 "" H 7600 3850 50  0001 C CNN
-F 4 "C721442" H 7600 3850 50  0001 C CNN "LCSC"
-F 5 "PTH" H 7600 3850 50  0001 C CNN "Type"
-	1    7600 3850
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	7400 3950 6950 3950
-Wire Wire Line
-	6950 4150 6950 3950
-$Comp
 L Transistor_FET:2N7002 Q?
 U 1 1 6110903F
 P 5400 4100
@@ -598,4 +581,27 @@ F 8 "SMD" H 5400 4100 50  0001 C CNN "Type"
 	1    5400 4100
 	1    0    0    -1  
 $EndComp
+Wire Wire Line
+	6800 3850 7400 3850
+Wire Wire Line
+	6800 3850 6800 4100
+$Comp
+L Connector_Generic:Conn_01x05 J3
+U 1 1 624DF3A3
+P 7600 3950
+F 0 "J3" H 7680 3992 50  0000 L CNN
+F 1 "I2C" H 7680 3901 50  0000 L CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x05_P2.54mm_Horizontal" H 7600 3950 50  0001 C CNN
+F 3 "~" H 7600 3950 50  0001 C CNN
+	1    7600 3950
+	1    0    0    -1  
+$EndComp
+Text GLabel 7250 4300 0    50   Input ~ 0
+~RST
+Wire Wire Line
+	7250 4300 7300 4300
+Wire Wire Line
+	7300 4300 7300 4150
+Wire Wire Line
+	7300 4150 7400 4150
 $EndSCHEMATC

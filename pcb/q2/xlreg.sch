@@ -4,10 +4,10 @@ EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 47 109
-Title ""
-Date ""
-Rev "4"
-Comp ""
+Title "Q2 Computer"
+Date "2022-04-16"
+Rev "4c"
+Comp "joewing.net"
 Comment1 ""
 Comment2 ""
 Comment3 ""

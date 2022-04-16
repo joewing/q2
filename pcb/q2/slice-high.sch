@@ -3,11 +3,11 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 34 109
-Title ""
-Date ""
-Rev "4"
-Comp ""
+Sheet 2 109
+Title "Q2 Computer"
+Date "2022-04-16"
+Rev "4c"
+Comp "joewing.net"
 Comment1 ""
 Comment2 ""
 Comment3 ""
@@ -294,7 +294,7 @@ Wire Wire Line
 Wire Wire Line
 	2600 3900 2450 3900
 Text Notes 8550 2000 0    50   ~ 0
-Fanout 4
+Fanout 5
 Text Notes 7850 2000 0    50   ~ 0
 Fanout 1
 $Comp

@@ -6,7 +6,7 @@ A 12-bit bit-serial single-board discrete transistor computer.
 This repo contains the following subdirectories:
   - hdl - A Verilog model and test bench for simulating Q2 programs.
   - scad - An OpenSCAD 3d model for the case.
-  - [q2asm](a2asm/README.md) - A Q2 assembler (in Rust).
+  - [q2asm](q2asm/README.md) - A Q2 assembler (in Rust).
   - [q2lc](q2lc/README.md) - A compiler for a simple language (in Rust).
   - [q2prog](q2prog/README.md) - A Q2 programmer (in Rust) for a Raspberry Pi.
   - examples - Q2 example programs (assembly and Q2L).

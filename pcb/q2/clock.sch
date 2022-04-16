@@ -4,10 +4,10 @@ EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 74 109
-Title ""
-Date ""
-Rev "4"
-Comp ""
+Title "Q2 Computer"
+Date "2022-04-16"
+Rev "4c"
+Comp "joewing.net"
 Comment1 ""
 Comment2 ""
 Comment3 ""
@@ -2021,4 +2021,64 @@ $EndComp
 Wire Wire Line
 	5750 4900 5750 5000
 Connection ~ 5750 5000
+$Comp
+L power:GND #PWR?
+U 1 1 625C14A6
+P 10200 1650
+AR Path="/608D9BDD/625C14A6" Ref="#PWR?"  Part="1" 
+AR Path="/609A143E/625C14A6" Ref="#PWR?"  Part="1" 
+AR Path="/609A36A9/625C14A6" Ref="#PWR?"  Part="1" 
+AR Path="/609E7D64/625C14A6" Ref="#PWR?"  Part="1" 
+AR Path="/609EDBE1/625C14A6" Ref="#PWR?"  Part="1" 
+AR Path="/609FBC79/625C14A6" Ref="#PWR?"  Part="1" 
+AR Path="/609FC03E/625C14A6" Ref="#PWR?"  Part="1" 
+AR Path="/609FC502/625C14A6" Ref="#PWR?"  Part="1" 
+AR Path="/609FCA98/625C14A6" Ref="#PWR?"  Part="1" 
+AR Path="/60D38EA9/625C14A6" Ref="#PWR?"  Part="1" 
+AR Path="/60D3B051/625C14A6" Ref="#PWR?"  Part="1" 
+AR Path="/60A72A52/625C14A6" Ref="#PWR?"  Part="1" 
+AR Path="/60A0BC91/625C14A6" Ref="#PWR0701"  Part="1" 
+F 0 "#PWR0701" H 10200 1400 50  0001 C CNN
+F 1 "GND" H 10205 1477 50  0000 C CNN
+F 2 "" H 10200 1650 50  0001 C CNN
+F 3 "" H 10200 1650 50  0001 C CNN
+	1    10200 1650
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VCC #PWR?
+U 1 1 625C2FB9
+P 10200 1350
+AR Path="/608D9BDD/608D9C42/608D9C9B/625C2FB9" Ref="#PWR?"  Part="1" 
+AR Path="/608D9BDD/608D9C42/625C2FB9" Ref="#PWR?"  Part="1" 
+AR Path="/608D9BDD/625C2FB9" Ref="#PWR?"  Part="1" 
+AR Path="/609A143E/625C2FB9" Ref="#PWR?"  Part="1" 
+AR Path="/609A36A9/625C2FB9" Ref="#PWR?"  Part="1" 
+AR Path="/609E7D64/625C2FB9" Ref="#PWR?"  Part="1" 
+AR Path="/60A0BC91/625C2FB9" Ref="#PWR0881"  Part="1" 
+AR Path="/608F5351/625C2FB9" Ref="#PWR?"  Part="1" 
+AR Path="/620E339C/625C2FB9" Ref="#PWR?"  Part="1" 
+F 0 "#PWR0881" H 10200 1200 50  0001 C CNN
+F 1 "VCC" H 10215 1523 50  0000 C CNN
+F 2 "" H 10200 1350 50  0001 C CNN
+F 3 "" H 10200 1350 50  0001 C CNN
+	1    10200 1350
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C24
+U 1 1 625D4A66
+P 10200 1500
+F 0 "C24" V 9948 1500 50  0000 C CNN
+F 1 "470p" V 10039 1500 50  0000 C CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 10238 1350 50  0001 C CNN
+F 3 "" H 10200 1500 50  0001 C CNN
+F 4 "C1743" H 10200 1500 50  0001 C CNN "LCSC"
+F 5 "FH" H 10200 1500 50  0001 C CNN "Manufacturer"
+F 6 "0805B471K500NT" H 10200 1500 50  0001 C CNN "Part Number"
+F 7 "0805" H 10200 1500 50  0001 C CNN "Package"
+F 8 "SMD" H 10200 1500 50  0001 C CNN "Type"
+	1    10200 1500
+	-1   0    0    1   
+$EndComp
 $EndSCHEMATC

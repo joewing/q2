@@ -4,10 +4,10 @@ EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 90 109
-Title ""
-Date ""
-Rev "4"
-Comp ""
+Title "Q2 Computer"
+Date "2022-04-16"
+Rev "4c"
+Comp "joewing.net"
 Comment1 ""
 Comment2 ""
 Comment3 ""
@@ -42,25 +42,6 @@ F 7 "PTH" H 8000 2650 50  0001 C CNN "Type"
 F 8 "Plugin" H 8000 2650 50  0001 C CNN "Package"
 	1    8000 2650
 	-1   0    0    -1  
-$EndComp
-$Comp
-L power:VCC #PWR?
-U 1 1 609C9B43
-P 8000 2500
-AR Path="/608D9BDD/608D9C42/608D9C9B/609C9B43" Ref="#PWR?"  Part="1" 
-AR Path="/608D9BDD/608D9C42/609C9B43" Ref="#PWR?"  Part="1" 
-AR Path="/608D9BDD/609C9B43" Ref="#PWR?"  Part="1" 
-AR Path="/609A143E/609C9B43" Ref="#PWR?"  Part="1" 
-AR Path="/609A36A9/609C9B43" Ref="#PWR?"  Part="1" 
-AR Path="/609E7D64/609C9B43" Ref="#PWR?"  Part="1" 
-AR Path="/60A0BC91/609C9B43" Ref="#PWR?"  Part="1" 
-AR Path="/609C40CC/609C9B43" Ref="#PWR0701"  Part="1" 
-F 0 "#PWR0701" H 8000 2350 50  0001 C CNN
-F 1 "VCC" H 8015 2673 50  0000 C CNN
-F 2 "" H 8000 2500 50  0001 C CNN
-F 3 "" H 8000 2500 50  0001 C CNN
-	1    8000 2500
-	1    0    0    -1  
 $EndComp
 $Comp
 L power:VCC #PWR?
@@ -1068,4 +1049,5 @@ F 3 "" H 8550 1850 50  0001 C CNN
 	1    8550 1850
 	1    0    0    -1  
 $EndComp
+NoConn ~ 8000 2500
 $EndSCHEMATC

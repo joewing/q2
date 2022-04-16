@@ -4,10 +4,10 @@ EELAYER END
 $Descr A3 16535 11693
 encoding utf-8
 Sheet 78 109
-Title ""
-Date ""
-Rev "4"
-Comp ""
+Title "Q2 Computer"
+Date "2022-04-16"
+Rev "4c"
+Comp "joewing.net"
 Comment1 ""
 Comment2 ""
 Comment3 ""
@@ -6267,6 +6267,79 @@ F 1 "VCC" H 14115 5073 50  0000 C CNN
 F 2 "" H 14100 4900 50  0001 C CNN
 F 3 "" H 14100 4900 50  0001 C CNN
 	1    14100 4900
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C?
+U 1 1 625FC00D
+P 15050 1550
+AR Path="/608D9BDD/608D9C42/608D9C9B/625FC00D" Ref="C?"  Part="1" 
+AR Path="/608D9BDD/60918A2D/6091B28C/625FC00D" Ref="C?"  Part="1" 
+AR Path="/608D9BDD/60947309/6095340A/625FC00D" Ref="C?"  Part="1" 
+AR Path="/608D9BDD/6098A2F9/625FC00D" Ref="C?"  Part="1" 
+AR Path="/608D9BDD/625FC00D" Ref="C?"  Part="1" 
+AR Path="/609A143E/625FC00D" Ref="C?"  Part="1" 
+AR Path="/609A36A9/625FC00D" Ref="C?"  Part="1" 
+AR Path="/609E7D64/625FC00D" Ref="C?"  Part="1" 
+AR Path="/609EDBE1/625FC00D" Ref="C?"  Part="1" 
+AR Path="/609FBC79/625FC00D" Ref="C?"  Part="1" 
+AR Path="/609FC03E/625FC00D" Ref="C?"  Part="1" 
+AR Path="/609FC502/625FC00D" Ref="C?"  Part="1" 
+AR Path="/609FCA98/625FC00D" Ref="C?"  Part="1" 
+AR Path="/60D38EA9/625FC00D" Ref="C?"  Part="1" 
+AR Path="/60D3B051/625FC00D" Ref="C?"  Part="1" 
+AR Path="/60A72A52/625FC00D" Ref="C?"  Part="1" 
+AR Path="/60B749FD/625FC00D" Ref="C?"  Part="1" 
+AR Path="/60BC7BD0/625FC00D" Ref="C43"  Part="1" 
+F 0 "C43" H 15165 1596 50  0000 L CNN
+F 1 "0.1u" H 15165 1505 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 15088 1400 50  0001 C CNN
+F 3 "" H 15050 1550 50  0001 C CNN
+F 4 "C49678" H 15050 1550 50  0001 C CNN "LCSC"
+F 5 "YAGEO" H 15050 1550 50  0001 C CNN "Manufacturer"
+F 6 "CC0805KRX7R9BB104" H 15050 1550 50  0001 C CNN "Part Number"
+F 7 "0805" H 15050 1550 50  0001 C CNN "Package"
+F 8 "SMD" H 15050 1550 50  0001 C CNN "Type"
+	1    15050 1550
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 625FC013
+P 15050 1700
+AR Path="/608D9BDD/625FC013" Ref="#PWR?"  Part="1" 
+AR Path="/609A143E/625FC013" Ref="#PWR?"  Part="1" 
+AR Path="/609A36A9/625FC013" Ref="#PWR?"  Part="1" 
+AR Path="/609E7D64/625FC013" Ref="#PWR?"  Part="1" 
+AR Path="/609EDBE1/625FC013" Ref="#PWR?"  Part="1" 
+AR Path="/609FBC79/625FC013" Ref="#PWR?"  Part="1" 
+AR Path="/609FC03E/625FC013" Ref="#PWR?"  Part="1" 
+AR Path="/609FC502/625FC013" Ref="#PWR?"  Part="1" 
+AR Path="/609FCA98/625FC013" Ref="#PWR?"  Part="1" 
+AR Path="/60D38EA9/625FC013" Ref="#PWR?"  Part="1" 
+AR Path="/60D3B051/625FC013" Ref="#PWR?"  Part="1" 
+AR Path="/60A72A52/625FC013" Ref="#PWR?"  Part="1" 
+AR Path="/60B749FD/625FC013" Ref="#PWR?"  Part="1" 
+AR Path="/60BC7BD0/625FC013" Ref="#PWR0951"  Part="1" 
+F 0 "#PWR0951" H 15050 1450 50  0001 C CNN
+F 1 "GND" H 15055 1527 50  0000 C CNN
+F 2 "" H 15050 1700 50  0001 C CNN
+F 3 "" H 15050 1700 50  0001 C CNN
+	1    15050 1700
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VCC #PWR?
+U 1 1 625FC019
+P 15050 1400
+AR Path="/60A72A52/625FC019" Ref="#PWR?"  Part="1" 
+AR Path="/60B749FD/625FC019" Ref="#PWR?"  Part="1" 
+AR Path="/60BC7BD0/625FC019" Ref="#PWR0950"  Part="1" 
+F 0 "#PWR0950" H 15050 1250 50  0001 C CNN
+F 1 "VCC" H 15065 1573 50  0000 C CNN
+F 2 "" H 15050 1400 50  0001 C CNN
+F 3 "" H 15050 1400 50  0001 C CNN
+	1    15050 1400
 	1    0    0    -1  
 $EndComp
 $EndSCHEMATC
