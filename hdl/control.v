@@ -63,15 +63,15 @@ module control(
   nfet #(3, 10000) q7(t4, ns0, t5);
   nfet #(3, 10000) q8(t5, no2, nstate_load);
 
-  nfet #(6, 10000) q9(t4, s0, nstate_exec);
+  nfet #(5, 10000) q9(t4, s0, nstate_exec);
 
   wire state_exec;
   nfet #(14, 4700) q10(1'b0, nstate_exec, state_exec);
 
   nfet #(13, 4700) q11(1'b0, nstate_fetch, state_fetch);
 
-  nfet #(13, 4700, 5, 2) q12(1'b0, s2, nstate_alu);
-  nfet #(13, 4700, 5, 2) q13(1'b0, s3, nstate_alu);
+  nfet #(13, 1000, 5, 2) q12(1'b0, s2, nstate_alu);
+  nfet #(13, 1000, 5, 2) q13(1'b0, s3, nstate_alu);
 
   wire state_alu;
   nfet #(12, 4700) q14(1'b0, nstate_alu, state_alu);
@@ -86,7 +86,7 @@ module control(
   nfet #(6, 4700, 5, 2) q20(1'b0, dbus7, xhin_p);
 
   nfet #(5, 4700, 5, 2) q21(1'b0, nstate_fetch, xhin_zero);
-  nfet #(5, 4700, 5, 2) q22(1'b0, xhin_p, xhin_zero);//XXX
+  nfet #(5, 4700, 5, 2) q22(1'b0, xhin_p, xhin_zero);
 
   wire t7;
   nfet #(5, 10000) q23(1'b0, nstate_load, t7);

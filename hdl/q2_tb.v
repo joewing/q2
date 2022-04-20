@@ -17,7 +17,7 @@ module q2_tb;
 
     $timeformat(0, 3, " seconds", 10);
 
-    $dumpvars;
+    //$dumpvars;
 
     #20000 nrst = 0;
     #20000 nrst = 1;

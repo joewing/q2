@@ -7,8 +7,8 @@ module nfet #(
   parameter DRIVERS = 1,      // Number of transistors driving the output.
 
   // 2N7002K parameters:
-  parameter VTH     = 2.4,    // Output level required to be considered 1.
-  parameter CISS_PF = 45.0,   // FET input capacitance.
+  parameter VTH     = 2.5,    // Output level required to be considered 1.
+  parameter CISS_PF = 50.0,   // FET input capacitance.
   parameter COSS_PF = 8.0,    // FET output capacitance.
   parameter RDS     = 2.5     // Drain-source resistance.
 

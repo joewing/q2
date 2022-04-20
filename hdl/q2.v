@@ -133,8 +133,7 @@ module q2(
   wire ram_nce;
   nfet rq1(1'b0, nio, ram_nce);
 
-  wire ram_noe;
-  nfet rq2(1'b0, nstate_exec, ram_noe);
+  wire ram_noe = rda;
 
   // Show writes to output for debugging.
   wire show_output = ~(nwrm | nio) & ~dbus[11];

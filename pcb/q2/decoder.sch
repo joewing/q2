@@ -347,7 +347,7 @@ F 3 "" H 3800 5550 50  0001 C CNN
 	1    3800 5550
 	1    0    0    -1  
 $EndComp
-Text GLabel 2250 1900 2    50   Input ~ 0
+Text GLabel 2250 1800 2    50   Input ~ 0
 ~STATE_FETCH
 $Comp
 L Transistor_FET:2N7002 Q?
@@ -872,7 +872,7 @@ S0
 $Comp
 L power:VCC #PWR?
 U 1 1 60EB906E
-P 2050 1500
+P 2050 1400
 AR Path="/608D9BDD/608D9C42/608D9C9B/60EB906E" Ref="#PWR?"  Part="1" 
 AR Path="/608D9BDD/608D9C42/60EB906E" Ref="#PWR?"  Part="1" 
 AR Path="/608D9BDD/60EB906E" Ref="#PWR?"  Part="1" 
@@ -881,11 +881,11 @@ AR Path="/609A36A9/60EB906E" Ref="#PWR?"  Part="1"
 AR Path="/609E7D64/60EB906E" Ref="#PWR?"  Part="1" 
 AR Path="/60A0BC91/60EB906E" Ref="#PWR?"  Part="1" 
 AR Path="/60B749FD/60EB906E" Ref="#PWR0536"  Part="1" 
-F 0 "#PWR0536" H 2050 1350 50  0001 C CNN
-F 1 "VCC" H 2065 1673 50  0000 C CNN
-F 2 "" H 2050 1500 50  0001 C CNN
-F 3 "" H 2050 1500 50  0001 C CNN
-	1    2050 1500
+F 0 "#PWR0536" H 2050 1250 50  0001 C CNN
+F 1 "VCC" H 2065 1573 50  0000 C CNN
+F 2 "" H 2050 1400 50  0001 C CNN
+F 3 "" H 2050 1400 50  0001 C CNN
+	1    2050 1400
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -939,12 +939,10 @@ Connection ~ 3100 1800
 Wire Wire Line
 	3100 1800 3100 1900
 Wire Wire Line
-	2050 2400 2050 1900
+	2050 1800 2250 1800
+Connection ~ 2050 1800
 Wire Wire Line
-	2050 1900 2250 1900
-Connection ~ 2050 1900
-Wire Wire Line
-	2050 1900 2050 1800
+	2050 1800 2050 1700
 $Comp
 L Device:R R?
 U 1 1 60ED6BE0
@@ -2136,16 +2134,16 @@ Text Notes 4150 4900 0    50   ~ 0
 Fanout 12
 Text Notes 2550 4750 0    50   ~ 0
 Fanout 13
-Text Notes 2400 1750 0    50   ~ 0
+Text Notes 2400 1650 0    50   ~ 0
 Fanout 18
 Text Notes 3450 1650 0    50   ~ 0
 Fanout 2
 Text Notes 5600 1650 0    50   ~ 0
-Fanout 6
+Fanout 5
 $Comp
 L Device:R R?
 U 1 1 60B6E9D3
-P 2050 1650
+P 2050 1550
 AR Path="/608D9BDD/608D9C42/608D9C9B/60B6E9D3" Ref="R?"  Part="1" 
 AR Path="/608D9BDD/608D9C42/60B6E9D3" Ref="R?"  Part="1" 
 AR Path="/608D9BDD/60B6E9D3" Ref="R?"  Part="1" 
@@ -2154,16 +2152,16 @@ AR Path="/609A36A9/60B6E9D3" Ref="R?"  Part="1"
 AR Path="/609E7D64/60B6E9D3" Ref="R?"  Part="1" 
 AR Path="/60A0BC91/60B6E9D3" Ref="R?"  Part="1" 
 AR Path="/60B749FD/60B6E9D3" Ref="R297"  Part="1" 
-F 0 "R297" H 2120 1696 50  0000 L CNN
-F 1 "1k" H 2120 1605 50  0000 L CNN
-F 2 "Resistor_SMD:R_0603_1608Metric" V 1980 1650 50  0001 C CNN
-F 3 "" H 2050 1650 50  0001 C CNN
-F 4 "C21190" H 2050 1650 50  0001 C CNN "LCSC"
-F 5 "UNI-ROYAL(Uniroyal Elec)" H 2050 1650 50  0001 C CNN "Manufacturer"
-F 6 "0603WAF1001T5E" H 2050 1650 50  0001 C CNN "Part Number"
-F 7 "0603" H 2050 1650 50  0001 C CNN "Package"
-F 8 "SMD" H 2050 1650 50  0001 C CNN "Type"
-	1    2050 1650
+F 0 "R297" H 2120 1596 50  0000 L CNN
+F 1 "1k" H 2120 1505 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 1980 1550 50  0001 C CNN
+F 3 "" H 2050 1550 50  0001 C CNN
+F 4 "C21190" H 2050 1550 50  0001 C CNN "LCSC"
+F 5 "UNI-ROYAL(Uniroyal Elec)" H 2050 1550 50  0001 C CNN "Manufacturer"
+F 6 "0603WAF1001T5E" H 2050 1550 50  0001 C CNN "Part Number"
+F 7 "0603" H 2050 1550 50  0001 C CNN "Package"
+F 8 "SMD" H 2050 1550 50  0001 C CNN "Type"
+	1    2050 1550
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -2323,4 +2321,6 @@ F 3 "" H 7400 1350 50  0001 C CNN
 $EndComp
 Text Notes 1850 6250 0    50   ~ 0
 The low to high transistion of ~STATE_ALU~\nis one of the most critical paths because it\nhappens only after a ripple through all 4 bits\nof the state. It is then used by all other state\nsignals.
+Wire Wire Line
+	2050 1800 2050 2400
 $EndSCHEMATC

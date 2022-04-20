@@ -10,7 +10,7 @@ module clock(
 );
 
   localparam FAST = 1;
-  localparam DELAY_FAST = 1.0 / 100_000;
+  localparam DELAY_FAST = 1.0 / 107_000;
   localparam DELAY_SLOW = 1.0 / 100;
 
   localparam RAW_DELAY_US = DELAY_SLOW + (DELAY_FAST - DELAY_SLOW) * FAST;
