@@ -26,12 +26,12 @@ module dff #(
   nfet #(1, 22000) q5(t6, clk, t7);
 
   // 1x 6k
-  nfet #(1, 6800) q8(clr, t7, t8);
-  nfet #(1, 6800) q7(t8, d, t1);
+  nfet #(1, 10000) q8(clr, t7, t8);
+  nfet #(1, 10000) q7(t8, d, t1);
 
   // 1.5x 9k
-  nfet #(FANOUT_Q + 1, 10000) q9(t9, t3, q);
-  nfet #(FANOUT_Q + 1, 10000) q10(set, nq, t9);
+  nfet #(FANOUT_Q + 1, 6800) q9(t9, t3, q);
+  nfet #(FANOUT_Q + 1, 6800) q10(set, nq, t9);
 
   // LED with 2v drop.
   nfet #(FANOUT_NQ + 1, 1000, 3.0) q11(t8, q, nq);

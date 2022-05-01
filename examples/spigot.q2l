@@ -1,0 +1,76 @@
+
+const DIGIT_COUNT = 16;
+const ARRAY_LEN = (10 * DIGIT_COUNT) / 3 + 1;
+const ARRAY = :ARRAY_LEN;
+
+# Pi "spigot" algorithm from Rabinowitz and Wagon.
+fun spigot()
+  var previous_digit = 2;
+  var nine_count = 0;
+  var printed_count = 0;
+
+  # Start with 2s.
+  memset(ARRAY, ARRAY_LEN, 2);
+
+  while @printed_count < DIGIT_COUNT do
+
+    # Multiply by 10.
+    var i = 1;
+    while @i < ARRAY_LEN do
+      var ptr = ARRAY + @i;
+      @ptr = @@ptr << 1;    # x2
+      var temp = @@ptr;
+      @ptr = @@ptr << 1;    # x4
+      @ptr = @@ptr << 1;    # x8
+      @ptr = @@ptr + @temp; # x10
+      i = @i + 1;
+    end
+
+    # Normalize
+    var carry = 0;
+    i = ARRAY_LEN - 1;
+    while @i do
+      var denom = @i;
+      var num = (@i << 1) + 1;
+      var ptr = ARRAY + @i;
+      var x = @@ptr + @carry;
+      var div, rem;
+      divmod(@x, @num, div, rem);
+      @ptr = @rem;
+      carry = @div * @denom;
+      i = @i - 1;
+    end
+
+    var carry_digit, next_digit;
+    divmod(@carry, 10, carry_digit, next_digit);
+    if @next_digit == 9 then
+      nine_count = @nine_count + 1;
+    else
+      var current_digit = @previous_digit + @carry_digit;
+      OUTPUT = '0' + @current_digit;
+      printed_count = @printed_count + 1;
+      i = 0;
+      while @i < @nine_count do
+        if @carry_digit then
+          OUTPUT = '0';
+        else
+          OUTPUT = '9';
+        end
+        i = @i + 1;
+        printed_count = @printed_count + 1;
+      end
+      nine_count = 0;
+      previous_digit = @next_digit;
+    end
+  end
+end
+
+
+fun main()
+  clear();
+  puts("pi = ");
+  OUTPUT = 0x180 + 0x40;
+  spigot();
+  waitkey();
+end
+

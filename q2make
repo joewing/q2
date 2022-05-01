@@ -1,0 +1,57 @@
+#/bin/sh
+
+# Script to handle compiling and assembling Q2 programs.
+
+set -e
+
+findprog() {
+  PROG=$1
+  LOCAL="./$PROG/target/debug/$PROG"
+  if [[ -e $LOCAL ]] ; then
+    echo $LOCAL
+  else
+    echo $PROG
+  fi
+}
+
+Q2ASM=$(findprog q2asm)
+Q2LC=$(findprog q2lc)
+
+usage() {
+  echo "Compile and assembly Q2 programs"
+  echo "usage: $0 <filename>"
+}
+
+if [[ $# != 1 ]] ; then
+  usage
+  exit 1
+fi
+
+FILENAME=$1
+
+compile() {
+  echo "Compiling ${BASENAME}.q2l"
+  $Q2LC "${BASENAME}.q2l"
+}
+
+assemble() {
+  echo "Assembling ${BASENAME}.q2"
+  $Q2ASM "${BASENAME}.q2"
+}
+
+BASENAME=${FILENAME%.*}
+if [[ ${FILENAME: -4} == ".q2l" ]] ; then
+  compile
+  assemble
+elif [[ ${FILENAME: -3} == ".q2" ]] ; then
+  assemble
+elif [[ ${FILENAME: -4} == ".q2p" ]] ; then
+  return
+else
+  echo
+  echo "ERROR: File type not recognized: $FILENAME"
+  echo
+  usage
+  exit 1
+fi
+

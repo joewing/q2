@@ -29,12 +29,6 @@ examples/%.hex: $(ASM) examples/%.q2
 examples/%.q2p: $(ASM) examples/%.q2
 	$(ASM) examples/$*.q2
 
-examples/%.low.hex: $(ASM) examples/%.q2
-	$(ASM) examples/$*.q2
-
-examples/%.high.hex: $(ASM) examples/%.q2
-	$(ASM) examples/$*.q2
-
 examples/%.q2: $(Q2LC) examples/%.q2l
 	$(Q2LC) examples/$*.q2l
 
