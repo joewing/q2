@@ -41,11 +41,15 @@ This is what it looks like:
 
 ### To make the hardware:
 
- * OpenSCAD - The 3D model for the case is written in
-  [OpenSCAD](http://www.openscad.org). To print the case you
-  will also need a 3D printer and the necessary slicer program.
  * KiCad - The PCB and schematics are in
-  [KiCad](https://kicad.org).
+  [KiCad](https://kicad.org) 6. Note: the design was originally
+  in KiCad 5 and the SOT-23 footprint became much larger with version 6.
+  Therefore, to get the board to appear correctly it is necessary to use
+  the footprint from KiCad 5. Unfortunately there doesn't seem to be
+  a new footprint that works. See
+  [Gitlab issue 2523](https://gitlab.com/kicad/libraries/kicad-footprints/-/issues/2523).
+ * OpenSCAD - The 3D model for the case is written in
+  [OpenSCAD](http://www.openscad.org).
 
 ## PCB Fabrication and Assembly
 
