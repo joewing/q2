@@ -45,7 +45,7 @@ fun run_generation(dest, src)
       while @@offset do
         count = @count + @(@src + @@offset);
         offset = @offset + 1;
-        key = @key + ~@OUTPUT;
+        key = @key + @OUTPUT;
       end
       if @key & 31 then
         return 1;

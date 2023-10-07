@@ -1,0 +1,38 @@
+GAL16V8
+opcode
+
+CLK   D11   D10   D9    D8    D7    NC    S1    S0    GND
+/OE   OP3   OP2   OP1   OP0   ZP    FLAG  CIN   X0    VCC
+
+; Store opcode (D11..D8) during fetch state (00).
+; Forward zero page bit (D7).
+
+OP3.R   = /S1 * /S0 * D11
+        +  S1       * OP3
+        +  S0       * OP3
+
+OP2.R   = /S1 * /S0 * D10
+        +  S1       * OP2
+        +        S0 * OP2
+
+OP1.R   = /S1 * /S0 * D9
+        +  S1       * OP1
+        +        S0 * OP1
+
+OP0.R   = /S1 * /S0 * D8
+        +  S1       * OP0
+        +        S0 * OP0
+
+ZP      = D7
+
+; Store flag during ALU (0xxx) exec state (11).
+FLAG.R  =  S1 * S0 * /OP3 * /OP2        * CIN   ; LDA/NOR
+        +  S1 * S0 * /OP3 *  OP2 * /OP1 * CIN   ; ADD
+        +  S1 * S0 * /OP3 *  OP2 *  OP1 * X0    ; SHR
+        +  S1 * S0 *  OP3 * FLAG
+        + /S1 * FLAG
+        + /S0 * FLAG
+
+DESCRIPTION
+
+

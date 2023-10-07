@@ -5,6 +5,7 @@ use clap::{App, Arg, crate_version, crate_name, crate_authors};
 use std::fs;
 use std::env;
 use std::error::Error;
+use std::str::FromStr;
 
 mod parser;
 mod eval;
@@ -55,7 +56,7 @@ trait OutputFormat {
     /** Skip to last_addr to addr (inclusive), generate padding if necessary. */
     fn pad(&self, _vec: &mut Vec<u8>, _last_addr: i64, _addr: i64) -> () {}
 
-    fn write(&self, vec: &mut Vec<u8>, base: u16, st: &CompiledStatement);
+    fn write(&self, vec: &mut Vec<u8>, bank: i64, base: u16, st: &CompiledStatement);
     fn write_end(&self, _vec: &mut Vec<u8>) -> () {}
 }
 
@@ -67,7 +68,7 @@ impl OutputFormat for HexOutputFormat {
             write_str(vec, "XX\n");
         }
     }
-    fn write(&self, vec: &mut Vec<u8>, _base: u16, st: &CompiledStatement) {
+    fn write(&self, vec: &mut Vec<u8>, _bank: i64, _base: u16, st: &CompiledStatement) {
         match st.code {
             Some(word) => {
                 write_hex(vec, word);
@@ -81,7 +82,7 @@ impl OutputFormat for HexOutputFormat {
 struct ListOutputFormat;
 impl OutputFormat for ListOutputFormat {
     fn name(&self) -> &str { "lst" }
-    fn write(&self, vec: &mut Vec<u8>, _base: u16, st: &CompiledStatement) {
+    fn write(&self, vec: &mut Vec<u8>, _bank: i64, _base: u16, st: &CompiledStatement) {
         write_str(vec, format!("{:03X}  ", st.addr).as_ref());
         match st.code {
             Some(word)  => write_hex(vec, word),
@@ -94,11 +95,11 @@ impl OutputFormat for ListOutputFormat {
 struct HighRomOutputFormat;
 impl OutputFormat for HighRomOutputFormat {
     fn name(&self) -> &str { "high.hex" }
-    fn write(&self, vec: &mut Vec<u8>, base: u16, st: &CompiledStatement) {
+    fn write(&self, vec: &mut Vec<u8>, bank: i64, base: u16, st: &CompiledStatement) {
        match st.code {
            Some(word) => {
                let addr = st.full_addr() - (base as i64);
-               write_intel_hex(vec, word >> 6, addr)
+               write_intel_hex(vec, word >> 6, addr | (bank << 12))
            },
            None => ()
        }
@@ -111,11 +112,11 @@ impl OutputFormat for HighRomOutputFormat {
 struct LowRomOutputFormat;
 impl OutputFormat for LowRomOutputFormat {
     fn name(&self) -> &str { "low.hex" }
-    fn write(&self, vec: &mut Vec<u8>, base: u16, st: &CompiledStatement) {
+    fn write(&self, vec: &mut Vec<u8>, bank: i64, base: u16, st: &CompiledStatement) {
         match st.code {
             Some(word) => {
                 let addr = st.full_addr() - (base as i64);
-                write_intel_hex(vec, word & 0x3F, addr)
+                write_intel_hex(vec, word & 0x3F, addr | (bank << 12))
             },
             None => ()
         }
@@ -128,7 +129,7 @@ impl OutputFormat for LowRomOutputFormat {
 struct Q2pOutputFormat;
 impl OutputFormat for Q2pOutputFormat {
     fn name(&self) -> &str { "q2p" }
-    fn write(&self, vec: &mut Vec<u8>, _base: u16, st: &CompiledStatement) {
+    fn write(&self, vec: &mut Vec<u8>, _bank: i64, _base: u16, st: &CompiledStatement) {
         match st.code {
             Some(word) => {
                 write_hex(vec, st.full_addr() as u16);
@@ -159,6 +160,8 @@ struct OutputWriter {
 
 fn assemble(
     input_name: &str,
+    start_addr: i64,
+    bank: i64,
     formats: &Vec<Rc<dyn OutputFormat>>
 ) -> Result<(), Box<dyn Error>> {
     let mut writers: Vec<OutputWriter> = Vec::new();
@@ -175,7 +178,7 @@ fn assemble(
     let (symbols, updated_statements) = pass1::pass1(statements)?;
     let mut result = pass2::pass2(&updated_statements, &symbols)?;
     result.sort_by_key(|s| s.full_addr());
-    let mut last_addr: i64 = 0;
+    let mut last_addr: i64 = start_addr;
     let mut base: u16 = 0xFFFF;
     for cs in result {
         if cs.code.is_some() && base == 0xFFFF {
@@ -186,7 +189,7 @@ fn assemble(
             if last_addr != cs.addr {
                 writer.format.pad(&mut writer.output, last_addr, cs.addr);
             }
-            writer.format.write(&mut writer.output, base, &cs);
+            writer.format.write(&mut writer.output, bank, base, &cs);
         }
         last_addr = cs.addr + if cs.code.is_some() { 1 } else { 0 };
     }
@@ -207,11 +210,27 @@ fn main() {
         Rc::new(Q2pOutputFormat),
     ];
     let input_key = "INPUT";
+    let start_key = "START";
+    let bank_key = "BANK";
     let matches = App::new(crate_name!())
         .version(crate_version!())
         .author(crate_authors!())
         .about("An assembler for the Q2 computer")
         .max_term_width(80)
+        .arg(Arg::with_name(start_key)
+            .short("-s")
+            .long("--start")
+            .takes_value(true)
+            .default_value("0x000")
+            .help("Starting address")
+        )
+        .arg(Arg::with_name(bank_key)
+            .short("-b")
+            .long("--bank")
+            .takes_value(true)
+            .default_value("0")
+            .help("ROM bank")
+        )
         .arg(Arg::with_name(input_key)
             .required(true)
             .help("Source to assemble")
@@ -219,13 +238,21 @@ fn main() {
         .get_matches();
 
     let input_name = matches.value_of(input_key).unwrap();
-    match assemble(input_name, &output_formats) {
+    let start_addr_str = matches.value_of(start_key).unwrap_or("0x000");
+    let start_addr = if start_addr_str.starts_with("0x") {
+        i64::from_str_radix(&start_addr_str[2..], 16).unwrap()
+    } else {
+        i64::from_str(start_addr_str).unwrap()
+    };
+    let bank = i64::from_str(matches.value_of(bank_key).unwrap_or("0")).unwrap();
+    match assemble(input_name, start_addr, bank, &output_formats) {
         Ok(_) => (),
         Err(e) => eprintln!("ERROR: {}", e)
     };
 }
 
 mod tests {
+    #[cfg(test)]
     use super::*;
 
     #[test]

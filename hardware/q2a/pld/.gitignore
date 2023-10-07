@@ -1,0 +1,6 @@
+clock.v
+io.v
+opcode.v
+slicehigh.v
+slicelow.v
+state.v

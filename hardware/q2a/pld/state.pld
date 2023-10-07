@@ -1,0 +1,70 @@
+GAL16V8
+state
+
+CLK   RST     DEP   INCP  OP3   OP2   OP1   OP0   FLAG  GND
+/OE   STORE   S0    S1    CIN0  C0    C1    C2    C3    VCC
+
+; State bits:
+; 00 FETCH
+; 01 DEREF
+; 10 LOAD
+; 11 EXEC
+
+S0.R  = /RST * /DEP * /INCP * /S0
+
+S1.R  = /RST * /DEP * /INCP * /S1 *  S0
+      + /RST * /DEP * /INCP *  S1 * /S0
+
+; Control bits:
+; 0000 IDLE
+; 0001 FETCH/INCP
+; 0010 DEREF/LOAD
+; 0011 JUMP
+; 0100 STA
+; 0101 STS
+; 10xx ALU
+; 11xx RESET
+
+; To reduce terms in slices:
+;   1xxx=A updated (A will be set to 0 in RESET)
+;   01xx=store
+
+;  Opcode  | Name  | F | Description
+;  ------- | ----- | - | ----------------
+;  000     | LDA   | Z | A = [X]
+;  001     | NOR   | Z | A = A NOR [X]
+;  010     | ADD   | C | A = A + [X]
+;  011     | SHR   | C | A = [X] >> 1
+;  100     | LEA   | - | A = X
+;  101     | STA   | - | [X] = A
+;  110     | JMP   | - | P = X
+;  111     | JFC   | - | if !F, P = X
+
+C3  = /RST * /DEP * /INCP *  S0 *  S1 * /OP3                ; ALU
+    + /RST * /DEP * /INCP *  S0 *  S1 *  OP3 * /OP2 * /OP1  ; ALU for LEA
+    + RST
+
+C2  = /RST * /DEP * /INCP *  S0 *  S1 *  OP3 * /OP2 * OP1   ; STA
+    + /RST * DEP                                            ; STS
+    + RST
+
+C1  = /RST * /DEP * /INCP * /S1 *  S0 *  OP0                  ; DEREF
+    + /RST * /DEP * /INCP *  S1 * /S0 * /OP3                  ; LOAD
+    + /RST * /DEP * /INCP *  S1 *  S0 *  OP3 * OP2 *  /FLAG   ; JFC
+    + /RST * /DEP * /INCP *  S1 *  S0 *  OP3 * OP2 * /OP1     ; JMP
+    + /RST * /DEP * /INCP *  S1 *  S0 * /OP3 * OP2            ; ALU 11x
+
+C0  = /RST * /S1 * /S0                      ; FETCH
+    + /RST *  S1 *  S0 * /OP3       *  OP1  ; ALU
+    + /RST *  S1 *  S0 *  OP3 * OP2 * /OP1  ; JMP
+    + /RST *  S1 *  S0 *  OP3 * OP2 * /FLAG ; JFC
+    + /RST * DEP                            ; STS
+    + /RST * INCP
+
+STORE = /C3 * C2 * /C1
+
+CIN0 = /C1
+
+DESCRIPTION
+
+

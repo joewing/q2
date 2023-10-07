@@ -12,11 +12,15 @@ impl Renamer {
     const SEP: &'static str = "__";
 
     fn find(&self, name: &String) -> Result<String, String> {
-        for p in self.prefix.iter().rev() {
-            let temp = format!("{}{}", p, name);
-            for s in self.symbols.iter() {
-                if temp == *s {
-                    return Ok(temp);
+        if name.starts_with("__internal__") {
+            return Ok(name.clone());
+        } else {
+            for p in self.prefix.iter().rev() {
+                let temp = format!("{}{}", p, name);
+                for s in self.symbols.iter() {
+                    if temp == *s {
+                        return Ok(temp);
+                    }
                 }
             }
         }

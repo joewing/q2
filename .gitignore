@@ -12,5 +12,10 @@ target/
 *.hex
 *.lst
 *.q2p
+*.chp
+*.jed
+*.fus
+*.pin
 a.out
-case.stl
+*.stl
+gerber

@@ -27,18 +27,27 @@ pub struct SymbolTable {
     index: usize,
     page: Word,
     heap: Word,
+    code_start: Word,
+    heap_start: Word,
+}
+
+fn overlaps(a0: Word, a1: Word, b0: Word, b1: Word) -> bool {
+    (b0 > a0 && b0 < a1) || (b1 > a0 && b1 < a1)
 }
 
 impl SymbolTable {
 
     pub const PAGE_SIZE: Word = 128;
     pub const PAGE_COUNT: Word = 32;
-    pub const ORIGIN: Word = SymbolTable::PAGE_SIZE;
     pub const ENTRYPOINT: &'static str = "main";
-    const BASE_HEAP: Word = 0xFFF;
+    const OUTPUT_DELAY_NAME: &'static str = "__internal__OUTPUT_DELAY";
     const BASE_WATERMARK: Word = 0x004;
 
-    pub fn new() -> SymbolTable {
+    pub fn new(code_addr: i64, heap_addr: i64, freq: i64) -> SymbolTable {
+
+        let output_delay = (freq * 1500 / 20000000 - 1).max(0);
+        let output_delay_str = SymbolTable::OUTPUT_DELAY_NAME.to_string();
+
         let global_scope = Scope {
             symbols: HashMap::new(),
             watermark: SymbolTable::BASE_WATERMARK,
@@ -46,7 +55,7 @@ impl SymbolTable {
             return_address: Symbol::Constant(0),
             break_label: None,
         };
-        SymbolTable {
+        let mut state = SymbolTable {
             code: Vec::new(),
             data: Vec::new(),
             immediates: HashMap::new(),
@@ -54,9 +63,13 @@ impl SymbolTable {
             local_labels: HashSet::new(),
             words: 0,
             index: 0,
-            page: 0,
-            heap: SymbolTable::BASE_HEAP,
-        }
+            page: (code_addr as Word) / SymbolTable::PAGE_SIZE as Word,
+            heap: heap_addr as Word,
+            heap_start: heap_addr as Word,
+            code_start: code_addr as Word
+        };
+        state.declare_const(&output_delay_str, Symbol::Constant(output_delay as Word));
+        state
     }
 
     fn append(&mut self, line: String) {
@@ -98,48 +111,53 @@ impl SymbolTable {
         }
         let scope = self.scopes.last().unwrap();
         let total_words = SymbolTable::PAGE_COUNT * SymbolTable::PAGE_SIZE - 1;
-        let usage = (total_words - self.heap)
-            + (self.page - 1) * SymbolTable::PAGE_SIZE
-            + scope.watermark;
+        let heap_usage = self.heap_start - self.heap;
+        let code_end = self.page * SymbolTable::PAGE_SIZE;
+        let code_usage = code_end - self.code_start;
+        let max_code = total_words - self.code_start;
+        let usage = heap_usage + code_usage;
         println!("memory usage:    {:4} / {:4}", usage, total_words);
         println!("zero-page words: {:4} / {:4}", scope.watermark, SymbolTable::PAGE_SIZE);
-        println!("code pages:      {:4} / {:4}", self.page - 1, SymbolTable::PAGE_COUNT - 1);
-        println!("heap words:      {:4} / {:4}", total_words - self.heap, total_words);
+        println!("code words:      {:4} / {:4}", code_usage, max_code);
+        println!("heap words:      {:4} / {:4}", heap_usage, self.heap_start);
         if scope.watermark > SymbolTable::PAGE_SIZE {
             return Err(format!("too many vars: {}", scope.watermark));
         }
         if self.page - 1 > SymbolTable::PAGE_COUNT {
             return Err(format!("code requires too many pages: {}", self.page));
         }
-        let code_end = self.page * SymbolTable::PAGE_SIZE;
-        if code_end > self.heap {
-            return Err(
-                format!("heap (0x{:x}) and code (0x{:x}) overlap", self.heap, code_end)
-            );
+        if overlaps(self.heap, self.heap_start, self.code_start, code_end) {
+            return Err(format!("code and heap overlap"))
         }
         Ok(())
     }
 
-    pub fn emit_prelude(&mut self) -> Result<(), String> {
+    pub fn emit_prelude(&mut self, start_addr: i64) -> Result<(), String> {
+        if start_addr < 128 {
+            // Bootstrap.
+            // This will just run the program over and over.
+            self.append(format!("  .org {}", start_addr));
+            self.append_word(format!("  lea =0"));
+            self.append_word(format!("  jmp @$+1"));
+            self.append_word(format!("  .dw {}", SymbolTable::ENTRYPOINT));
 
-        // Zero-page bootstrap.
-        // This will just run the program over and over.
-        self.append_word(format!("  lea =0"));
-        self.append_word(format!("  jmp @$+1"));
-        self.append_word(format!("  .dw {}", SymbolTable::ENTRYPOINT));
-
-        // Entry point.
-        // This will return to the zero page.
-        self.new_page();
-        self.append(format!("  .org {}", SymbolTable::ORIGIN));
-        let entrypoint_label = self.append_immediate(&Symbol::Label(SymbolTable::ENTRYPOINT.to_string()));
-        let field0_label = self.append_immediate(&Symbol::Constant(0xC00));
-        let neg1_label = self.append_immediate(&Symbol::Constant(0xFFF));
-        self.append_word(format!("  lea $+2"));
-        self.append_word(format!("  jmp @{}", entrypoint_label));
-        self.append_word(format!("  lda {}", field0_label));
-        self.append_word(format!("  sta @{}", neg1_label));
-        self.append_word(format!("  jmp =0"));
+            // Entry point.
+            // This will return to the bootstrap page.
+            self.new_page();
+            let entrypoint_label = self.append_immediate(&Symbol::Label(SymbolTable::ENTRYPOINT.to_string()));
+            let field0_label = self.append_immediate(&Symbol::Constant(0xC00));
+            let neg1_label = self.append_immediate(&Symbol::Constant(0xFFF));
+            self.append_word(format!("  lea $+2"));
+            self.append_word(format!("  jmp @{}", entrypoint_label));
+            self.append_word(format!("  lda {}", field0_label));
+            self.append_word(format!("  sta @{}", neg1_label));
+            self.append_word(format!("  jmp =0"));
+        } else {
+            self.append(format!("  .org {}", start_addr));
+            let entrypoint_label = self.append_immediate(&Symbol::Label(SymbolTable::ENTRYPOINT.to_string()));
+            self.append_word(format!("  lea $"));
+            self.append_word(format!("  jmp @{}", entrypoint_label));
+        }
         Ok(())
     }
 
@@ -165,7 +183,8 @@ impl SymbolTable {
         }
         while self.words > 0 {
             self.page += 1;
-            self.words -= Word::min(self.words, SymbolTable::PAGE_SIZE);
+            let delta = Word::min(self.words, SymbolTable::PAGE_SIZE);
+            self.words -= delta;
         }
         self.data.clear();
         let _ = self.check_size()?;
@@ -318,7 +337,7 @@ impl SymbolTable {
 
     /** Update current stack to account for an argument to a function call. */
     pub fn update_stack(&mut self, param: Word) {
-        let mut last = self.scopes.last_mut().unwrap();
+        let last = self.scopes.last_mut().unwrap();
         last.stack = Word::max(last.stack, param + 1);
         last.watermark = Word::max(last.watermark, last.stack);
     }
@@ -370,7 +389,7 @@ impl SymbolTable {
     }
 
     pub fn allocate_temp(&mut self) -> Symbol {
-        let mut scope = self.scopes.last_mut().unwrap();
+        let scope = self.scopes.last_mut().unwrap();
         let addr = scope.stack;
         scope.stack += 1;
         scope.watermark = Word::max(scope.watermark, scope.stack);
@@ -387,11 +406,15 @@ impl SymbolTable {
 
     pub fn declare_var(&mut self, name: &String, value: Option<Symbol>) -> Result<(), String> {
         let symbol = if self.is_global() {
-            self.data.push((name.clone(), vec![value.unwrap_or(Symbol::Constant(0))]));
-            Symbol::Label(name.clone())
+            if value.is_some() {
+                Err(format!("global var ({}) cannot have an initial value", name))
+            } else {
+                let addr = self.append_heap(1)?;
+                Ok(Symbol::Constant(addr))
+            }
         } else {
-            self.allocate_temp()
-        };
+            Ok(self.allocate_temp())
+        }?;
         let scope = self.scopes.last_mut().unwrap();
         scope.symbols.insert(name.clone(), symbol);
         Ok(())

@@ -1,0 +1,29 @@
+GAL16V8
+clock
+
+CLK   RST   STOP  START INCP    DEP   NC    NC    NC    GND
+/OE   Q0    Q1    NC    NC      NC    RUN   COUT  NC    VCC
+
+; Clock low when not running.
+; Pull clock high for one cycle after a button is pressed.
+COUT.R  = /COUT * RUN
+        + /COUT * INCP  * /Q1
+        + /COUT * DEP   * /Q1
+        + /COUT * RST   * /Q1
+        + /COUT * STOP  * /Q1
+
+RUN.R = /RST * /STOP * START
+      + /RST * /STOP * RUN
+
+Q0.R  = /Q1 * INCP
+      + /Q1 * DEP
+      + /Q1 * RST
+      + /Q1 * STOP
+
+Q1.R  = Q0 
+      + Q1 * INCP
+      + Q1 * DEP
+      + Q1 * RST
+      + Q1 * STOP
+
+DESCRIPTION

@@ -17,6 +17,7 @@ const BUILTINS: &[&str] = &[
     MEMSET,
     MEMCPY,
     OUTPUT,
+    DELAY,
     PUTS,
     ITOA,
     PUTINT,
@@ -161,10 +162,25 @@ const MEMCPY: &str = concat!(
 
 const OUTPUT: &str = "const OUTPUT = 0xFFF;";
 
+// Instruction count: 5 + 5 * i
+// Assuming each instruction takes 4 cycles:
+//      Time (s): 4 * (5 + 5 * i) / FREQUENCY_HZ
+// To delay for x ms (1000 * x s):
+//      x / 1000 == 4 * (5 + 5 * i) / FREQUENCY_HZ
+//      i = x * FREQUENCY_HZ / 20000 - 1
+const DELAY: &str = concat!(
+    "fun delay(i)\n",
+    "  while @i do\n",
+    "    i = @i - 1;\n",
+    "  end\n",
+    "end\n"
+);
+
 const PUTS: &str = concat!(
     "fun puts(ptr)\n",
     "  while @@ptr do\n",
     "    OUTPUT = @@ptr;\n",
+    "    delay(__internal__OUTPUT_DELAY);\n",
     "    ptr = @ptr + 1;\n",
     "  end\n",
     "end\n",

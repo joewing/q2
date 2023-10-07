@@ -1,0 +1,27 @@
+GAL16V8
+io
+
+CLK   IO      D11     D10     D9      D8      NC      STORE   NC      GND
+/OE   /MEMOE  /MEMWE  /IORD   /IOWR   /IOCMD  /IOEN0  /IOEN1  /IOEN2  VCC
+
+MEMOE = /STORE * /IO
+
+MEMWE = STORE * /IO * CLK
+
+IORD  = /STORE * IO
+
+IOWR  = STORE * IO * /CLK
+
+IOCMD = IO * D8 * STORE
+
+IOEN0 = IO * /D11 * /D10 * /D9 * STORE
+      + IO * /STORE
+
+IOEN1 = IO * /D11 * /D10 *  D9 * STORE
+      + IO * /STORE
+
+IOEN2 = IO * /D11 *  D10 * /D9 * STORE
+      + IO * /STORE
+
+DESCRIPTION
+
