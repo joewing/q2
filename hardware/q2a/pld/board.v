@@ -5,6 +5,7 @@
 `include "slicehigh.v"
 `include "slicelow.v"
 `include "io.v"
+`include "field.v"
 
 `include "ram.v"
 `include "rom.v"
@@ -19,7 +20,8 @@ module board(
   input wire incp,
   input wire start,
   input wire stop,
-  input wire [11:0] sw
+  input wire [11:0] sw,
+  input wire [2:0] fieldsw
 );
 
   wire [3:0] op;
@@ -35,8 +37,9 @@ module board(
   wire [11:0] carry;    // Carry (low->high bits)
   wire [11:0] io;       // Zero/IO (low->high bits)
   wire [11:0] x;
-  wire [2:0] ioen;
+  wire [1:0] ioen;
   wire [7:0] iobus;
+  wire [2:0] field;
 
   wire memoe, memwe;
   wire iord, iowr, iocmd;
@@ -98,7 +101,7 @@ module board(
     .iocmd(iocmd),
     .ioen0(ioen[0]),
     .ioen1(ioen[1]),
-    .ioen2(ioen[2])
+    .wrf(wrf)
   );
 
   ttl245 io0_buf(
@@ -150,7 +153,24 @@ module board(
 
   genvar i;
   generate
-    for ( i = 0; i < 12; i = i + 1) begin
+    for (i = 0; i < 3; i = i + 1) begin
+      field field_inst(
+        .clk(clk),
+        .c0(control[0]),
+        .c1(control[1]),
+        .c2(control[2]),
+        .c3(control[3]),
+        .s1(state[1]),
+        .din(dbus[i]),
+        .sw(fieldsw[i]),
+        .wrf(wrf),
+        .field(field[i])
+      );
+    end
+  endgenerate;
+
+  generate
+    for (i = 0; i < 12; i = i + 1) begin
       if (i > 6) begin
         slicehigh high_inst(
           .clk(clk),

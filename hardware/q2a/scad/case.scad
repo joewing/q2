@@ -1,5 +1,5 @@
 
-board_width = 154;
+board_width = 196;
 board_depth = 160;
 base_height = 11.6;
 panel_width = board_width;
@@ -12,9 +12,9 @@ thickness = 3.6;
 switch_radius = 3.6;
 led_radius = 1.7;
 switch_spacing = 3.5;
-screw_radius = 1.7;
-screw_head_radius = 2.8;
-screw_head_height = 3;
+screw_radius = 1.9;
+screw_head_radius = 2.9;
+screw_head_height = 3.1;
 standoff_height = thickness + base_height - screw_head_height - pcb_thickness;
 standoff_radius = 3.6;
 board_offset = 40;
@@ -46,17 +46,18 @@ module rounded_cube(x, y, z, r = 3) {
     }
 }
 
-// 1 on each side, and 1/2 for nibble spacing divides the panel into 15.
-switch_spacingx = panel_width / (2 * 0.5 + 2 * 0.5 + 12);
+// 1 on each side, and 1/2 for nibble spacing:
+switch_spacingx = panel_width / (3 * 0.5 + 2 * 0.5 + 15);
 
 // 4 lines with extra on the top and bottom divides the panel into 5:
 switch_spacingy = panel_height / (1 + 4);
 
+function bumps(x) = x > 3 ? (x > 7 ? (x > 11 ? 2 : 1.5) : 1.0) : 0.5;
+
 module switches(x, y, count, is_switch = true) {
     radius = is_switch ? switch_radius : led_radius;
     for (i = [0:count-1]) {
-        bump = x + i > 4 ? (x + i > 8 ? 1.5 : 1) : 0.5;
-        echo(x, y, (x + i + bump - 0.5) * switch_spacingx, panel_height -  (y) * switch_spacingy);
+        bump = bumps(x + i);
         translate([
             thickness + (x + i + bump - 0.5) * switch_spacingx,
             (y) * switch_spacingy + base_height + thickness,
@@ -68,7 +69,7 @@ module switches(x, y, count, is_switch = true) {
 }
 
 module label(x, y, text, size = 3.2) {
-    bump = x > 4 ? (x > 8 ? 1.5 : 1) : 0.5;
+    bump = bumps(x);
     translate([
         (x + bump - 0.5) * switch_spacingx,
         (y) * switch_spacingy - 2.5 * switch_radius + base_height + thickness,
@@ -156,40 +157,45 @@ module render_panel() {
             standoff_hole(panel_width - standoff_radius, base_height + panel_height - standoff_radius, true);
         }
         
+        // Field LEDs
+        switches(1, 4, 3, false);
+        label(1, 4, "Field");
+        
         // Address LEDs
-        switches(1, 4, 12, false);
-        label(1, 4, "Address");
+        switches(4, 4, 12, false);
+        label(4, 4, "Address");
         
         // Data LEDs
-        switches(1, 3, 12, false);
-        label(1, 3, "Data");
+        switches(4, 3, 12, false);
+        label(4, 3, "Data");
         
-        // Power switch and LED.
+        // Power switch and LED
         switches(1, 2, 1, false);
         switches(2, 2, 1, true);
         label(1, 2, "Power");
-                  
-        // ROM selector
-        switches(3, 2, 2, true);
-        label(3, 2, "ROM");
-        
+
         // Run LED, start, stop
-        switches(6, 2, 1, false);
-        switches(7, 2, 2, true);
-        label(6, 2, "RUN");
-        label(8, 2, "HLT");
+        switches(4, 2, 1, false);
+        switches(5, 2, 2, true);
+        label(4, 2, "RUN");
+        label(6, 2, "HLT");
         
         // Reset / Increment / Deposit
-        switches(10, 2, 3, true);
-        label(10, 2, "SET");
-        label(11, 2, "INC");
-        label(12, 2, "DEP");
+        switches(11, 2, 1, true);
+        switches(13, 2, 2, true);
+        label(11, 2, "SET");
+        label(13, 2, "INC");
+        label(14, 2, "DEP");
         
-        // Input switches
-        switches(1, 1, 12, true);
-        label(1, 1, "Input");
+        // Field switches
+        switches(1, 1, 3, true);
+        label(1, 1, "Field");
         
-        label(8.5, 0.25, "Q2A", 12);
+        // Data switches
+        switches(4, 1, 12, true);
+        label(4, 1, "Input");
+        
+        label(11, 0.25, "Q2A", 12);
     }
 }
 

@@ -781,7 +781,7 @@
           (reference "#PWR083") (unit 1)
         )
         (path "/a14fee10-9a48-449e-80d1-f8dffaea277c"
-          (reference "#PWR0160") (unit 1)
+          (reference "#PWR?") (unit 1)
         )
         (path "/a14fee10-9a48-449e-80d1-f8dffaea277c/00000000-0000-0000-0000-000060b90c82"
           (reference "#PWR034") (unit 1)
@@ -802,7 +802,7 @@
           (reference "#PWR048") (unit 1)
         )
         (path "/a14fee10-9a48-449e-80d1-f8dffaea277c/2d699bb0-6bf7-4e34-bbb8-42651e38942b"
-          (reference "#PWR0133") (unit 1)
+          (reference "#PWR0123") (unit 1)
         )
       )
     )
@@ -832,10 +832,10 @@
       )
       (project "q2a"
         (path "/a14fee10-9a48-449e-80d1-f8dffaea277c"
-          (reference "#PWR0103") (unit 1)
+          (reference "#PWR?") (unit 1)
         )
         (path "/a14fee10-9a48-449e-80d1-f8dffaea277c/2d699bb0-6bf7-4e34-bbb8-42651e38942b"
-          (reference "#PWR0137") (unit 1)
+          (reference "#PWR0127") (unit 1)
         )
       )
     )
@@ -844,7 +844,7 @@
   (symbol (lib_id "power:VCC") (at 95.25 64.77 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 0ed5fd19-b9ad-421e-9c3a-270402aea583)
-    (property "Reference" "#PWR094" (at 95.25 68.58 0)
+    (property "Reference" "#PWR?" (at 95.25 68.58 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "VCC" (at 95.631 60.3758 0)
@@ -860,10 +860,10 @@
     (instances
       (project "q2a"
         (path "/a14fee10-9a48-449e-80d1-f8dffaea277c"
-          (reference "#PWR094") (unit 1)
+          (reference "#PWR?") (unit 1)
         )
         (path "/a14fee10-9a48-449e-80d1-f8dffaea277c/2d699bb0-6bf7-4e34-bbb8-42651e38942b"
-          (reference "#PWR0134") (unit 1)
+          (reference "#PWR0124") (unit 1)
         )
       )
     )
@@ -908,7 +908,7 @@
       )
       (project "q2a"
         (path "/a14fee10-9a48-449e-80d1-f8dffaea277c"
-          (reference "J1") (unit 1)
+          (reference "J?") (unit 1)
         )
         (path "/a14fee10-9a48-449e-80d1-f8dffaea277c/2d699bb0-6bf7-4e34-bbb8-42651e38942b"
           (reference "J2") (unit 1)
@@ -954,7 +954,7 @@
           (reference "#PWR082") (unit 1)
         )
         (path "/a14fee10-9a48-449e-80d1-f8dffaea277c"
-          (reference "#PWR0159") (unit 1)
+          (reference "#PWR?") (unit 1)
         )
         (path "/a14fee10-9a48-449e-80d1-f8dffaea277c/00000000-0000-0000-0000-000060b90c82"
           (reference "#PWR033") (unit 1)
@@ -975,7 +975,7 @@
           (reference "#PWR047") (unit 1)
         )
         (path "/a14fee10-9a48-449e-80d1-f8dffaea277c/2d699bb0-6bf7-4e34-bbb8-42651e38942b"
-          (reference "#PWR0132") (unit 1)
+          (reference "#PWR0122") (unit 1)
         )
       )
     )
@@ -984,7 +984,7 @@
   (symbol (lib_id "power:GND") (at 95.25 105.41 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 459b9c46-8628-4262-8d48-83da40e69d8e)
-    (property "Reference" "#PWR096" (at 95.25 111.76 0)
+    (property "Reference" "#PWR?" (at 95.25 111.76 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 95.377 109.8042 0)
@@ -1000,10 +1000,10 @@
     (instances
       (project "q2a"
         (path "/a14fee10-9a48-449e-80d1-f8dffaea277c"
-          (reference "#PWR096") (unit 1)
+          (reference "#PWR?") (unit 1)
         )
         (path "/a14fee10-9a48-449e-80d1-f8dffaea277c/2d699bb0-6bf7-4e34-bbb8-42651e38942b"
-          (reference "#PWR0135") (unit 1)
+          (reference "#PWR0125") (unit 1)
         )
       )
     )
@@ -1066,13 +1066,13 @@
           (reference "#PWR?") (unit 1)
         )
         (path "/a14fee10-9a48-449e-80d1-f8dffaea277c"
-          (reference "#PWR095") (unit 1)
+          (reference "#PWR?") (unit 1)
         )
         (path "/a14fee10-9a48-449e-80d1-f8dffaea277c/00000000-0000-0000-0000-000060b9649c"
           (reference "#PWR?") (unit 1)
         )
         (path "/a14fee10-9a48-449e-80d1-f8dffaea277c/2d699bb0-6bf7-4e34-bbb8-42651e38942b"
-          (reference "#PWR0136") (unit 1)
+          (reference "#PWR0126") (unit 1)
         )
       )
     )
@@ -1081,7 +1081,7 @@
   (symbol (lib_id "74xx:74LS245") (at 95.25 85.09 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid a803c37f-5a3e-4903-b7e0-4f97e531d11d)
-    (property "Reference" "U7" (at 97.4441 64.77 0)
+    (property "Reference" "U?" (at 97.4441 64.77 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "245" (at 97.4441 67.31 0)
@@ -1116,10 +1116,10 @@
     (instances
       (project "q2a"
         (path "/a14fee10-9a48-449e-80d1-f8dffaea277c"
-          (reference "U7") (unit 1)
+          (reference "U?") (unit 1)
         )
         (path "/a14fee10-9a48-449e-80d1-f8dffaea277c/2d699bb0-6bf7-4e34-bbb8-42651e38942b"
-          (reference "U19") (unit 1)
+          (reference "U18") (unit 1)
         )
       )
     )
@@ -1181,10 +1181,10 @@
           (reference "C9") (unit 1)
         )
         (path "/a14fee10-9a48-449e-80d1-f8dffaea277c"
-          (reference "C23") (unit 1)
+          (reference "C?") (unit 1)
         )
         (path "/a14fee10-9a48-449e-80d1-f8dffaea277c/2d699bb0-6bf7-4e34-bbb8-42651e38942b"
-          (reference "C25") (unit 1)
+          (reference "C26") (unit 1)
         )
       )
     )

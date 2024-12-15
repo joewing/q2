@@ -1,5 +1,5 @@
 
-PLD = state opcode slicehigh slicelow io clock
+PLD = state opcode slicehigh slicelow io clock field
 GEN_V = $(foreach f,${PLD},$f.v)
 GEN_JED = $(foreach f,${PLD},$f.jed)
 DEVICE = ATF16V8CZ
