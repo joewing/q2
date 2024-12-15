@@ -11,6 +11,7 @@ mod pruner;
 mod simplifier;
 mod allocator;
 mod promoter;
+mod retcheck;
 
 extern crate clap;
 use clap::{App, Arg, crate_version, crate_name, crate_authors};
@@ -40,10 +41,21 @@ fn output_name(input_name: &str) -> String {
     }
 }
 
-fn compile(input_name: &str, code_addr: i64, heap_addr: i64, freq: i64) -> Result<(), Box<dyn Error>> {
-    let mut source = generate_builtins();
+pub struct Machine {
+    pub code_addr: i64,
+    pub heap_addr: i64,
+    pub freq: i64,
+    pub key_polarity: i8,
+    pub key_mask: u8
+}
+
+fn compile(
+    input_name: &str,
+    machine: &Machine
+) -> Result<(), Box<dyn Error>> {
+    let mut source = generate_builtins(&machine);
     source.push(parse_file(input_name)?);
-    let mut state = SymbolTable::new(code_addr, heap_addr, freq);
+    let mut state = SymbolTable::new(&machine);
 
     // Rename nested symbols based on hierarchy.
     let renamed = Renamer::rename(&source)?;
@@ -57,7 +69,7 @@ fn compile(input_name: &str, code_addr: i64, heap_addr: i64, freq: i64) -> Resul
     // Prune unused functions.
     let pruned = Statement::Block(Pruner::prune(&promoted)?);
 
-    let _ = state.emit_prelude(code_addr)?;
+    let _ = state.emit_prelude(&machine)?;
     let _ = pruned.emit_globals(&mut state)?;
     let mut output_file = fs::File::create(output_name(input_name))?;
     for line in state.emit()? {
@@ -76,21 +88,33 @@ fn parse_addr(s: &str) -> i64 {
 }
 
 fn main() {
+    let target_key = "TARGET";
+    let q2_target = "q2";
+    let q2a_target = "q2a";
     let input_key = "INPUT";
     let code_key = "CODE";
     let heap_key = "HEAP";
     let freq_key = "FREQ";
+    let key_polarity_key = "KEY";
     let matches = App::new(crate_name!())
         .version(crate_version!())
         .author(crate_authors!())
         .about("A compiler for the Q2 computer")
         .max_term_width(80)
         .arg(
+            Arg::with_name(target_key)
+                .short("-t")
+                .long("--target")
+                .takes_value(true)
+                .possible_values(&[q2_target, q2a_target])
+                .default_value(q2_target)
+                .help("Target machine")
+        )
+        .arg(
             Arg::with_name(code_key)
                 .short("-c")
                 .long("--code")
                 .takes_value(true)
-                .default_value("0x000")
                 .help("Starting code address")
         )
         .arg(
@@ -98,7 +122,6 @@ fn main() {
                 .short("-h")
                 .long("--heap")
                 .takes_value(true)
-                .default_value("0xFFF")
                 .help("Starting heap address (heap grows down)")
         )
         .arg(
@@ -106,8 +129,15 @@ fn main() {
                 .short("-f")
                 .long("--frequency")
                 .takes_value(true)
-                .default_value("100000")
                 .help("Clock frequency in Hz (for delays)")
+        )
+        .arg(
+            Arg::with_name(key_polarity_key)
+                .short("-kp")
+                .long("--keypolarity")
+                .takes_value(true)
+                .possible_values(&["+", "-"])
+                .help("Key polarity")
         )
         .arg(
             Arg::with_name(input_key)
@@ -116,11 +146,32 @@ fn main() {
         )
         .get_matches();
 
+    let target = match matches.value_of(target_key).unwrap_or(q2_target) {
+        "q2" => Machine {
+            code_addr: 0x000,
+            heap_addr: 0xFFF,
+            freq: 100_000,
+            key_polarity: -1,
+            key_mask: 31
+        },
+        "q2a" => Machine {
+            code_addr: 0x800,
+            heap_addr: 0x800,
+            freq: 1_000_000,
+            key_polarity: 1,
+            key_mask: 63
+        },
+        t => panic!("invalid target: {}", t)
+    };
     let input_name = matches.value_of(input_key).unwrap();
-    let code_addr = parse_addr(matches.value_of(code_key).unwrap());
-    let heap_addr = parse_addr(matches.value_of(heap_key).unwrap());
-    let freq = i64::from_str(matches.value_of(freq_key).unwrap()).unwrap();
-    match compile(input_name, code_addr, heap_addr, freq) {
+    let machine = Machine {
+        code_addr: matches.value_of(code_key).map(parse_addr).unwrap_or(target.code_addr),
+        heap_addr: matches.value_of(heap_key).map(parse_addr).unwrap_or(target.heap_addr),
+        freq: matches.value_of(freq_key).and_then(|f| i64::from_str(f).ok()).unwrap_or(target.freq),
+        key_polarity: matches.value_of(key_polarity_key).map(|f| if f == "+" { 1 } else { -1 }).unwrap_or(target.key_polarity),
+        key_mask: target.key_mask
+    };
+    match compile(input_name, &machine) {
         Ok(_) => (),
         Err(e) => {
             eprintln!("ERROR: {}", e.to_string());

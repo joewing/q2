@@ -41,13 +41,11 @@ fun run_generation(dest, src)
     while @x do
       var count = 0;
       var offset = OFFSETS;
-      var key = 0;
       while @@offset do
         count = @count + @(@src + @@offset);
         offset = @offset + 1;
-        key = @key + @OUTPUT;
       end
-      if @key & 31 then
+      if getkey() then
         return 1;
       end
       if @count == 3 then

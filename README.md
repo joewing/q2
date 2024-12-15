@@ -21,25 +21,25 @@ A home-brew 12-bit mini-computer.
 
 There are currently two hardware implementations of the Q2 instruction set:
 
-  - [Q2](hardware/q2/README.md) - The bit-serial single-board discrete transistor implementation.
-  - [Q2A](hardware/q2a/README.md) - A faster, parallel implementation using ATF16V8 PLDs.
+  - [Q2](hardware/q2) - The bit-serial single-board discrete transistor implementation.
+  - [Q2A](hardware/q2a) - A faster, parallel implementation using ATF16V8 PLDs.
 
 Compared to the DEC PDP-8, the original Q2 would be like the PDP-8/S and
 the Q2A would be like the PDP-8/I.
 
 This repo contains the following subdirectories:
   - hardware - Hardware realizations.
-    - [q2](hardware/q2/README.md) - The original discrete transistor Q2.
+    - [q2](hardware/q2) - The original discrete transistor Q2.
       - hdl - A Verilog model and test bench for simulating Q2 programs.
       - scad - An OpenSCAD 3d model for the case.
       - pcb - Schematics and PCB in KiCad
-    - [q2a](hardware/q2a/README.md) - Programmable logic device implementation
+    - [q2a](hardware/q2a) - Programmable logic device implementation
       - pld - PLD files for programming the ATF16V8s and Verilog test bench
       - scad - An OpenSCAD 3d model for the case.
       - pcb - Schematics and PCB in KiCad
-  - [q2asm](q2asm/README.md) - A Q2 assembler (in Rust).
-  - [q2lc](q2lc/README.md) - A compiler for a simple language (in Rust).
-  - [q2prog](q2prog/README.md) - A Q2 programmer (in Rust) for a Raspberry Pi
+  - [q2asm](q2asm) - A Q2 assembler (in Rust).
+  - [q2lc](q2lc) - A compiler for a simple language (in Rust).
+  - [q2prog](q2prog) - A Q2 programmer (in Rust) for a Raspberry Pi
     (this is for the Q2 only; the Q2A requires an EEPROM programmer).
   - examples - Q2 example programs (assembly and Q2L).
 

@@ -1,6 +1,7 @@
 use std::collections::{HashMap, HashSet};
 
 use crate::expr::{Expression, Word};
+use crate::Machine;
 
 #[derive(Hash, PartialEq, Eq, Clone)]
 pub enum Symbol {
@@ -40,14 +41,9 @@ impl SymbolTable {
     pub const PAGE_SIZE: Word = 128;
     pub const PAGE_COUNT: Word = 32;
     pub const ENTRYPOINT: &'static str = "main";
-    const OUTPUT_DELAY_NAME: &'static str = "__internal__OUTPUT_DELAY";
     const BASE_WATERMARK: Word = 0x004;
 
-    pub fn new(code_addr: i64, heap_addr: i64, freq: i64) -> SymbolTable {
-
-        let output_delay = (freq * 1500 / 20000000 - 1).max(0);
-        let output_delay_str = SymbolTable::OUTPUT_DELAY_NAME.to_string();
-
+    pub fn new(machine: &Machine) -> SymbolTable {
         let global_scope = Scope {
             symbols: HashMap::new(),
             watermark: SymbolTable::BASE_WATERMARK,
@@ -55,7 +51,7 @@ impl SymbolTable {
             return_address: Symbol::Constant(0),
             break_label: None,
         };
-        let mut state = SymbolTable {
+        SymbolTable {
             code: Vec::new(),
             data: Vec::new(),
             immediates: HashMap::new(),
@@ -63,13 +59,11 @@ impl SymbolTable {
             local_labels: HashSet::new(),
             words: 0,
             index: 0,
-            page: (code_addr as Word) / SymbolTable::PAGE_SIZE as Word,
-            heap: heap_addr as Word,
-            heap_start: heap_addr as Word,
-            code_start: code_addr as Word
-        };
-        state.declare_const(&output_delay_str, Symbol::Constant(output_delay as Word));
-        state
+            page: (machine.code_addr as Word) / SymbolTable::PAGE_SIZE as Word,
+            heap: machine.heap_addr as Word,
+            heap_start: machine.heap_addr as Word,
+            code_start: machine.code_addr as Word
+        }
     }
 
     fn append(&mut self, line: String) {
@@ -115,7 +109,7 @@ impl SymbolTable {
         let code_end = self.page * SymbolTable::PAGE_SIZE;
         let code_usage = code_end - self.code_start;
         let max_code = total_words - self.code_start;
-        let usage = heap_usage + code_usage;
+        let usage = heap_usage + code_usage + scope.watermark;
         println!("memory usage:    {:4} / {:4}", usage, total_words);
         println!("zero-page words: {:4} / {:4}", scope.watermark, SymbolTable::PAGE_SIZE);
         println!("code words:      {:4} / {:4}", code_usage, max_code);
@@ -132,11 +126,11 @@ impl SymbolTable {
         Ok(())
     }
 
-    pub fn emit_prelude(&mut self, start_addr: i64) -> Result<(), String> {
-        if start_addr < 128 {
+    pub fn emit_prelude(&mut self, machine: &Machine) -> Result<(), String> {
+        if machine.code_addr < 128 {
             // Bootstrap.
             // This will just run the program over and over.
-            self.append(format!("  .org {}", start_addr));
+            self.append(format!("  .org {}", machine.code_addr));
             self.append_word(format!("  lea =0"));
             self.append_word(format!("  jmp @$+1"));
             self.append_word(format!("  .dw {}", SymbolTable::ENTRYPOINT));
@@ -153,7 +147,7 @@ impl SymbolTable {
             self.append_word(format!("  sta @{}", neg1_label));
             self.append_word(format!("  jmp =0"));
         } else {
-            self.append(format!("  .org {}", start_addr));
+            self.append(format!("  .org {}", machine.code_addr));
             let entrypoint_label = self.append_immediate(&Symbol::Label(SymbolTable::ENTRYPOINT.to_string()));
             self.append_word(format!("  lea $"));
             self.append_word(format!("  jmp @{}", entrypoint_label));

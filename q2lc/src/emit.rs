@@ -1,6 +1,7 @@
 use crate::allocator::Allocator;
 use crate::builtin::{DIVIDE_NAME, MODULUS_NAME, MULTIPLY_NAME, SHIFT_LEFT_NAME, SHIFT_RIGHT_NAME};
 use crate::expr::{Expression, UnaryOperator, Word};
+use crate::retcheck::ReturnCheck;
 use crate::symbol::{SymbolTable, Symbol};
 use crate::statement::Statement;
 use crate::visitor::StatementVisitor;
@@ -491,7 +492,9 @@ pub fn emit_function(
     state.append_label(name);
     let _ = emit_store(state, &return_addr)?;
     let _ = body.emit(state)?;
-    let _ = state.append_code_indirect(JMP, &return_addr)?;
+    if !ReturnCheck::check(body) {
+        let _ = state.append_code_indirect(JMP, &return_addr)?;
+    }
     state.leave_function(name, arg_addrs);
     Ok(())
 }

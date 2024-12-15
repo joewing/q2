@@ -5,6 +5,7 @@ Hardware for the Q2 12-bit bit-serial single-board discrete
 transistor computer.
 
 This is what it looks like:
+
 ![Q4 revision 4b](q2r4b.png)
 
 ## PCB Fabrication and Assembly

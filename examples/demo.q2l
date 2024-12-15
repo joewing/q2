@@ -4,7 +4,7 @@ fun run_program(entry)
   var src = @(@entry + 1);
   var len = @(@entry + 2);
   var ptr = @src;
-  var dest = 0x080;
+  var dest = 0x000;
   var status = 0;
   while @len do
     var temp = @@ptr;
@@ -31,22 +31,22 @@ end
 
 include "examples/tetris.hex";
 include "examples/life.hex";
-include "examples/wump.hex";
-include "examples/maze.hex";
+#include "examples/wump.hex";
+#include "examples/maze.hex";
 include "examples/snake.hex";
-include "examples/pong.hex";
+#include "examples/pong.hex";
 
 const PROGRAMS = [
   [ "Tetris", tetris, tetris_size ],
-  [ "Maze",   maze,   maze_size   ],
+  [ "Life",   life,   life_size   ],
+#  [ "Maze",   maze,   maze_size   ],
   [ "Snake",  snake,  snake_size  ],
 #  [ "Wumpus", wump,   wump_size  ],
-  [ "Life",   life,   life_size   ],
 #  [ "Pong",   pong,   pong_size   ],
   0
 ];
 
-var index = 0;
+var index;
 
 fun show_name()
   OUTPUT = 0x180 + 0x40;
@@ -86,6 +86,7 @@ end
 fun main()
   clear();
   puts("- Q2 Demo v0.2 -");
+  index = 0;
   show_name();
   while 1 do
     var key = waitkey();

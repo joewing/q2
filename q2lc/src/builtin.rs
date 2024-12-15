@@ -1,8 +1,22 @@
+use crate::Machine;
 use crate::parser::parse_builtin;
 use crate::statement::Statement;
 
-pub fn generate_builtins() -> Vec<Statement> {
-    BUILTINS.iter().map(|body| parse_builtin(body)).collect()
+const FREQUENCY_KHZ_NAME: &'static str = "FREQUENCY_KHZ";
+const OUTPUT_NAME: &'static str = "OUTPUT";
+
+pub fn generate_builtins(machine: &Machine) -> Vec<Statement> {
+    let freq_khz = (machine.freq + 500) / 1000;
+    let mut statements: Vec<Statement> = Vec::new();
+
+    statements.push(parse_builtin(format!("const {} = {};", FREQUENCY_KHZ_NAME, freq_khz).as_str()));
+    statements.push(parse_builtin(format!("const {} = 0xFFF;", OUTPUT_NAME).as_str()));
+
+    generate_delay_function(machine, &mut statements);
+    generate_getkey_function(machine, &mut statements);
+
+    statements.extend(BUILTINS.iter().map(|body| parse_builtin(body)));
+    statements
 }
 
 const BUILTINS: &[&str] = &[
@@ -16,8 +30,6 @@ const BUILTINS: &[&str] = &[
     RAND,
     MEMSET,
     MEMCPY,
-    OUTPUT,
-    DELAY,
     PUTS,
     ITOA,
     PUTINT,
@@ -29,7 +41,6 @@ const BUILTINS: &[&str] = &[
     I2C_WRITE,
     I2C_READ,
     CLEAR,
-    GETKEY,
     WAITKEY,
 ];
 
@@ -160,27 +171,36 @@ const MEMCPY: &str = concat!(
     "end\n",
 );
 
-const OUTPUT: &str = "const OUTPUT = 0xFFF;";
-
 // Instruction count: 5 + 5 * i
 // Assuming each instruction takes 4 cycles:
-//      Time (s): 4 * (5 + 5 * i) / FREQUENCY_HZ
+//      Time (s): 2 * 4 * (5 + 5 * i) / FREQUENCY_HZ
 // To delay for x ms (1000 * x s):
-//      x / 1000 == 4 * (5 + 5 * i) / FREQUENCY_HZ
+//      x / 1000 == 8 * (5 + 5 * i) / FREQUENCY_HZ
 //      i = x * FREQUENCY_HZ / 20000 - 1
-const DELAY: &str = concat!(
-    "fun delay(i)\n",
-    "  while @i do\n",
-    "    i = @i - 1;\n",
-    "  end\n",
-    "end\n"
-);
+fn generate_delay_function(machine: &Machine, statements: &mut Vec<Statement>) {
+    let output_delay = (machine.freq * 1500 / 40_000_000 - 1).max(0);     // Delay 1.5ms
+    statements.push(
+        parse_builtin(
+            format!(
+                concat!(
+                    "fun delay()\n",
+                    "  var i = {};\n",
+                    "  while @i do\n",
+                    "    i = @i - 1;\n",
+                    "  end\n",
+                    "end\n"
+                ),
+                output_delay
+            ).as_str()
+        )
+    );
+}
 
 const PUTS: &str = concat!(
     "fun puts(ptr)\n",
     "  while @@ptr do\n",
     "    OUTPUT = @@ptr;\n",
-    "    delay(__internal__OUTPUT_DELAY);\n",
+    "    delay();\n",
     "    ptr = @ptr + 1;\n",
     "  end\n",
     "end\n",
@@ -290,11 +310,21 @@ const CLEAR: &str = concat!(
     "end\n",
 );
 
-const GETKEY: &str = concat!(
-    "fun getkey()\n",
-    "  return ~@OUTPUT & 31;\n",
-    "end\n",
-);
+fn generate_getkey_function(machine: &Machine, statements: &mut Vec<Statement>) {
+    statements.push(
+        parse_builtin(
+            format!(
+                concat!(
+                    "fun getkey()\n",
+                    "  return {}@OUTPUT & {};\n",
+                    "end\n"
+                ),
+                if machine.key_polarity < 0 { "~" } else { "" },
+                machine.key_mask
+            ).as_str()
+        )
+    );
+}
 
 const WAITKEY: &str = concat!(
     "fun waitkey()\n",

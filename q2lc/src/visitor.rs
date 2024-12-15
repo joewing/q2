@@ -156,7 +156,7 @@ pub trait StatementVisitor {
         self.visit_function_default(name, params, body)
     }
 
-    fn visit_statement(&mut self, statement: &Statement) -> Result<Statement, String> {
+    fn visit_statement_default(&mut self, statement: &Statement) -> Result<Statement, String> {
         match statement {
             Statement::Const(name, expr) => self.visit_const(name, expr),
             Statement::Var(name, expr_opt) => self.visit_var(name, expr_opt),
@@ -171,6 +171,10 @@ pub trait StatementVisitor {
             Statement::While(cond, body) => self.visit_while(cond, body),
             Statement::Asm(opcode, dest) => self.visit_asm(opcode, dest),
         }
+    }
+
+    fn visit_statement(&mut self, statement: &Statement) -> Result<Statement, String> {
+        self.visit_statement_default(&statement)
     }
 
     fn visit_statements(&mut self, statements: &Vec<Statement>) -> Result<Vec<Statement>, String> {

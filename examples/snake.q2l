@@ -66,13 +66,13 @@ end
 fun move()
 
   # Delay and check for a change in direction.
-  var delay = 15;
-  while @delay do
-    var key = ~@OUTPUT & 31;
+  var d = FREQUENCY_KHZ / 3;
+  while @d do
+    var key = getkey();
     if @key then
       snake_dir = @key;
     end
-    delay = @delay - 1;
+    d = @d - 1;
   end
 
   # Move the head.

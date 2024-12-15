@@ -99,7 +99,7 @@ impl OutputFormat for HighRomOutputFormat {
        match st.code {
            Some(word) => {
                let addr = st.full_addr() - (base as i64);
-               write_intel_hex(vec, word >> 6, addr | (bank << 12))
+               write_intel_hex(vec, word >> 6, addr | (bank << 11))
            },
            None => ()
        }
@@ -116,7 +116,7 @@ impl OutputFormat for LowRomOutputFormat {
         match st.code {
             Some(word) => {
                 let addr = st.full_addr() - (base as i64);
-                write_intel_hex(vec, word & 0x3F, addr | (bank << 12))
+                write_intel_hex(vec, word & 0x3F, addr | (bank << 11))
             },
             None => ()
         }

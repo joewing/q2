@@ -17,8 +17,8 @@ all:
 	@echo "   reset            Reset device"
 
 sim-%: examples/%.hex
-	cp $< hdl/test.hex
-	(cd hdl && $(MAKE) sim)
+	cp $< hardware/q2/hdl/test.hex
+	(cd hardware/q2/hdl && $(MAKE) sim)
 
 examples/%.lst: $(ASM) examples/%.q2
 	$(ASM) examples/$*.q2
@@ -64,7 +64,7 @@ uninstall:
 
 clean:
 	rm -f examples/*.lst examples/*.hex examples/*.q2p
-	rm -f hdl/test.hex
-	(cd hdl && $(MAKE) clean)
+	rm -f hardware/q2/hdl/test.hex
+	(cd hardware/q2/hdl && $(MAKE) clean)
 	(cd q2asm && cargo clean)
 	(cd q2prog && cargo clean)
